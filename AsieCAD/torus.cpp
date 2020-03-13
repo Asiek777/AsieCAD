@@ -1,0 +1,62 @@
+#include "torus.h"
+
+Torus::Torus(int _smallCircle, int _bigCircle, float _smallRadius, float _bigRadius, const char* name) :
+	SceneObject(name)
+{
+    bigCount = _bigCircle;
+    smallCount = _smallCircle;
+    smallRadius = _smallRadius;
+    bigRadius = _bigRadius;
+ 
+    prepareBuffers();
+}
+
+void Torus::prepareBuffers()
+{
+    vertices = std::vector<float>();
+    indices = std::vector<unsigned>();
+    for (int i = 0; i < bigCount; i++)
+    {
+        float bigAngle = 2 * M_PI * i / bigCount;
+        for (int j = 0; j < smallCount; j++)
+        {
+            float smallAngle = 2 * M_PI * j / smallCount;
+            vertices.emplace_back((bigRadius + smallRadius * std::cosf(smallAngle))
+                * std::cosf(bigAngle));
+            vertices.emplace_back(smallRadius * std::sinf(smallAngle));
+            vertices.emplace_back((bigRadius + smallRadius * std::cosf(smallAngle))
+                * std::sinf(bigAngle));
+        }
+        for (int i = 0; i < bigCount; i++)
+            for (int j = 0; j < smallCount; j++)
+            {
+                indices.emplace_back(i * smallCount + j);
+                indices.emplace_back(((i + 1) % bigCount * smallCount) + j);
+                indices.emplace_back(i * smallCount + j);
+                indices.emplace_back(i * smallCount + ((j + 1) % smallCount));
+            }
+    }
+    mesh = std::make_unique<MeshBuffer>(vertices, true, indices);
+}
+
+void Torus::Render(Shader& shader)
+{
+	if (hasChanged)
+		prepareBuffers();
+	hasChanged = false;
+    glBindVertexArray(mesh->GetVAO());
+    shader.setMat4("model", position.GetModelMatrix());
+    glDrawElements(GL_LINES, smallCount * bigCount * 4, GL_UNSIGNED_INT, 0);
+    glBindVertexArray(0);
+	
+}
+
+void Torus::RenderMenu()
+{
+    hasChanged |= ImGui::SliderInt("Ring vertice count", &smallCount, 3, 70);
+	hasChanged |= ImGui::SliderInt("Ring count", &bigCount, 3, 200);
+    hasChanged |= ImGui::SliderFloat("Small radius", &smallRadius, 0.1, 10);
+    hasChanged |= ImGui::SliderFloat("Big radius", &bigRadius, 0.2, 15);
+    if (ImGui::CollapsingHeader("Position"))
+        position.RenderMenu();
+}

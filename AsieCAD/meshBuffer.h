@@ -1,0 +1,22 @@
+#pragma once
+#include <vector>
+#include <glad/glad.h>
+#include <GL/gl.h>
+
+class MeshBuffer
+{
+	static MeshBuffer* cubeBuffer;
+	static MeshBuffer* slopeBuffer;
+
+
+	unsigned int VBO, VAO, EBO;
+public:
+	unsigned int inline GetVAO() { return VAO; }
+	MeshBuffer();
+	MeshBuffer(std::vector<float> vertices, bool hasEBO = false, 
+		std::vector<unsigned>  indices = {});
+	~MeshBuffer();
+
+
+};
+
