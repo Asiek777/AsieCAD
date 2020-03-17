@@ -1,8 +1,12 @@
 #include "torus.h"
 
+std::unique_ptr<Shader> Torus::shader;
+
 Torus::Torus(int _smallCircle, int _bigCircle, float _smallRadius, float _bigRadius, const char* name) :
 	SceneObject(name)
 {
+	if(!shader)
+        shader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag");
     bigCount = _bigCircle;
     smallCount = _smallCircle;
     smallRadius = _smallRadius;
@@ -13,8 +17,8 @@ Torus::Torus(int _smallCircle, int _bigCircle, float _smallRadius, float _bigRad
 
 void Torus::prepareBuffers()
 {
-    vertices = std::vector<float>();
-    indices = std::vector<unsigned>();
+    std::vector<float> vertices;
+    std::vector<unsigned> indices;
     for (int i = 0; i < bigCount; i++)
     {
         float bigAngle = 2 * M_PI * i / bigCount;
@@ -39,13 +43,14 @@ void Torus::prepareBuffers()
     mesh = std::make_unique<MeshBuffer>(vertices, true, indices);
 }
 
-void Torus::Render(Shader& shader)
+void Torus::Render()
 {
 	if (hasChanged)
 		prepareBuffers();
 	hasChanged = false;
     glBindVertexArray(mesh->GetVAO());
-    shader.setMat4("model", position.GetModelMatrix());
+    shader->use();
+    shader->setMat4("model", position.GetModelMatrix());
     glDrawElements(GL_LINES, smallCount * bigCount * 4, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 	

@@ -38,6 +38,8 @@ class App
 	
 public:
 	App();
+	void setMatrices();
+	void setMatricesoShaders();
 	static App* GetInstance() { return instance; };
 	int Run();
 

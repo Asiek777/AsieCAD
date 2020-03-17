@@ -33,7 +33,7 @@ struct Position
 	void RenderMenu()
 	{
 		bool hasChanged = false;
-		hasChanged |= ImGui::DragFloat3("Location", &Location.x, 0.02f);
+		hasChanged |= ImGui::DragFloat3("location", &Location.x, 0.02f);
 		hasChanged |= ImGui::DragFloat3("Rotation", &Rotation.x, 0.5f);
 		hasChanged |= ImGui::DragFloat3("Scale", &Scale.x, 0.02f);
 		if (hasChanged)

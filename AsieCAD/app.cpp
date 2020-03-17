@@ -1,4 +1,6 @@
 #include "app.h"
+#include "point.h"
+#include "cursor.h"
 
 App* App::instance;
 
@@ -31,10 +33,10 @@ int App::Run()
 	}
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
+	glPointSize(5);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-	glm::mat4 projection;
 	glm::vec3 objectColor(1.0f, 0.5f, 0.31f);
 
 	ImGui::CreateContext();
@@ -44,10 +46,11 @@ int App::Run()
 
 	glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
+	SceneObject::SceneObjects.emplace_back(std::make_unique<Cursor>());
 	SceneObject::SceneObjects.emplace_back(std::make_unique<Torus>(50, 50, 1, 4, "torus 1"));
 	SceneObject::SceneObjects.emplace_back(std::make_unique<Torus>(50, 50, 1, 6, "torus 2"));
-	Shader torusShader("shaders/torus.vert", "shaders/torus.frag");
-	torusShader.use();
+	SceneObject::SceneObjects.emplace_back(std::make_unique<Point>());
+	//Shader torusShader("shaders/torus.vert", "shaders/torus.frag");
 
 	while (!glfwWindowShouldClose(window)) {
 
@@ -59,19 +62,13 @@ int App::Run()
 		glClearColor(0.f, 0.f, 0.f, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		torusShader.use();
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		glm::mat4 view = camera.GetViewMatrix();
-		torusShader.setMat4("view", view);
-		projection = glm::perspective(glm::radians(camera.Zoom), (float)screenWidth / screenHeight, 0.1f, 100.0f);
-		torusShader.setMat4("projection", projection);
-		glm::mat4 model(1.f);
-		torusShader.setMat4("model", model);
+		setMatrices();
 		
 		for (int i = 0; i < SceneObject::SceneObjects.size(); i++) {
-			SceneObject::SceneObjects[i]->Render(torusShader);
+			SceneObject::SceneObjects[i]->Render();
 		}
 
 		{
@@ -104,6 +101,24 @@ int App::Run()
 	ImGui::DestroyContext();
 	glfwTerminate();
 	return 0;
+}
+
+void App::setMatrices()
+{
+	glm::mat4 view = camera.GetViewMatrix();
+	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)screenWidth / screenHeight, 0.1f, 100.0f);
+	if (Torus::shader) {
+		Torus::shader->use();
+		Torus::shader->setMat4("viewProjection", projection * view);			
+	}
+	if (Point::shader) {
+		Point::shader->use();
+		Point::shader->setMat4("viewProjection", projection * view);
+	}
+	if (Cursor::shader) {
+		Cursor::shader->use();
+		Cursor::shader->setMat4("viewProjection", projection * view);
+	}
 }
 
 void App::framebuffer_size_callback(GLFWwindow* window, int width, int height) {

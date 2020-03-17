@@ -144,6 +144,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="app.cpp" />
+    <ClCompile Include="cursor.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Imgui\imgui.cpp" />
     <ClCompile Include="Imgui\imgui_demo.cpp" />
@@ -160,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="cursor.h" />
     <ClInclude Include="Imgui\imconfig.h" />
     <ClInclude Include="Imgui\imgui.h" />
     <ClInclude Include="Imgui\imgui_impl_glfw.h" />
@@ -176,6 +178,7 @@
     <ClInclude Include="torus.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="shaders\point.vert" />
     <None Include="shaders\torus.frag" />
     <None Include="shaders\torus.vert" />
   </ItemGroup>

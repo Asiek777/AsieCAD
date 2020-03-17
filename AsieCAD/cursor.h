@@ -2,14 +2,15 @@
 #include "sceneObject.h"
 #include "meshBuffer.h"
 
-class Point :
+class Cursor :
 	public SceneObject
 {
 	glm::vec3 location;
-	static std::unique_ptr<MeshBuffer> mesh;
+	std::unique_ptr<MeshBuffer> mesh;
+	glm::mat4 modelMatrix = glm::mat4(1);
 public:
 	static std::unique_ptr<Shader> shader;
-	Point(glm::vec3 location = glm::vec3(0));
+	Cursor();
 	void Render() override;
 	void RenderMenu() override;
 };

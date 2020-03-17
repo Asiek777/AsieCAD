@@ -13,16 +13,15 @@ class Torus : public SceneObject
 	int smallCount, bigCount;
 	float smallRadius, bigRadius;
 	std::unique_ptr<MeshBuffer> mesh;
-	std::vector<float> vertices;
-	std::vector<unsigned> indices;
-	bool hasChanged = false;
 	Position position;
+	bool hasChanged = false;
 	void prepareBuffers();
 public:
+	static std::unique_ptr<Shader> shader;
 	Torus(int _smallCircle, int _bigCircle, float _smallRadius, 
 		float _bigRadius, const char* name );
 	virtual ~Torus() {};
-	void Render(Shader& shader);
+	void Render();
 	void RenderMenu();
 };
 
