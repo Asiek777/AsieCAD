@@ -74,32 +74,28 @@ public:
 			Position += Right * velocity;
 	}
 
-	void ProcessMouseRotation(float xoffset, float yoffset, GLboolean constrainPitch = true)
+	void ProcessMouseRotation(float xoffset, float yoffset, glm::vec3 rotCenter)
 	{
 		xoffset *= MouseSensitivity;
 		yoffset *= MouseSensitivity;
 
-		Position += Front * 10.f;
+		glm::vec4 move = GetViewMatrix() * glm::vec4(rotCenter,1);
+
+		Position += Right * move.x + Up * move.y - Front * move.z;
 
 		Yaw += xoffset;
 		Pitch += yoffset;
+		Pitch = glm::clamp(Pitch, -89.f, 89.f);
 
-		if (constrainPitch)
-		{
-			if (Pitch > 89.0f)
-				Pitch = 89.0f;
-			if (Pitch < -89.0f)
-				Pitch = -89.0f;
-		}
 		glm::vec3 front;
 		front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));
 		front.y = sin(glm::radians(Pitch));
 		front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
 		Front = glm::normalize(front);
-		Position -= Front * 10.f;
 		updateCameraVectors();
+		Position -= Right * move.x + Up * move.y - Front * move.z;;
 	}
-	void ProcessMouseMove(float xoffset, float yoffset, GLboolean constrainPitch = true)
+	void ProcessMouseMove(float xoffset, float yoffset)
 	{
 		xoffset *= MouseSensitivity * 0.1;
 		yoffset *= MouseSensitivity * 0.1;

@@ -3,6 +3,13 @@
 
 std::unique_ptr<Shader> Cursor::shader;
 
+glm::vec3 Cursor::GetRotationCenter()
+{
+	if (isRotationCenter)
+		return location;
+	else
+		return glm::vec3(0);
+}
 Cursor::Cursor() :SceneObject("Kursor")
 {
 	if (!shader)
@@ -25,6 +32,8 @@ void Cursor::Render()
 }
 void Cursor::RenderMenu()
 {
+	ImGui::Checkbox("Rotate around cursor", &isRotationCenter);
 	if (ImGui::DragFloat3("location", &location.x, 0.02f))
 		modelMatrix = glm::translate(glm::mat4(1), location);
+	
 }

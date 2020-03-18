@@ -142,7 +142,7 @@ void App::mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	lastY = ypos;
 
 	if (isCameraRotating)
-		camera.ProcessMouseRotation(xoffset, yoffset);
+		camera.ProcessMouseRotation(xoffset, yoffset, SceneObject::GetRotationCenter());
 	if (isCameraMoving)
 		camera.ProcessMouseMove(xoffset, yoffset);
 }

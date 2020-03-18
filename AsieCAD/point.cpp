@@ -3,14 +3,14 @@
 std::unique_ptr<Shader> Point::shader;
 std::unique_ptr<MeshBuffer> Point::mesh;
 
-Point::Point(glm::vec3 location) : SceneObject("punkcik")
+Point::Point(glm::vec3 _location) : SceneObject("punkcik")
 {
 	if (!shader) {
 		shader = std::make_unique<Shader>("shaders/point.vert", "shaders/torus.frag");
 		std::vector<float> vertex{ 0.f,0.f, 0.f };
 		mesh = std::make_unique<MeshBuffer>(vertex);
 	}
-	location = location;
+	location = _location;
 }
 void Point::Render()
 {

@@ -9,7 +9,7 @@ class Point :
 	static std::unique_ptr<MeshBuffer> mesh;
 public:
 	static std::unique_ptr<Shader> shader;
-	Point(glm::vec3 location = glm::vec3(0));
+	Point(glm::vec3 _location = glm::vec3(0));
 	void Render() override;
 	void RenderMenu() override;
 };
