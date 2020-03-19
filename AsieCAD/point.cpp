@@ -3,7 +3,7 @@
 std::unique_ptr<Shader> Point::shader;
 std::unique_ptr<MeshBuffer> Point::mesh;
 
-Point::Point(glm::vec3 _location) : SceneObject("punkcik")
+Point::Point(glm::vec3 _location) : Clicable("punkcik")
 {
 	if (!shader) {
 		shader = std::make_unique<Shader>("shaders/point.vert", "shaders/torus.frag");
@@ -18,6 +18,10 @@ void Point::Render()
 	glBindVertexArray(mesh->GetVAO());
 	shader->use();
 	shader->setVec3("position", location);
+	if (isSelected)
+		shader->setVec3("color", 1.f, 0.f, 0.f);
+	else
+		shader->setVec3("color", 1.f, 1.f, 1.f);
 	glDrawArrays(GL_POINTS, 0, 1);
 	glBindVertexArray(0);
 }

@@ -116,6 +116,9 @@
     <ClInclude Include="cursor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="clickable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\torus.frag">

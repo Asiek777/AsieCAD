@@ -1,11 +1,11 @@
 #pragma once
 #include "sceneObject.h"
 #include "meshBuffer.h"
+#include "clickable.h"
 
 class Cursor :
-	public SceneObject
+	public Clicable
 {
-	glm::vec3 location;
 	std::unique_ptr<MeshBuffer> mesh;
 	glm::mat4 modelMatrix = glm::mat4(1);
 	bool isRotationCenter;

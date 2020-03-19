@@ -51,6 +51,10 @@ void Torus::Render()
     glBindVertexArray(mesh->GetVAO());
     shader->use();
     shader->setMat4("model", position.GetModelMatrix());
+    if (isSelected)
+        shader->setVec3("color", 1.f, 0.f, 0.f);
+    else
+        shader->setVec3("color", 1.f, 1.f, 1.f);
     glDrawElements(GL_LINES, smallCount * bigCount * 4, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 	

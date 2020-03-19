@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="clickable.h" />
     <ClInclude Include="cursor.h" />
     <ClInclude Include="Imgui\imconfig.h" />
     <ClInclude Include="Imgui\imgui.h" />

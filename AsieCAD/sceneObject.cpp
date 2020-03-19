@@ -16,29 +16,32 @@ glm::vec3 SceneObject::GetRotationCenter()
 }
 SceneObject::SceneObject(const char* _name)
 {
-    strcpy_s(text, 64, _name);
-    name = text;
+	strcpy_s(text, 64, _name);
+	name = text;
+}
+bool SceneObject::IsClicable()
+{
+	return false;
 }
 void SceneObject::RenderFullMenu()
 {
-    if (ImGui::InputText("Object name", text, 64))
-        name = text;
-    RenderMenu();
+	if (ImGui::InputText("Object name", text, 64))
+		name = text;
+	RenderMenu();
 }
 void SceneObject::ItemListMenu()
 {
 	if (ImGui::CollapsingHeader("Object list")) {
 		ImGui::ListBoxHeader("");
 		for (int i = 0; i < SceneObjects.size(); i++)
-			if (ImGui::Selectable((std::to_string(i) + ": " + SceneObjects[i]->name).c_str(),
+			if (ImGui::Selectable(
+				(std::to_string(i) + ": " + SceneObjects[i]->name).c_str(),
 				SceneObjects[i]->isSelected)) {
-				
-				if(ImGui::GetIO().KeyCtrl) {
+
+				if (ImGui::GetIO().KeyCtrl) 
 					ChangeSelection(i);
-				}
-				else {
+				else
 					Select(i);
-				}
 			}
 		ImGui::ListBoxFooter();
 	}
@@ -50,8 +53,12 @@ void SceneObject::Select(int i)
 	for (int j = 0; j < SceneObjects.size(); j++)
 		SceneObjects[j]->isSelected = false;
 	selected = i;
-	SceneObjects[i]->isSelected = true;
-	selectedCount = 1;
+	if (selected >= 0) {
+		SceneObjects[i]->isSelected = true;
+		selectedCount = 1;
+	}
+	else
+		selectedCount = 0;
 }
 void SceneObject::ChangeSelection(int i)
 {
@@ -72,7 +79,8 @@ void SceneObject::RenderProperties()
 		}
 		else
 			SceneObjects[selected]->RenderFullMenu();
-	} else if (selectedCount>1) {
+	}
+	else if (selectedCount > 1) {
 		std::string text = "Selected " + std::to_string(selectedCount) + " items";
 		ImGui::Text(text.c_str());
 		if (ImGui::Button("Delete items")) {
@@ -88,8 +96,8 @@ void SceneObject::RenderProperties()
 }
 void SceneObject::AddItemMenu()
 {
-	if(ImGui::Button("Add Torus"))
-        SceneObjects.emplace_back(std::make_unique<Torus>(50, 50, 1, 2, "new torus"));
-	if(ImGui::Button("Add point"))
+	if (ImGui::Button("Add Torus"))
+		SceneObjects.emplace_back(std::make_unique<Torus>(50, 50, 1, 2, "new torus"));
+	if (ImGui::Button("Add point"))
 		SceneObjects.emplace_back(std::make_unique<Point>());
 }

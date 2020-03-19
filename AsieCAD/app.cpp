@@ -65,11 +65,14 @@ int App::Run()
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
+		
+		viewProjection = glm::perspective(glm::radians(camera.Zoom),
+			(float)screenWidth / screenHeight, 0.1f, 100.0f)
+		* camera.GetViewMatrix();
 		setMatrices();
 		
-		for (int i = 0; i < SceneObject::SceneObjects.size(); i++) {
+		for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
 			SceneObject::SceneObjects[i]->Render();
-		}
 
 		{
 			static float f = 0.0f;
@@ -105,19 +108,17 @@ int App::Run()
 
 void App::setMatrices()
 {
-	glm::mat4 view = camera.GetViewMatrix();
-	glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)screenWidth / screenHeight, 0.1f, 100.0f);
 	if (Torus::shader) {
 		Torus::shader->use();
-		Torus::shader->setMat4("viewProjection", projection * view);			
+		Torus::shader->setMat4	("viewProjection", viewProjection);
 	}
 	if (Point::shader) {
 		Point::shader->use();
-		Point::shader->setMat4("viewProjection", projection * view);
+		Point::shader->setMat4("viewProjection", viewProjection);
 	}
 	if (Cursor::shader) {
 		Cursor::shader->use();
-		Cursor::shader->setMat4("viewProjection", projection * view);
+		Cursor::shader->setMat4("viewProjection", viewProjection);
 	}
 }
 
@@ -128,14 +129,6 @@ void App::framebuffer_size_callback(GLFWwindow* window, int width, int height) {
 }
 
 void App::mouse_callback(GLFWwindow* window, double xpos, double ypos) {
-
-	//if (firstMouse)
-	//{
-	//	lastX = xpos;
-	//	lastY = ypos;
-	//	firstMouse = false;
-	//}
-
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos;
 	lastX = xpos;
@@ -162,6 +155,8 @@ void App::processInput(GLFWwindow *window) {
 			isCameraMoving = true;
 		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_RELEASE)
 			isCameraMoving = false;
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+			SelectItem();
 	}
 
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -177,6 +172,35 @@ void App::processInput(GLFWwindow *window) {
 			camera.ProcessKeyboard(RIGHT, deltaTime);
 	}
 }
+void App::SelectItem()
+{
+	ImVec2 mousePos = ImGui::GetMousePos();
+	bool ctrlClick = ImGui::GetIO().KeyCtrl;
+	glm::vec3 point, dir;
+	ScreenPosToWorldRay(mousePos.x,screenHeight - mousePos.y, point, dir);
+	dir = glm::normalize(dir);
+	float minDist = 0.3f;
+	int minI = -1;
+	for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
+		if (SceneObject::SceneObjects[i]->IsClicable()) {
+			Clicable* clicked = static_cast<Clicable*>(SceneObject::SceneObjects[i].get());
+			float dist = clicked->DistanceToLine(point, dir);
+			if (dist < minDist) {
+				minDist = dist;
+				minI = i;
+			}			
+		}
+	if(ctrlClick) {
+		if(minI >= 0)
+			SceneObject::ChangeSelection(minI);
+	}
+	else {
+		if (minI>=0)
+			SceneObject::Select(minI);
+		else
+			SceneObject::Select(-1);
+	}
+}
 
 void App::setCameraRotate(GLFWwindow* window, bool move)
 {
@@ -190,4 +214,27 @@ void App::setCameraRotate(GLFWwindow* window, bool move)
 	}
 }
 
+void App::ScreenPosToWorldRay(int mouseX, int mouseY, glm::vec3& out_origin, 
+	glm::vec3& out_direction)
+{
+	glm::vec4 lRayStart_NDC(
+	((float)mouseX / (float)screenWidth - 0.5f) * 2.0f,
+		((float)mouseY / (float)screenHeight - 0.5f) * 2.0f, 
+		-1.0,	 1.0f);
+	glm::vec4 lRayEnd_NDC(
+	((float)mouseX / (float)screenWidth - 0.5f) * 2.0f,
+		((float)mouseY / (float)screenHeight - 0.5f) * 2.0f,
+		0.0,	1.0f);
 
+	glm::mat4 M = glm::inverse(viewProjection);
+	glm::vec4 lRayStart_world = M * lRayStart_NDC;
+	lRayStart_world /= lRayStart_world.w;
+	glm::vec4 lRayEnd_world = M * lRayEnd_NDC;
+	lRayEnd_world /= lRayEnd_world.w;
+
+	glm::vec3 lRayDir_world(lRayEnd_world - lRayStart_world);
+	lRayDir_world = glm::normalize(lRayDir_world);
+
+	out_origin = glm::vec3(lRayStart_world);
+	out_direction = glm::normalize(lRayDir_world);
+}

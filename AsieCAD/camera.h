@@ -78,9 +78,7 @@ public:
 	{
 		xoffset *= MouseSensitivity;
 		yoffset *= MouseSensitivity;
-
 		glm::vec4 move = GetViewMatrix() * glm::vec4(rotCenter,1);
-
 		Position += Right * move.x + Up * move.y - Front * move.z;
 
 		Yaw += xoffset;
@@ -92,6 +90,7 @@ public:
 		front.y = sin(glm::radians(Pitch));
 		front.z = sin(glm::radians(Yaw)) * cos(glm::radians(Pitch));
 		Front = glm::normalize(front);
+		
 		updateCameraVectors();
 		Position -= Right * move.x + Up * move.y - Front * move.z;;
 	}

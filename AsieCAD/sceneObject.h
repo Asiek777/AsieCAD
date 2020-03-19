@@ -20,6 +20,7 @@ public:
 	SceneObject() {};
 	SceneObject(const char* _name);
 	virtual ~SceneObject() = default;
+	virtual bool IsClicable();
 	void RenderFullMenu();
 	static void Select(int i);
 	static void ChangeSelection(int i);

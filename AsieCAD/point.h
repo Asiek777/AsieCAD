@@ -1,11 +1,10 @@
 #pragma once
-#include "sceneObject.h"
 #include "meshBuffer.h"
+#include "clickable.h"
 
 class Point :
-	public SceneObject
+	public Clicable
 {
-	glm::vec3 location;
 	static std::unique_ptr<MeshBuffer> mesh;
 public:
 	static std::unique_ptr<Shader> shader;
