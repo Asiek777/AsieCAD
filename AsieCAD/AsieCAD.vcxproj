@@ -173,12 +173,13 @@
     <ClInclude Include="Imgui\imstb_truetype.h" />
     <ClInclude Include="meshBuffer.h" />
     <ClInclude Include="point.h" />
-    <ClInclude Include="Position.h" />
+    <ClInclude Include="position.h" />
     <ClInclude Include="sceneObject.h" />
     <ClInclude Include="shader_s.h" />
     <ClInclude Include="torus.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="position.cpp" />
     <None Include="shaders\point.vert" />
     <None Include="shaders\torus.frag" />
     <None Include="shaders\torus.vert" />

@@ -1,4 +1,6 @@
 #include "torus.h"
+#include "point.h"
+#include "Imgui/imgui.h"
 
 std::unique_ptr<Shader> Torus::shader;
 
@@ -11,7 +13,8 @@ Torus::Torus(int _smallCircle, int _bigCircle, float _smallRadius, float _bigRad
     smallCount = _smallCircle;
     smallRadius = _smallRadius;
     bigRadius = _bigRadius;
- 
+    position.location = GetCursorCenter();
+    position.UpdateMatrix();
     prepareBuffers();
 }
 
@@ -45,9 +48,6 @@ void Torus::prepareBuffers()
 
 void Torus::Render()
 {
-	if (hasChanged)
-		prepareBuffers();
-	hasChanged = false;
     glBindVertexArray(mesh->GetVAO());
     shader->use();
     shader->setMat4("model", position.GetModelMatrix());
@@ -57,15 +57,24 @@ void Torus::Render()
         shader->setVec3("color", 1.f, 1.f, 1.f);
     glDrawElements(GL_LINES, smallCount * bigCount * 4, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+    if (isSelected)
+        Point::DrawPoint(GetCenter(), glm::vec3(1, 0, 0));
 	
 }
 
 void Torus::RenderMenu()
 {
+    bool hasChanged = false;
     hasChanged |= ImGui::SliderInt("Ring vertice count", &smallCount, 3, 70);
 	hasChanged |= ImGui::SliderInt("Ring count", &bigCount, 3, 200);
     hasChanged |= ImGui::SliderFloat("Small radius", &smallRadius, 0.1, 10);
     hasChanged |= ImGui::SliderFloat("Big radius", &bigRadius, 0.2, 15);
+    if (hasChanged)
+        prepareBuffers();
     if (ImGui::CollapsingHeader("Position"))
-        position.RenderMenu();
+        position.RenderMenu(GetCursorCenter());
+}
+glm::vec3 Torus::GetCenter()
+{
+    return position.location;
 }

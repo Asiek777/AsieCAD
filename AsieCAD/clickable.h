@@ -18,4 +18,5 @@ public:
 			M.z * dir.x - M.x * dir.z, M.x * dir.y - M.y * dir.x);
 		return glm::length(dist);
 	}
+	glm::vec3 GetCenter() override { return location; }
 };

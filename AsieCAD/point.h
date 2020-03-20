@@ -8,8 +8,9 @@ class Point :
 	static std::unique_ptr<MeshBuffer> mesh;
 public:
 	static std::unique_ptr<Shader> shader;
-	Point(glm::vec3 _location = glm::vec3(0));
+	Point();
 	void Render() override;
 	void RenderMenu() override;
+	static void DrawPoint(glm::vec3 position, glm::vec3 color);
 };
 

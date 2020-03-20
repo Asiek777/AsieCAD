@@ -107,9 +107,6 @@
     <ClInclude Include="sceneObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Position.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -117,6 +114,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="clickable.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="position.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -129,6 +129,9 @@
     </None>
     <None Include="shaders\point.vert">
       <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="position.cpp">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #include "cursor.h"
-#include <glm/ext/matrix_transform.inl>
+#include <glm\glm.hpp>
+#include <glm\gtc\matrix_transform.hpp>
 
 std::unique_ptr<Shader> Cursor::shader;
 

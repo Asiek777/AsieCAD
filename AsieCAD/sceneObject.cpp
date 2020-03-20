@@ -8,11 +8,19 @@
 std::vector<std::unique_ptr<SceneObject>> SceneObject::SceneObjects;
 int SceneObject::selected = -1;
 int SceneObject::selectedCount = 0;
+bool SceneObject::rotateAroundCursor = false;
+Position SceneObject::selectedCenter;
 
 glm::vec3 SceneObject::GetRotationCenter()
 {
-	Cursor* cursor = static_cast<Cursor*>(SceneObjects[0].get());
-	return cursor->GetRotationCenter();
+	if (rotateAroundCursor || selectedCount != 1)
+		return GetCursorCenter();
+	else
+		return SceneObjects[selected]->GetCenter();
+}
+glm::vec3 SceneObject::GetCursorCenter()
+{
+	return SceneObjects[0]->GetCenter();
 }
 SceneObject::SceneObject(const char* _name)
 {
@@ -66,6 +74,14 @@ void SceneObject::ChangeSelection(int i)
 	selectedCount += SceneObjects[i]->isSelected ? 1 : -1;
 	if (selectedCount == 1)
 		for (selected = 0; !SceneObjects[selected]->isSelected; selected++);
+	else if (selectedCount > 1) {
+		glm::vec3 centerLoc = glm::vec3(0);
+		for (int i = 0; i < SceneObjects.size(); i++)
+			if (SceneObjects[i]->isSelected)
+				centerLoc += SceneObjects[i]->GetCenter();
+		selectedCenter = Position(centerLoc);
+	}
+	
 }
 void SceneObject::RenderProperties()
 {
@@ -96,8 +112,11 @@ void SceneObject::RenderProperties()
 }
 void SceneObject::AddItemMenu()
 {
+	//TODO: put it in diffrent function
+	ImGui::Checkbox("Rotate Camera Around Cursor", &rotateAroundCursor);
 	if (ImGui::Button("Add Torus"))
 		SceneObjects.emplace_back(std::make_unique<Torus>(50, 50, 1, 2, "new torus"));
+	ImGui::SameLine();
 	if (ImGui::Button("Add point"))
 		SceneObjects.emplace_back(std::make_unique<Point>());
 }
