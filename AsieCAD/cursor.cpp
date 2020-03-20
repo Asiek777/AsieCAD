@@ -43,3 +43,8 @@ void Cursor::RenderMenu()
 	if (ImGui::DragFloat3("location", &location.x, 0.02f))
 		modelMatrix = glm::translate(glm::mat4(1), location);
 }
+void Cursor::UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange)
+{
+	location = pos;
+	modelMatrix = glm::translate(glm::mat4(1), location);
+}

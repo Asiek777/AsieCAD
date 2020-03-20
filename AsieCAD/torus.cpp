@@ -57,8 +57,6 @@ void Torus::Render()
         shader->setVec3("color", 1.f, 1.f, 1.f);
     glDrawElements(GL_LINES, smallCount * bigCount * 4, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
-    if (isSelected)
-        Point::DrawPoint(GetCenter(), glm::vec3(1, 0, 0));
 	
 }
 
@@ -77,4 +75,8 @@ void Torus::RenderMenu()
 glm::vec3 Torus::GetCenter()
 {
     return position.location;
+}
+void Torus::UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange)
+{
+    position.UpdatePosition(pos, scaleChange, rotChange);
 }

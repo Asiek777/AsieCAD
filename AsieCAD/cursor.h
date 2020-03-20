@@ -15,5 +15,6 @@ public:
 	Cursor();
 	void Render() override;
 	void RenderMenu() override;
+	void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange) override;
 };
 

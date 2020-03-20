@@ -28,8 +28,10 @@ public:
 	virtual bool IsClicable();
 	virtual glm::vec3 GetCenter() = 0;
 	virtual void Render() = 0;
+	virtual void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange) = 0;
 	void RenderFullMenu();
 	
+	static void RenderScene();
 	static void Select(int i);
 	static void ChangeSelection(int i);
 	static void RenderProperties();

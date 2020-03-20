@@ -13,10 +13,12 @@ Position SceneObject::selectedCenter;
 
 glm::vec3 SceneObject::GetRotationCenter()
 {
-	if (rotateAroundCursor || selectedCount != 1)
+	if (rotateAroundCursor || selectedCount < 1)
 		return GetCursorCenter();
-	else
+	else if (selectedCount == 1)
 		return SceneObjects[selected]->GetCenter();
+	else if (selectedCount > 1)
+		return selectedCenter.location;
 }
 glm::vec3 SceneObject::GetCursorCenter()
 {
@@ -36,6 +38,15 @@ void SceneObject::RenderFullMenu()
 	if (ImGui::InputText("Object name", text, 64))
 		name = text;
 	RenderMenu();
+}
+void SceneObject::RenderScene()
+{
+	for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
+		SceneObject::SceneObjects[i]->Render();
+	if (selectedCount > 1)
+		Point::DrawPoint(selectedCenter.location, glm::vec3(1, 1, 0));
+	if (selectedCount == 1)
+		Point::DrawPoint(SceneObjects[selected]->GetCenter(), glm::vec3(1, 1, 0));
 }
 void SceneObject::ItemListMenu()
 {
@@ -79,7 +90,7 @@ void SceneObject::ChangeSelection(int i)
 		for (int i = 0; i < SceneObjects.size(); i++)
 			if (SceneObjects[i]->isSelected)
 				centerLoc += SceneObjects[i]->GetCenter();
-		selectedCenter = Position(centerLoc);
+		selectedCenter = Position(centerLoc / (float)selectedCount);
 	}
 	
 }
@@ -106,6 +117,12 @@ void SceneObject::RenderProperties()
 			selectedCount = SceneObjects[0]->isSelected;
 			selected = selectedCount ? 0 : -1;
 		}
+		if (selectedCenter.RenderMenu(GetCursorCenter()))
+			for (int i = 0; i < SceneObjects.size(); i++)
+				if (SceneObjects[i]->isSelected)
+					SceneObjects[i]->UpdatePosition(selectedCenter.newPos(SceneObjects[i]->GetCenter()),
+						selectedCenter.scaleChange, selectedCenter.rotationChange);
+		
 	}
 
 	ImGui::End();

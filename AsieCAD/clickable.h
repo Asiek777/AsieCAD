@@ -19,4 +19,8 @@ public:
 		return glm::length(dist);
 	}
 	glm::vec3 GetCenter() override { return location; }
+	void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange) override
+	{
+		location = pos;
+	}
 };

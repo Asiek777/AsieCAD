@@ -22,5 +22,6 @@ public:
 	void Render() override;
 	void RenderMenu() override;
 	glm::vec3 GetCenter() override;
+	void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange) override;
 };
 

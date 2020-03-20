@@ -71,8 +71,7 @@ int App::Run()
 		* camera.GetViewMatrix();
 		setMatrices();
 		
-		for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
-			SceneObject::SceneObjects[i]->Render();
+		SceneObject::RenderScene();
 
 		{
 			static float f = 0.0f;
@@ -89,7 +88,6 @@ int App::Run()
 			if (ImGui::Button("Quit"))
 				glfwSetWindowShouldClose(window, true);
 			ImGui::End();
-			ImGui::ShowDemoWindow();
 		}
 
 		ImGui::Render();
