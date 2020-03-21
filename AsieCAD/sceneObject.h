@@ -11,6 +11,7 @@
 class SceneObject 
 {
 	static int selected;
+	//static SceneObject* selected;
 	static int selectedCount;
 	static bool rotateAroundCursor;
 	//static std::unique_ptr<SceneObject>& GetSelected();
@@ -26,6 +27,7 @@ public:
 	SceneObject(const char* _name);
 	virtual ~SceneObject() = default;
 	virtual bool IsClicable();
+	virtual void SetSelection(bool _isSelected);
 	virtual glm::vec3 GetCenter() = 0;
 	virtual void Render() = 0;
 	virtual void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange) = 0;

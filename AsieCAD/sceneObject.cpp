@@ -7,6 +7,7 @@
 
 std::vector<std::unique_ptr<SceneObject>> SceneObject::SceneObjects;
 int SceneObject::selected = -1;
+//SceneObject* SceneObject::selected = nullptr;
 int SceneObject::selectedCount = 0;
 bool SceneObject::rotateAroundCursor = false;
 Position SceneObject::selectedCenter;
@@ -32,6 +33,10 @@ SceneObject::SceneObject(const char* _name)
 bool SceneObject::IsClicable()
 {
 	return false;
+}
+void SceneObject::SetSelection(bool _isSelected)
+{
+	isSelected = _isSelected;
 }
 void SceneObject::RenderFullMenu()
 {
