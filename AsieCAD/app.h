@@ -26,7 +26,7 @@ class App
 	const char* glsl_version = "#version 330 core";
 	static App* instance;
 
-	int screenWidth = 1360, screenHeight = 768;
+	int screenWidth = 1800, screenHeight = 950;
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
 	Camera camera = Camera(glm::vec3(0.f, 0.f, 10.0f));

@@ -17,16 +17,18 @@ class SceneObject
 	//static std::unique_ptr<SceneObject>& GetSelected();
 	static Position selectedCenter;
 protected:
-	std::string name;
 	char text[64];
 	bool isSelected = false;
 	virtual void RenderMenu() = 0;
 public:
-	static std::vector<std::unique_ptr<SceneObject>> SceneObjects;
+	std::string name;
+	static std::vector<std::shared_ptr<SceneObject>> SceneObjects;
 	SceneObject() {};
 	SceneObject(const char* _name);
 	virtual ~SceneObject() = default;
 	virtual bool IsClicable();
+	virtual bool IsPoint();
+	virtual bool IsCurve();
 	virtual void SetSelection(bool _isSelected);
 	virtual glm::vec3 GetCenter() = 0;
 	virtual void Render() = 0;
@@ -36,6 +38,9 @@ public:
 	static void RenderScene();
 	static void Select(int i);
 	static void ChangeSelection(int i);
+	static void DrawMenu();
+	static void AddPointsToCruve();
+	static void AddCurveFromPoints();
 	static void RenderProperties();
 	static void ItemListMenu();
 	static void AddItemMenu();

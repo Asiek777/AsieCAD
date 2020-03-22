@@ -11,6 +11,7 @@ public:
 	Point();
 	void Render() override;
 	void RenderMenu() override;
+	bool IsPoint() override { return true; }
 	static void DrawPoint(glm::vec3 position, glm::vec3 color);
 };
 

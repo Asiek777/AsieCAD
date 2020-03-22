@@ -46,10 +46,10 @@ int App::Run()
 
 	glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
-	SceneObject::SceneObjects.emplace_back(std::make_unique<Cursor>());
-	SceneObject::SceneObjects.emplace_back(std::make_unique<Torus>(50, 50, 1, 4, "torus 1"));
-	SceneObject::SceneObjects.emplace_back(std::make_unique<Torus>(50, 50, 1, 6, "torus 2"));
-	SceneObject::SceneObjects.emplace_back(std::make_unique<Point>());
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Cursor>());
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 4, "torus 1"));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 6, "torus 2"));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>());
 	//Shader torusShader("shaders/torus.vert", "shaders/torus.frag");
 
 	while (!glfwWindowShouldClose(window)) {
@@ -80,8 +80,7 @@ int App::Run()
 
 			ImGui::SliderFloat("View Angle", &camera.Zoom, 1.0f, 45.0f);
 
-			SceneObject::AddItemMenu();
-			SceneObject::ItemListMenu();
+			SceneObject::DrawMenu();
 
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
 				1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

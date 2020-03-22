@@ -3,9 +3,10 @@
 #include "point.h"
 #include <algorithm>
 #include "cursor.h"
+#include "bezierCurve.h"
 
 
-std::vector<std::unique_ptr<SceneObject>> SceneObject::SceneObjects;
+std::vector<std::shared_ptr<SceneObject>> SceneObject::SceneObjects;
 int SceneObject::selected = -1;
 //SceneObject* SceneObject::selected = nullptr;
 int SceneObject::selectedCount = 0;
@@ -34,20 +35,28 @@ bool SceneObject::IsClicable()
 {
 	return false;
 }
+bool SceneObject::IsPoint()
+{
+	return false;
+}
+bool SceneObject::IsCurve()
+{
+	return false;
+}
 void SceneObject::SetSelection(bool _isSelected)
 {
 	isSelected = _isSelected;
 }
 void SceneObject::RenderFullMenu()
 {
-	if (ImGui::InputText("Object name", text, 64))
+	if (ImGui::InputText(IsCurve()?"Object name ":"Object name", text, 64))
 		name = text;
 	RenderMenu();
 }
 void SceneObject::RenderScene()
 {
-	for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
-		SceneObject::SceneObjects[i]->Render();
+	for (int i = 0; i < SceneObjects.size(); i++)
+		SceneObjects[i]->Render();
 	if (selectedCount > 1)
 		Point::DrawPoint(selectedCenter.location, glm::vec3(1, 1, 0));
 	if (selectedCount == 1)
@@ -69,8 +78,6 @@ void SceneObject::ItemListMenu()
 			}
 		ImGui::ListBoxFooter();
 	}
-
-	RenderProperties();
 }
 void SceneObject::Select(int i)
 {
@@ -99,6 +106,31 @@ void SceneObject::ChangeSelection(int i)
 	}
 	
 }
+void SceneObject::DrawMenu()
+{
+	ImGui::Checkbox("Rotate Camera Around Cursor", &rotateAroundCursor);
+	AddItemMenu();
+	ItemListMenu();
+	RenderProperties();
+}
+void SceneObject::AddPointsToCruve()
+{
+	int curveInx;
+	for (curveInx = 0; !SceneObjects[curveInx]->IsCurve(); curveInx++);
+	BezierCurve* curve = static_cast<BezierCurve*>(SceneObjects[curveInx].
+		get());
+	for (int i = 0; i < SceneObjects.size(); i++)
+		if (SceneObjects[i]->isSelected && i != curveInx)
+			curve->AddPoint(SceneObjects[i]);
+}
+void SceneObject::AddCurveFromPoints()
+{
+	auto curve = std::make_shared<BezierCurve>();
+	for (int i = 0; i < SceneObjects.size(); i++)
+		if (SceneObjects[i]->isSelected)
+			curve->AddPoint(SceneObjects[i]);
+	SceneObjects.emplace_back(std::move(curve));
+}
 void SceneObject::RenderProperties()
 {
 	ImGui::Begin("Properties");
@@ -114,6 +146,7 @@ void SceneObject::RenderProperties()
 	}
 	else if (selectedCount > 1) {
 		std::string text = "Selected " + std::to_string(selectedCount) + " items";
+		
 		ImGui::Text(text.c_str());
 		if (ImGui::Button("Delete items")) {
 			auto end = std::remove_if(SceneObjects.begin() + 1, SceneObjects.end(),
@@ -122,6 +155,20 @@ void SceneObject::RenderProperties()
 			selectedCount = SceneObjects[0]->isSelected;
 			selected = selectedCount ? 0 : -1;
 		}
+		int pointCount = 0;
+		int curveCount = 0;
+		for (int i = 0; i < SceneObjects.size(); i++)
+			if (SceneObjects[i]->isSelected) {
+				pointCount += SceneObjects[i]->IsPoint();
+				curveCount += SceneObjects[i]->IsCurve();
+			}
+		if(pointCount == selectedCount)
+			if(ImGui::Button("Create Curve"))
+				AddCurveFromPoints();
+		if (curveCount == 1 && pointCount == selectedCount - 1)
+			if (ImGui::Button("Add point to curve"))
+				AddPointsToCruve();
+				
 		if (selectedCenter.RenderMenu(GetCursorCenter()))
 			for (int i = 0; i < SceneObjects.size(); i++)
 				if (SceneObjects[i]->isSelected)
@@ -135,10 +182,16 @@ void SceneObject::RenderProperties()
 void SceneObject::AddItemMenu()
 {
 	//TODO: put it in diffrent function
-	ImGui::Checkbox("Rotate Camera Around Cursor", &rotateAroundCursor);
 	if (ImGui::Button("Add Torus"))
-		SceneObjects.emplace_back(std::make_unique<Torus>(50, 50, 1, 2, "new torus"));
+		SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 2, "new torus"));
 	ImGui::SameLine();
-	if (ImGui::Button("Add point"))
-		SceneObjects.emplace_back(std::make_unique<Point>());
+	if (ImGui::Button("Add point")) {
+		SceneObjects.emplace_back(std::make_shared<Point>());
+		if (SceneObjects[selected]->IsCurve())
+			(static_cast<BezierCurve*>(SceneObjects[selected].get()))->
+			AddPoint(SceneObjects[SceneObjects.size() - 1]);
+	}
+
+	if (ImGui::Button("Add Bezier's Curve"))
+		SceneObjects.emplace_back(std::make_shared<BezierCurve>());
 }
