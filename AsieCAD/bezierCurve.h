@@ -12,11 +12,19 @@ class BezierCurve :
 	public SceneObject
 {
 	std::vector<CurvePoint> points;
+	Position selectedCenter;
+	bool RenderBroken = false;
+	std::unique_ptr<MeshBuffer> brokenMesh;
+	std::unique_ptr<MeshBuffer> curveMesh;
 	int SelectedCount();
 	void clearExpired();
-	Position selectedCenter;
+	void CalcCubic(int from, std::vector<glm::vec3> &nodes, std::vector<glm::vec3> &curvePoint);
+	void CalcQuadratic(int from, std::vector<glm::vec3>& nodes, std::vector<glm::vec3>& curvePoint);
+	int CalcStepCount(int from, int degree, std::vector<glm::vec3>& nodes);
 public:
-	BezierCurve() : SceneObject("Curve") {}
+	static glm::mat4 viewProjection;
+	static std::unique_ptr<Shader> shader;
+	BezierCurve();
 	bool AddPoint(std::shared_ptr<SceneObject>& point);
 	bool IsCurve() override { return true; }
 	void RenderMenu() override;

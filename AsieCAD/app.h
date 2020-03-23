@@ -42,6 +42,7 @@ class App
 	
 public:
 	App();
+	void CreateDefaultScene();
 	void setMatrices();
 	void setMatricesoShaders();
 	static App* GetInstance() { return instance; };

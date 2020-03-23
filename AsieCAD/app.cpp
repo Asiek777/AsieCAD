@@ -1,6 +1,7 @@
 #include "app.h"
 #include "point.h"
 #include "cursor.h"
+#include "bezierCurve.h"
 
 App* App::instance;
 
@@ -47,9 +48,7 @@ int App::Run()
 	glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Cursor>());
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 4, "torus 1"));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 6, "torus 2"));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>());
+	CreateDefaultScene();
 	//Shader torusShader("shaders/torus.vert", "shaders/torus.frag");
 
 	while (!glfwWindowShouldClose(window)) {
@@ -103,6 +102,15 @@ int App::Run()
 	return 0;
 }
 
+void App::CreateDefaultScene()
+{
+	//SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 4, "torus 1"));
+	//SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 6, "torus 2"));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>());
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>());
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>());
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>());
+}
 void App::setMatrices()
 {
 	if (Torus::shader) {
@@ -116,6 +124,11 @@ void App::setMatrices()
 	if (Cursor::shader) {
 		Cursor::shader->use();
 		Cursor::shader->setMat4("viewProjection", viewProjection);
+	}
+	BezierCurve::viewProjection = viewProjection;
+	if (BezierCurve::shader) {
+		BezierCurve::shader->use();
+		BezierCurve::shader->setMat4("viewProjection", viewProjection);
 	}
 }
 

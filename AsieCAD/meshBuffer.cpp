@@ -35,3 +35,13 @@ MeshBuffer::~MeshBuffer()
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 }
+std::vector<float> MeshBuffer::Vec3ToFloats(std::vector<glm::vec3>& vecs)
+{
+	std::vector<float> result(vecs.size() * 3);
+	for (int i = 0; i < vecs.size(); i++) {
+		result[3 * i + 0] = vecs[i].x;
+		result[3 * i + 1] = vecs[i].y;
+		result[3 * i + 2] = vecs[i].z;
+	}
+	return result;
+}
