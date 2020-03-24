@@ -116,7 +116,7 @@ void SceneObject::DrawMenu()
 void SceneObject::AddPointsToCruve()
 {
 	int curveInx;
-	for (curveInx = 0; !SceneObjects[curveInx]->IsCurve(); curveInx++);
+	for (curveInx = 0; !SceneObjects[curveInx]->isSelected || !SceneObjects[curveInx]->IsCurve(); curveInx++);
 	BezierCurve* curve = static_cast<BezierCurve*>(SceneObjects[curveInx].
 		get());
 	for (int i = 0; i < SceneObjects.size(); i++)

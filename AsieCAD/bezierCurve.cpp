@@ -61,6 +61,18 @@ void BezierCurve::RenderMenu()
 	
 	int selectedCount = SelectedCount();
 	if (selectedCount > 0) {
+		
+		if (ImGui::Button("MoveUp") && !points[0].isSelected) {
+			for (int i = 1; i < points.size(); i++)
+				if (points[i].isSelected)
+					std::swap(points[i], points[i - 1]);
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Move Down") && !points[points.size() - 1].isSelected) {
+			for (int i = points.size() - 1; i > 0; i--)
+				if (points[i - 1].isSelected)
+					std::swap(points[i], points[i - 1]);
+		}
 		if (ImGui::Button(selectedCount > 1 ? "Delete points" : "Delete point")) {
 			auto end = std::remove_if(points.begin(), points.end(),
 				[](auto const& object) { return object.isSelected; });
@@ -147,6 +159,7 @@ void BezierCurve::CalcQuadratic(int from, std::vector<glm::vec3>& nodes,
 	std::vector<glm::vec3>& curvePoint)
 {
 	int steps = CalcStepCount(from, 2, nodes);
+	std::cout << steps << std::endl;
 	for (int i = 1; i <= steps; i++) {
 		float t = (float)i / steps;
 		float w = 1 - t;
@@ -162,7 +175,7 @@ int BezierCurve::CalcStepCount(int from, int degree, std::vector<glm::vec3>& nod
 	float brokenLength = 0;
 	for (int i = from; i <= from + degree - 1; i++)
 		brokenLength += glm::distance(screenCoord[i], screenCoord[i + 1]);
-	return  brokenLength * 5;
+	return  brokenLength * 10;
 }
 glm::vec3 BezierCurve::GetCenter()
 {
