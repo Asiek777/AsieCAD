@@ -146,6 +146,7 @@
     <ClCompile Include="app.cpp" />
     <ClCompile Include="bezierCurve.cpp" />
     <ClCompile Include="cursor.cpp" />
+    <ClCompile Include="curve.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Imgui\imgui.cpp" />
     <ClCompile Include="Imgui\imgui_demo.cpp" />
@@ -165,6 +166,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="clickable.h" />
     <ClInclude Include="cursor.h" />
+    <ClInclude Include="curve.h" />
     <ClInclude Include="Imgui\imconfig.h" />
     <ClInclude Include="Imgui\imgui.h" />
     <ClInclude Include="Imgui\imgui_impl_glfw.h" />
@@ -182,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="position.cpp" />
+    <None Include="shaders\bezier.geom" />
     <None Include="shaders\point.vert" />
     <None Include="shaders\torus.frag" />
     <None Include="shaders\torus.vert" />

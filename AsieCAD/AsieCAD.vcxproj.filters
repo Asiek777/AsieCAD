@@ -66,6 +66,9 @@
     <ClCompile Include="bezierCurve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="curve.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -125,6 +128,9 @@
     <ClInclude Include="bezierCurve.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="curve.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\torus.frag">
@@ -138,6 +144,9 @@
     </None>
     <None Include="position.cpp">
       <Filter>Source Files</Filter>
+    </None>
+    <None Include="shaders\bezier.geom">
+      <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>
