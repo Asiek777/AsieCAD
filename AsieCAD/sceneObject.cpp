@@ -3,7 +3,7 @@
 #include "point.h"
 #include <algorithm>
 #include "cursor.h"
-#include "bezierCurve.h"
+#include "BezierC0.h"
 
 
 std::vector<std::shared_ptr<SceneObject>> SceneObject::SceneObjects;
@@ -117,7 +117,7 @@ void SceneObject::AddPointsToCruve()
 {
 	int curveInx;
 	for (curveInx = 0; !SceneObjects[curveInx]->isSelected || !SceneObjects[curveInx]->IsCurve(); curveInx++);
-	BezierCurve* curve = static_cast<BezierCurve*>(SceneObjects[curveInx].
+	BezierC0* curve = static_cast<BezierC0*>(SceneObjects[curveInx].
 		get());
 	for (int i = 0; i < SceneObjects.size(); i++)
 		if (SceneObjects[i]->isSelected && i != curveInx)
@@ -125,7 +125,7 @@ void SceneObject::AddPointsToCruve()
 }
 void SceneObject::AddCurveFromPoints()
 {
-	auto curve = std::make_shared<BezierCurve>();
+	auto curve = std::make_shared<BezierC0>();
 	for (int i = 0; i < SceneObjects.size(); i++)
 		if (SceneObjects[i]->isSelected)
 			curve->AddPoint(SceneObjects[i]);
@@ -181,17 +181,16 @@ void SceneObject::RenderProperties()
 }
 void SceneObject::AddItemMenu()
 {
-	//TODO: put it in diffrent function
 	if (ImGui::Button("Add Torus"))
-		SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 2, "new torus"));
+		SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 2));
 	ImGui::SameLine();
 	if (ImGui::Button("Add point")) {
-		SceneObjects.emplace_back(std::make_shared<Point>());
+		SceneObjects.emplace_back(std::make_shared<Point>(GetCursorCenter()));
 		if (SceneObjects[selected]->IsCurve())
-			(static_cast<BezierCurve*>(SceneObjects[selected].get()))->
+			(static_cast<BezierC0*>(SceneObjects[selected].get()))->
 			AddPoint(SceneObjects[SceneObjects.size() - 1]);
 	}
 
 	if (ImGui::Button("Add Bezier's Curve"))
-		SceneObjects.emplace_back(std::make_shared<BezierCurve>());
+		SceneObjects.emplace_back(std::make_shared<BezierC0>());
 }

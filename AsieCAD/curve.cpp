@@ -1,4 +1,6 @@
 #include "curve.h"
+
+#include "point.h"
 int Curve::SelectedCount()
 {
 	int result = 0;
@@ -102,4 +104,13 @@ void Curve::RenderMenu()
 		}
 	}
 
+}
+void Curve::RenderSelectedPoints()
+{
+	glDisable(GL_DEPTH_TEST);
+	for (int i = 0; i < points.size(); i++)
+		if(points[i].isSelected)
+			Point::DrawPoint(points[i].point.lock()->GetCenter(),
+				glm::vec3(0, 1, 0));
+	glEnable(GL_DEPTH_TEST);
 }

@@ -3,9 +3,10 @@
 #include "Imgui/imgui.h"
 
 std::unique_ptr<Shader> Torus::shader;
+int Torus::Number = 0;
 
-Torus::Torus(int _smallCircle, int _bigCircle, float _smallRadius, float _bigRadius, const char* name) :
-	SceneObject(name)
+Torus::Torus(int _smallCircle, int _bigCircle, float _smallRadius, float _bigRadius) :
+	SceneObject(("Torus " + std::to_string(Number)).c_str())
 {
 	if(!shader)
         shader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag");
@@ -16,6 +17,7 @@ Torus::Torus(int _smallCircle, int _bigCircle, float _smallRadius, float _bigRad
     position.location = GetCursorCenter();
     position.UpdateMatrix();
     prepareBuffers();
+    Number++;
 }
 
 void Torus::prepareBuffers()

@@ -1,7 +1,7 @@
 #include "app.h"
 #include "point.h"
 #include "cursor.h"
-#include "bezierCurve.h"
+#include "BezierC0.h"
 
 App* App::instance;
 
@@ -106,10 +106,10 @@ void App::CreateDefaultScene()
 {
 	//SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 4, "torus 1"));
 	//SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 6, "torus 2"));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>());
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>());
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>());
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>());
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1, 0, 0));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.4, -2, 0));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.7, 2, 0));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.5, 0));
 }
 void App::setMatrices()
 {
@@ -125,10 +125,10 @@ void App::setMatrices()
 		Cursor::shader->use();
 		Cursor::shader->setMat4("viewProjection", viewProjection);
 	}
-	BezierCurve::viewProjection = viewProjection;
-	if (BezierCurve::shader) {
-		BezierCurve::shader->use();
-		BezierCurve::shader->setMat4("viewProjection", viewProjection);
+	BezierC0::viewProjection = viewProjection;
+	if (BezierC0::shader) {
+		BezierC0::shader->use();
+		BezierC0::shader->setMat4("viewProjection", viewProjection);
 	}
 }
 

@@ -8,6 +8,7 @@
 
 class Torus : public SceneObject
 {
+	static int Number;
 	unsigned int VBO, VAO;
 	int smallCount, bigCount;
 	float smallRadius, bigRadius;
@@ -17,7 +18,7 @@ class Torus : public SceneObject
 public:
 	static std::unique_ptr<Shader> shader;
 	Torus(int _smallCircle, int _bigCircle, float _smallRadius, 
-		float _bigRadius, const char* name );
+		float _bigRadius);
 	virtual ~Torus() {};
 	void Render() override;
 	void RenderMenu() override;

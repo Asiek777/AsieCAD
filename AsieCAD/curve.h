@@ -17,6 +17,7 @@ protected:
 	Position selectedCenter;
 	int SelectedCount();
 	void clearExpired();
+	void RenderSelectedPoints();
 public:
 	Curve(const char* _name) : SceneObject(_name) {}
 	bool IsCurve() override { return true; }

@@ -5,10 +5,13 @@
 class Point :
 	public Clicable
 {
+	static int Number;
 	static std::unique_ptr<MeshBuffer> mesh;
 public:
+	bool hasChanged;
 	static std::unique_ptr<Shader> shader;
-	Point();
+	Point(glm::vec3 location);
+	Point(float x, float y, float z) : Point(glm::vec3(x,y,z)) {}
 	void Render() override;
 	void RenderMenu() override;
 	bool IsPoint() override { return true; }

@@ -3,9 +3,10 @@
 #include "point.h"
 #include "curve.h"
 
-class BezierCurve :
+class BezierC0 :
 	public Curve
 {
+	static int Number;
 	std::unique_ptr<MeshBuffer> brokenMesh;
 	std::unique_ptr<MeshBuffer> curveMesh;
 	void CalcCubic(int from, std::vector<glm::vec3> &nodes, std::vector<glm::vec3> &curvePoint);
@@ -14,8 +15,7 @@ class BezierCurve :
 public:
 	static glm::mat4 viewProjection;
 	static std::unique_ptr<Shader> shader;
-	BezierCurve();
-	void RenderMenu() override;
+	BezierC0();
 	void Render() override;
 };
 

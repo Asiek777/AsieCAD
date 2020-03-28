@@ -63,10 +63,10 @@
     <ClCompile Include="cursor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bezierCurve.cpp">
+    <ClCompile Include="curve.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="curve.cpp">
+    <ClCompile Include="BezierC0.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -125,10 +125,10 @@
     <ClInclude Include="position.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bezierCurve.h">
+    <ClInclude Include="curve.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="curve.h">
+    <ClInclude Include="BezierC0.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
