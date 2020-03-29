@@ -26,7 +26,7 @@ void BezierC0::Render()
 	int pointCount = points.size();
 	if (pointCount == 0)
 		return;
-	UpdateIndices();
+	indices = CalcIndices(pointCount);
 	RenderCurve();
 	if(drawBroken)
 		RenderBroken();
@@ -50,31 +50,31 @@ void BezierC0::RenderCurve()
 	glDrawElements(GL_LINES_ADJACENCY, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }
-void BezierC0::UpdateIndices()
+std::vector<unsigned int> BezierC0::CalcIndices(int pointCount)
 {
-	indices = std::vector<unsigned int>();
-	int pointCount = points.size();
+	std::vector<unsigned int> result;
 	int from = 0;
 	while (from < pointCount - 1) {
 		if (pointCount - from >= 4) {
-			indices.emplace_back(from++);
-			indices.emplace_back(from++);
-			indices.emplace_back(from++);
-			indices.emplace_back(from);
+			result.emplace_back(from++);
+			result.emplace_back(from++);
+			result.emplace_back(from++);
+			result.emplace_back(from);
 		}
 		else if (pointCount - from == 3) {
-			indices.emplace_back(from++);
-			indices.emplace_back(from++);
-			indices.emplace_back(from);
-			indices.emplace_back(from);
+			result.emplace_back(from++);
+			result.emplace_back(from++);
+			result.emplace_back(from);
+			result.emplace_back(from);
 		}
 		else if (pointCount - from == 2) {
-			indices.emplace_back(from++);
-			indices.emplace_back(from);
-			indices.emplace_back(from);
-			indices.emplace_back(from);
+			result.emplace_back(from++);
+			result.emplace_back(from);
+			result.emplace_back(from);
+			result.emplace_back(from);
 		}
 	}
+	return result;
 }
 void BezierC0::RenderBroken()
 {
@@ -85,5 +85,30 @@ void BezierC0::RenderBroken()
 	brokenShader->setVec3("color", 0.f, 0.f, 1.f);
 	glBindVertexArray(curveMesh->GetVAO());
 	glDrawArrays(GL_LINE_STRIP, 0, points.size());
+	glBindVertexArray(0);
+}
+
+void BezierC0::DrawBezierCurve(std::vector<glm::vec3> &nodes, glm::vec3 color)
+{
+	std::vector<unsigned> indices = CalcIndices(nodes.size());
+	auto mesh = std::make_unique<MeshBuffer>(MeshBuffer::Vec3ToFloats(nodes),
+		true, indices);
+	bezierShader->use();
+	bezierShader->setMat4("model", glm::identity<glm::mat4>());
+	bezierShader->setMat4("viewProjection", viewProjection);
+	bezierShader->setVec3("color", color);
+	glBindVertexArray(mesh->GetVAO());
+	glDrawElements(GL_LINES_ADJACENCY, indices.size(), GL_UNSIGNED_INT, 0);
+	glBindVertexArray(0);
+}
+void BezierC0::DrawBroken(std::vector<glm::vec3>& nodes, glm::vec3 color)
+{
+	auto mesh = std::make_unique<MeshBuffer>(MeshBuffer::Vec3ToFloats(nodes));
+	brokenShader->use();
+	brokenShader->setMat4("model", glm::identity<glm::mat4>());
+	brokenShader->setMat4("viewProjection", viewProjection);
+	brokenShader->setVec3("color", color);
+	glBindVertexArray(mesh->GetVAO());
+	glDrawArrays(GL_LINE_STRIP, 0, nodes.size());
 	glBindVertexArray(0);
 }

@@ -15,16 +15,16 @@ void BezierC2::Update()
 		if(!P2->HasChanged()) {
 			glm::vec3 pos0 = P0->GetCenter();
 			glm::vec3 pos1 = P1->GetCenter();
-			P2->UpdatePosition(2.f * pos1 - pos0, glm::vec3(1), glm::vec3(0));
+			P2->UpdatePosition(2.f * pos1 - pos0);
 		}
 		else if(!P1->HasChanged()) {
 			glm::vec3 pos0 = P0->GetCenter();
 			glm::vec3 pos1 = P2->GetCenter();
-			P1->UpdatePosition((pos1 + pos0) / 2.f, glm::vec3(1), glm::vec3(0));
+			P1->UpdatePosition((pos1 + pos0) / 2.f);
 		} else {
 			glm::vec3 pos1 = P1->GetCenter();
 			glm::vec3 pos2 = P2->GetCenter();
-			P0->UpdatePosition(2.f * pos1 - pos2, glm::vec3(1), glm::vec3(0));
+			P0->UpdatePosition(2.f * pos1 - pos2);
 		}
 	}
 }
@@ -37,7 +37,7 @@ void BezierC2::Render()
 	int pointCount = points.size();
 	if (pointCount == 0)
 		return;
-	UpdateIndices();
+	indices = CalcIndices(pointCount);
 	RenderCurve();
 	if (drawBroken)
 		RenderBroken();

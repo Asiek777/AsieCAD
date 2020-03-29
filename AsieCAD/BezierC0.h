@@ -6,11 +6,11 @@
 class BezierC0 :
 	public Curve
 {
-protected:
 	static int Number;
-	//std::unique_ptr<MeshBuffer> brokenMesh;
+protected:
 	std::unique_ptr<MeshBuffer> curveMesh;
 	std::vector<unsigned int> indices;
+	static std::vector<unsigned int> CalcIndices(int nodeCount);
 public:
 	static glm::mat4 viewProjection;
 	static std::unique_ptr<Shader> bezierShader;
@@ -18,8 +18,9 @@ public:
 	BezierC0();
 	BezierC0(const char* _name);
 	void RenderCurve();
-	void UpdateIndices();
 	void RenderBroken();
 	void Render() override;
+	static	void DrawBezierCurve(std::vector<glm::vec3>& nodes, glm::vec3 color = glm::vec3(1));
+	static	void DrawBroken(std::vector<glm::vec3>& nodes, glm::vec3 color = glm::vec3(1));
 };
 

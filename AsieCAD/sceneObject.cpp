@@ -5,6 +5,7 @@
 #include "cursor.h"
 #include "BezierC0.h"
 #include "bezierC2.h"
+#include "bSpline.h"
 
 
 std::vector<std::shared_ptr<SceneObject>> SceneObject::SceneObjects;
@@ -180,4 +181,6 @@ void SceneObject::AddItemMenu()
 		SceneObjects.emplace_back(std::make_shared<BezierC0>());
 	if (ImGui::Button("Add Bezier's C2 Curve"))
 		SceneObjects.emplace_back(std::make_shared<BezierC2>());
+	if (ImGui::Button("Add B-spline"))
+		SceneObjects.emplace_back(std::make_shared<BSpline>());
 }

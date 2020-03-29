@@ -1,6 +1,5 @@
 #version 330
 
-
 layout(lines_adjacency) in;
 layout(line_strip, max_vertices = 512) out;
 

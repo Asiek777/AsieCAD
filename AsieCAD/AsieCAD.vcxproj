@@ -146,6 +146,7 @@
     <ClCompile Include="app.cpp" />
     <ClCompile Include="BezierC0.cpp" />
     <ClCompile Include="bezierC2.cpp" />
+    <ClCompile Include="bSpline.cpp" />
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="curve.cpp" />
     <ClCompile Include="glad.c" />
@@ -165,6 +166,7 @@
     <ClInclude Include="app.h" />
     <ClInclude Include="BezierC0.h" />
     <ClInclude Include="bezierC2.h" />
+    <ClInclude Include="bSpline.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="clickable.h" />
     <ClInclude Include="cursor.h" />

@@ -16,6 +16,8 @@ Point::Point(glm::vec3 _location) : Clicable(("Point " + std::to_string(Number))
 }
 void Point::Render()
 {
+	if (hasChanged)
+		hasChanged--;
 	glBindVertexArray(mesh->GetVAO());
 	shader->use();
 	shader->setVec3("position", location);
@@ -28,13 +30,14 @@ void Point::Render()
 }
 void Point::RenderMenu()
 {
-	hasChanged = false;
-	hasChanged |= ImGui::DragFloat3("location", &location.x, 0.02f);
+	hasChanged = 0;
+	if (ImGui::DragFloat3("location", &location.x, 0.02f))
+		hasChanged = 2;
 }
 void Point::UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange)
 {
-	hasChanged = false;
 	Clicable::UpdatePosition(pos, scaleChange, rotChange);
+	hasChanged = 2;
 }
 void Point::DrawPoint(glm::vec3 position, glm::vec3 color)
 {

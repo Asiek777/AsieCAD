@@ -72,6 +72,9 @@
     <ClCompile Include="bezierC2.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bSpline.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -135,6 +138,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="bezierC2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bSpline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
