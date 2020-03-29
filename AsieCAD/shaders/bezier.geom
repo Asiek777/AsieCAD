@@ -46,7 +46,7 @@ void main(void)
          }
     } else {
         float dist = distance(B[0].xy, B[1].xy) + distance(B[1].xy, B[2].xy + distance(B[2].xy, B[3].xy));
-        int steps = min(int(dist * 10), 512);
+        int steps = min(int(dist * 10), 511);
         float delta = 1.0 / float(steps);
         for (int i=0; i<=steps; ++i){
             gl_Position = toBezier3(delta, i, B[0], B[1], B[2], B[3]);

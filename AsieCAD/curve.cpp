@@ -65,7 +65,7 @@ void Curve::RenderMenu()
 		}
 	}
 	ImGui::ListBoxFooter();
-	ImGui::Checkbox("Render broken line", &RenderBroken);
+	ImGui::Checkbox("Render broken line", &drawBroken);
 
 	int selectedCount = SelectedCount();
 	if (selectedCount > 0) {

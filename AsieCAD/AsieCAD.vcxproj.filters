@@ -69,6 +69,9 @@
     <ClCompile Include="BezierC0.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="bezierC2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -129,6 +132,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="BezierC0.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="bezierC2.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

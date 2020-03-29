@@ -110,6 +110,10 @@ void App::CreateDefaultScene()
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.4, -2, 0));
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.7, 2, 0));
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.5, 0));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.7, 0));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.4, 1.9, 0));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.2, 0.7, 0));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.8, 0.3, 0));
 }
 void App::setMatrices()
 {
@@ -126,10 +130,6 @@ void App::setMatrices()
 		Cursor::shader->setMat4("viewProjection", viewProjection);
 	}
 	BezierC0::viewProjection = viewProjection;
-	if (BezierC0::shader) {
-		BezierC0::shader->use();
-		BezierC0::shader->setMat4("viewProjection", viewProjection);
-	}
 }
 
 void App::framebuffer_size_callback(GLFWwindow* window, int width, int height) {

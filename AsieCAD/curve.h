@@ -12,7 +12,7 @@ class Curve :
 	public SceneObject
 {
 protected:
-	bool RenderBroken = false;
+	bool drawBroken = false;
 	std::vector<CurvePoint> points;
 	Position selectedCenter;
 	int SelectedCount();

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include "cursor.h"
 #include "BezierC0.h"
+#include "bezierC2.h"
 
 
 std::vector<std::shared_ptr<SceneObject>> SceneObject::SceneObjects;
@@ -30,22 +31,6 @@ SceneObject::SceneObject(const char* _name)
 {
 	strcpy_s(text, 64, _name);
 	name = text;
-}
-bool SceneObject::IsClicable()
-{
-	return false;
-}
-bool SceneObject::IsPoint()
-{
-	return false;
-}
-bool SceneObject::IsCurve()
-{
-	return false;
-}
-void SceneObject::SetSelection(bool _isSelected)
-{
-	isSelected = _isSelected;
 }
 void SceneObject::RenderFullMenu()
 {
@@ -191,6 +176,8 @@ void SceneObject::AddItemMenu()
 			AddPoint(SceneObjects[SceneObjects.size() - 1]);
 	}
 
-	if (ImGui::Button("Add Bezier's Curve"))
+	if (ImGui::Button("Add Bezier's C0 Curve"))
 		SceneObjects.emplace_back(std::make_shared<BezierC0>());
+	if (ImGui::Button("Add Bezier's C2 Curve"))
+		SceneObjects.emplace_back(std::make_shared<BezierC2>());
 }

@@ -23,27 +23,33 @@ protected:
 public:
 	std::string name;
 	static std::vector<std::shared_ptr<SceneObject>> SceneObjects;
+	
 	SceneObject() {};
 	SceneObject(const char* _name);
 	virtual ~SceneObject() = default;
-	virtual bool IsClicable();
-	virtual bool IsPoint();
-	virtual bool IsCurve();
-	virtual void SetSelection(bool _isSelected);
+	
+	virtual bool IsClicable() { return false; }
+	virtual bool IsPoint() { return false; }
+	virtual bool IsCurve() { return false; }
+	virtual bool HasChanged() { return false; }
+	
 	virtual glm::vec3 GetCenter() = 0;
 	virtual void Render() = 0;
 	virtual void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange) = 0;
 	void RenderFullMenu();
 	
 	static void RenderScene();
-	static void Select(int i);
-	static void ChangeSelection(int i);
+	
 	static void DrawMenu();
 	static void AddPointsToCruve();
 	static void AddCurveFromPoints();
 	static void RenderProperties();
 	static void ItemListMenu();
 	static void AddItemMenu();
+	
+	static void Select(int i);
+	static void ChangeSelection(int i);
+	
 	static glm::vec3 GetRotationCenter();
 	static glm::vec3 GetCursorCenter();
 };

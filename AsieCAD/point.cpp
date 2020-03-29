@@ -31,6 +31,11 @@ void Point::RenderMenu()
 	hasChanged = false;
 	hasChanged |= ImGui::DragFloat3("location", &location.x, 0.02f);
 }
+void Point::UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange)
+{
+	hasChanged = false;
+	Clicable::UpdatePosition(pos, scaleChange, rotChange);
+}
 void Point::DrawPoint(glm::vec3 position, glm::vec3 color)
 {
 	glBindVertexArray(mesh->GetVAO());
