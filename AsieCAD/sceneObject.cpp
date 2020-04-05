@@ -42,7 +42,11 @@ void SceneObject::RenderFullMenu()
 void SceneObject::RenderScene()
 {
 	for (int i = 0; i < SceneObjects.size(); i++)
-		SceneObjects[i]->Render();
+		if(!SceneObjects[i]->IsCurve())
+			SceneObjects[i]->Render();
+	for (int i = 0; i < SceneObjects.size(); i++)
+		if (SceneObjects[i]->IsCurve())
+			SceneObjects[i]->Render();
 	if (selectedCount > 1)
 		Point::DrawPoint(selectedCenter.location, glm::vec3(1, 1, 0));
 	if (selectedCount == 1)

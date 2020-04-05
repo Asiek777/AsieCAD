@@ -44,7 +44,7 @@ void Curve::RenderMenu()
 		if (ImGui::Selectable(
 		(std::to_string(i) + ": " + point->name).c_str(),
 			points[i].isSelected)) {
-			if (ImGui::GetIO().KeyCtrl) {
+			if (ImGui::GetIO().KeyCtrl && ableMultiSelect) {
 				points[i].isSelected = !points[i].isSelected;
 				int selectedCount = SelectedCount();
 				if (selectedCount > 1) {

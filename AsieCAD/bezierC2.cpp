@@ -25,7 +25,7 @@ void BezierC2::Update()
 			glm::vec3 pos1 = P1->GetCenter();
 			glm::vec3 pos2 = P2->GetCenter();
 			P0->UpdatePosition(2.f * pos1 - pos2);
-		}
+		};
 	}
 }
 void BezierC2::Render()

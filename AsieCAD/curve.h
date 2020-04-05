@@ -13,6 +13,7 @@ class Curve :
 {
 protected:
 	bool drawBroken = false;
+	bool ableMultiSelect = true;
 	std::vector<CurvePoint> points;
 	Position selectedCenter;
 	int SelectedCount();

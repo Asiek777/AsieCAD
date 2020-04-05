@@ -31,10 +31,10 @@ void main(void)
     B[3] = gl_in[3].gl_Position;
 
     if(B[1] == B[2]) {
-     gl_Position = B[0];
-     EmitVertex();
-     gl_Position = B[1];
-     EmitVertex();
+        gl_Position = B[0];
+        EmitVertex();
+        gl_Position = B[1];
+        EmitVertex();
     } else if(B[2] == B[3]) {
         float dist = distance(B[0].xy, B[1].xy) + distance(B[1].xy, B[2].xy);
         int steps = min(int(dist * 10), 512);
@@ -44,7 +44,7 @@ void main(void)
             EmitVertex();
          }
     } else {
-        float dist = distance(B[0].xy, B[1].xy) + distance(B[1].xy, B[2].xy + distance(B[2].xy, B[3].xy));
+        float dist = distance(B[0].xy, B[1].xy) + distance(B[1].xy, B[2].xy) + distance(B[2].xy, B[3].xy);
         int steps = min(int(dist * 10), 511);
         float delta = 1.0 / float(steps);
         for (int i=0; i<=steps; ++i){
