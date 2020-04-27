@@ -92,7 +92,7 @@ void BSpline::RenderMenu()
 void BSpline::UpdateBezierContinuity()
 {
 	int i;
-	for (i = 0; i < bezierPoints.size() && !bezierPoints[i]->HasChanged(); i++);
+	for (i = 0; i < bezierPoints.size() && 1 != bezierPoints[i]->HasChanged(); i++);
 	if(i<bezierPoints.size()) {
 		int closestDeBoor = (i + 1) / 3 + 1;
 		auto deboor0 = pointsCopy[closestDeBoor - 1].point.lock();

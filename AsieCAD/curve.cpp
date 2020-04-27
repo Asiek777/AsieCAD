@@ -33,6 +33,7 @@ bool Curve::AddPoint(std::shared_ptr<SceneObject>& point)
 	if (!point->IsPoint())
 		return false;
 	points.emplace_back(CurvePoint{ std::weak_ptr<SceneObject>(point), false });
+	hasChanged = true;
 	return true;
 }
 
@@ -44,6 +45,7 @@ void Curve::RenderMenu()
 		if (ImGui::Selectable(
 		(std::to_string(i) + ": " + point->name).c_str(),
 			points[i].isSelected)) {
+			hasChanged = 1;
 			if (ImGui::GetIO().KeyCtrl && ableMultiSelect) {
 				points[i].isSelected = !points[i].isSelected;
 				int selectedCount = SelectedCount();
@@ -74,17 +76,20 @@ void Curve::RenderMenu()
 			for (int i = 1; i < points.size(); i++)
 				if (points[i].isSelected)
 					std::swap(points[i], points[i - 1]);
+			hasChanged = 1;
 		}
 		ImGui::SameLine();
 		if (ImGui::Button("Move Down") && !points[points.size() - 1].isSelected) {
 			for (int i = points.size() - 1; i > 0; i--)
 				if (points[i - 1].isSelected)
 					std::swap(points[i], points[i - 1]);
+			hasChanged = 1;
 		}
 		if (ImGui::Button(selectedCount > 1 ? "Delete points" : "Delete point")) {
 			auto end = std::remove_if(points.begin(), points.end(),
 				[](auto const& object) { return object.isSelected; });
 			points.erase(end, points.end());
+			hasChanged = 1;
 		}
 		else if (selectedCount == 1) {
 			int i;
@@ -113,4 +118,12 @@ void Curve::RenderSelectedPoints()
 			Point::DrawPoint(points[i].point.lock()->GetCenter(),
 				glm::vec3(0, 1, 0));
 	glEnable(GL_DEPTH_TEST);
+}
+
+char Curve::HasChanged()
+{
+	for (int i = 0; i < points.size(); i++)
+		if (points[i].point.lock()->HasChanged())
+			return 1;
+	return hasChanged;
 }

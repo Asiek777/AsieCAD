@@ -31,7 +31,7 @@ public:
 	virtual bool IsClicable() { return false; }
 	virtual bool IsPoint() { return false; }
 	virtual bool IsCurve() { return false; }
-	virtual bool HasChanged() { return false; }
+	virtual char HasChanged() { return 0; }
 	
 	virtual glm::vec3 GetCenter() = 0;
 	virtual void Render() = 0;

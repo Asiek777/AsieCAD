@@ -16,9 +16,11 @@ protected:
 	bool ableMultiSelect = true;
 	std::vector<CurvePoint> points;
 	Position selectedCenter;
+	char hasChanged = 0;
 	int SelectedCount();
 	void clearExpired();
 	void RenderSelectedPoints();
+	char HasChanged() override;
 public:
 	Curve(const char* _name) : SceneObject(_name) {}
 	bool IsCurve() override { return true; }

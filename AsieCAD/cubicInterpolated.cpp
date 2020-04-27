@@ -22,16 +22,18 @@ void CubicInterpolated::Render()
 	clearExpired();
 	if (points.size() == 0)
 		return;
-	std::vector<glm::vec3> bezierPoints = CalcBezierPoints();
+	if (HasChanged())
+		CalcBezierPoints();
 
 	glm::vec3 color = isSelected ? glm::vec3(1, 0, 0) : glm::vec3(1);
 	BezierC0::DrawBezierCurve(bezierPoints, color);
 	if (drawBroken)
 		BezierC0::DrawBroken(bezierPoints);
 	RenderSelectedPoints();
+	hasChanged = 0;
 }
 
-std::vector<glm::vec3> CubicInterpolated::CalcBezierPoints()
+void CubicInterpolated::CalcBezierPoints()
 {
 	int knotCount = points.size();
 	std::vector<glm::vec3> knots(knotCount);
@@ -40,7 +42,7 @@ std::vector<glm::vec3> CubicInterpolated::CalcBezierPoints()
 	std::vector<glm::vec3> a(knotCount - 1), b(knotCount - 1), c(knotCount), d(knotCount - 1);
 	std::vector<float> alfa(knotCount - 1), beta(knotCount - 1), diag(knotCount - 1),
 	                   dist(knotCount - 1);
-	std::vector<glm::vec3> bezierPoints(3 * knotCount - 2);
+	bezierPoints = std::vector<glm::vec3>(3 * knotCount - 2);
 	for (int i = 0; i < knotCount - 1; i++)
 		dist[i] = glm::distance(knots[i], knots[i + 1]);
 	for (int i = 1; i < knotCount - 1; i++) {
@@ -76,5 +78,5 @@ std::vector<glm::vec3> CubicInterpolated::CalcBezierPoints()
 		bezierPoints[3 * i + 2] = a[i] + 2.f / 3.f * b[i] + 1.f / 3.f * c[i];
 	}
 	bezierPoints[3 * knotCount - 3] = knots[knotCount - 1];
-	return bezierPoints;
+	return;
 }

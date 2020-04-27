@@ -19,8 +19,10 @@ Point::Point(glm::vec3 _location) : Clicable(("Point " + std::to_string(Number))
 }
 void Point::Render()
 {
-	//if (hasChanged)
-	//	hasChanged--;
+	if (hasChanged > 3)
+		hasChanged--;
+	else if (hasChanged == 2)
+		hasChanged = 0;
 	glBindVertexArray(mesh->GetVAO());
 	shader->use();
 	shader->setVec3("position", location);
@@ -39,6 +41,7 @@ void Point::RenderMenu()
 }
 void Point::UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange)
 {
+	hasChanged = 3;
 	Clicable::UpdatePosition(pos, scaleChange, rotChange);
 	//hasChanged = 1;
 }
