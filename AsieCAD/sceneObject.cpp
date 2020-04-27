@@ -4,8 +4,8 @@
 #include <algorithm>
 #include "cursor.h"
 #include "BezierC0.h"
-#include "bezierC2.h"
 #include "bSpline.h"
+#include "cubicInterpolated.h"
 
 
 std::vector<std::shared_ptr<SceneObject>> SceneObject::SceneObjects;
@@ -183,8 +183,8 @@ void SceneObject::AddItemMenu()
 
 	if (ImGui::Button("Add Bezier's C0 Curve"))
 		SceneObjects.emplace_back(std::make_shared<BezierC0>());
-	if (ImGui::Button("Add Bezier's C2 Curve"))
-		SceneObjects.emplace_back(std::make_shared<BezierC2>());
 	if (ImGui::Button("Add B-spline"))
 		SceneObjects.emplace_back(std::make_shared<BSpline>());
+	if (ImGui::Button("Add Cubic interpolaction curve"))
+		SceneObjects.emplace_back(std::make_shared<CubicInterpolated>());
 }

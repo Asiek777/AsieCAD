@@ -69,10 +69,10 @@
     <ClCompile Include="BezierC0.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bezierC2.cpp">
+    <ClCompile Include="bSpline.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="bSpline.cpp">
+    <ClCompile Include="cubicInterpolated.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -137,10 +137,10 @@
     <ClInclude Include="BezierC0.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bezierC2.h">
+    <ClInclude Include="bSpline.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="bSpline.h">
+    <ClInclude Include="cubicInterpolated.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

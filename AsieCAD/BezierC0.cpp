@@ -1,5 +1,7 @@
 #include "BezierC0.h"
 #include <functional>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/glm.hpp>
 
 std::unique_ptr<Shader> BezierC0::bezierShader;
 std::unique_ptr<Shader> BezierC0::brokenShader;
@@ -40,7 +42,7 @@ void BezierC0::RenderCurve()
 	curveMesh = std::make_unique<MeshBuffer>(MeshBuffer::Vec3ToFloats(nodes), 
 		true, indices);
 	bezierShader->use();
-	bezierShader->setMat4("model", glm::identity<glm::mat4>());
+	bezierShader->setMat4("model", glm::mat4(1.0f));
 	bezierShader->setMat4("viewProjection", viewProjection);
 	if (isSelected)
 		bezierShader->setVec3("color", 1.f, 0.f, 0.f);
@@ -80,7 +82,7 @@ void BezierC0::RenderBroken()
 {
 	//brokenMesh = std::make_unique<MeshBuffer>(MeshBuffer::Vec3ToFloats(nodes));
 	brokenShader->use();
-	brokenShader->setMat4("model", glm::identity<glm::mat4>());
+	brokenShader->setMat4("model", glm::mat4(1.0f));
 	brokenShader->setMat4("viewProjection", viewProjection);
 	brokenShader->setVec3("color", 0.f, 0.f, 1.f);
 	glBindVertexArray(curveMesh->GetVAO());
@@ -94,7 +96,7 @@ void BezierC0::DrawBezierCurve(std::vector<glm::vec3> &nodes, glm::vec3 color)
 	auto mesh = std::make_unique<MeshBuffer>(MeshBuffer::Vec3ToFloats(nodes),
 		true, indices);
 	bezierShader->use();
-	bezierShader->setMat4("model", glm::identity<glm::mat4>());
+	bezierShader->setMat4("model", glm::mat4(1.0f));
 	bezierShader->setMat4("viewProjection", viewProjection);
 	bezierShader->setVec3("color", color);
 	glBindVertexArray(mesh->GetVAO());
@@ -105,7 +107,7 @@ void BezierC0::DrawBroken(std::vector<glm::vec3>& nodes, glm::vec3 color)
 {
 	auto mesh = std::make_unique<MeshBuffer>(MeshBuffer::Vec3ToFloats(nodes));
 	brokenShader->use();
-	brokenShader->setMat4("model", glm::identity<glm::mat4>());
+	brokenShader->setMat4("model", glm::mat4(1.0f));
 	brokenShader->setMat4("viewProjection", viewProjection);
 	brokenShader->setVec3("color", color);
 	glBindVertexArray(mesh->GetVAO());
