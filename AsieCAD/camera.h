@@ -56,9 +56,10 @@ public:
 		updateCameraVectors();
 	}
 
-	glm::mat4 GetViewMatrix()
+	glm::mat4 GetViewMatrix(float rightOffset = 0.0f)
 	{
-		return glm::lookAt(Position, Position + Front, Up);
+		return glm::lookAt(Position + Right * rightOffset,
+			Position + Front + Right * rightOffset, Up);
 	}
 
 	void ProcessKeyboard(Camera_Movement direction, float deltaTime)

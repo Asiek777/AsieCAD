@@ -26,7 +26,7 @@ class App
 	const char* glsl_version = "#version 330 core";
 	static App* instance;
 	GLFWwindow* window;
-	unsigned int framebufferL, framebufferP, quadVAO, quadVBO, textureColorbuffer;
+	unsigned int framebuffer[2], quadVAO, quadVBO, textureColorbuffer[2];
 	
 	int screenWidth = 1800, screenHeight = 950;
 	float deltaTime = 0.0f;
@@ -56,8 +56,6 @@ public:
 	int Init();
 	void DrawMenu();
 	void CreateDefaultScene();
-	void setMatrices();
-	void setMatricesoShaders();
 	static App* GetInstance() { return instance; };
 	int Run();
 

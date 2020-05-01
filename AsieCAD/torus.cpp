@@ -53,6 +53,7 @@ void Torus::Render()
     glBindVertexArray(mesh->GetVAO());
     shader->use();
     shader->setMat4("model", position.GetModelMatrix());
+    shader->setMat4("viewProjection", viewProjection);
     if (isSelected)
         shader->setVec3("color", 1.f, 0.f, 0.f);
     else

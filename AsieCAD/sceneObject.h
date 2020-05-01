@@ -11,15 +11,14 @@
 class SceneObject 
 {
 	static int selected;
-	//static SceneObject* selected;
 	static int selectedCount;
 	static bool rotateAroundCursor;
-	//static std::unique_ptr<SceneObject>& GetSelected();
 	static Position selectedCenter;
 protected:
 	char text[64];
 	bool isSelected = false;
 	virtual void RenderMenu() = 0;
+	static glm::mat4 viewProjection;
 public:
 	std::string name;
 	static std::vector<std::shared_ptr<SceneObject>> SceneObjects;
@@ -39,9 +38,10 @@ public:
 		glm::vec3 rotChange = glm::vec3(0)) = 0;
 	void RenderFullMenu();
 	
-	static void RenderScene();
-	
+	static void SetViewProjectionMatrix(glm::mat4 matrix) { viewProjection = matrix; }
+	static void RenderScene();	
 	static void DrawMenu();
+	
 	static void AddPointsToCruve();
 	static void AddCurveFromPoints();
 	static void RenderProperties();

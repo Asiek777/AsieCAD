@@ -10,10 +10,10 @@
 
 std::vector<std::shared_ptr<SceneObject>> SceneObject::SceneObjects;
 int SceneObject::selected = -1;
-//SceneObject* SceneObject::selected = nullptr;
 int SceneObject::selectedCount = 0;
 bool SceneObject::rotateAroundCursor = false;
 Position SceneObject::selectedCenter;
+glm::mat4 SceneObject::viewProjection;
 
 glm::vec3 SceneObject::GetRotationCenter()
 {

@@ -26,6 +26,7 @@ void Point::Render()
 	glBindVertexArray(mesh->GetVAO());
 	shader->use();
 	shader->setVec3("position", location);
+	shader->setMat4("viewProjection", viewProjection);
 	if (isSelected)
 		shader->setVec3("color", 1.f, 0.f, 0.f);
 	else
@@ -51,6 +52,7 @@ void Point::DrawPoint(glm::vec3 position, glm::vec3 color)
 	shader->use();
 	shader->setVec3("position", position);
 	shader->setVec3("color", color);
+	shader->setMat4("viewProjection", viewProjection);
 	glDrawArrays(GL_POINTS, 0, 1);
 	glBindVertexArray(0);
 }

@@ -12,7 +12,7 @@ protected:
 	std::vector<unsigned int> indices;
 	static std::vector<unsigned int> CalcIndices(int nodeCount);
 public:
-	static glm::mat4 viewProjection;
+	//static glm::mat4 viewProjection;
 	static std::unique_ptr<Shader> bezierShader;
 	static std::unique_ptr<Shader> brokenShader;
 	BezierC0();

@@ -57,9 +57,6 @@
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cursor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="sceneObject.cpp">
       <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
@@ -80,6 +77,9 @@
     </ClCompile>
     <ClCompile Include="cubicInterpolated.cpp">
       <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="cursor.cpp">
+      <Filter>Source Files\Shaders</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -119,9 +119,6 @@
     <ClInclude Include="app.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cursor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="position.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -147,6 +144,9 @@
       <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="BezierC0.h">
+      <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="cursor.h">
       <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
   </ItemGroup>

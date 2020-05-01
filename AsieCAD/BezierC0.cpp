@@ -5,7 +5,6 @@
 
 std::unique_ptr<Shader> BezierC0::bezierShader;
 std::unique_ptr<Shader> BezierC0::brokenShader;
-glm::mat4 BezierC0::viewProjection;
 int BezierC0::Number = 0;
 BezierC0::BezierC0() : BezierC0(("C0 Curve " + std::to_string(Number)).c_str())
 {
