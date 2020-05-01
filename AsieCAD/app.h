@@ -26,7 +26,8 @@ class App
 	const char* glsl_version = "#version 330 core";
 	static App* instance;
 	GLFWwindow* window;
-
+	unsigned int framebufferL, framebufferP, quadVAO, quadVBO, textureColorbuffer;
+	
 	int screenWidth = 1800, screenHeight = 950;
 	float deltaTime = 0.0f;
 	float lastFrame = 0.0f;
@@ -40,10 +41,20 @@ class App
 	void setCameraRotate(GLFWwindow* window, bool move);
 	void ScreenPosToWorldRay(int mouseX, int mouseY, glm::vec3& out_origin, 
 		glm::vec3& out_direction);
+	float quadVertices[24] = {
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		-1.0f, -1.0f,  0.0f, 0.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+
+		-1.0f,  1.0f,  0.0f, 1.0f,
+		 1.0f, -1.0f,  1.0f, 0.0f,
+		 1.0f,  1.0f,  1.0f, 1.0f
+	};
 	
 public:
 	App();
 	int Init();
+	void DrawMenu();
 	void CreateDefaultScene();
 	void setMatrices();
 	void setMatricesoShaders();

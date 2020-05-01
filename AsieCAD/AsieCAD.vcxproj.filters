@@ -166,5 +166,11 @@
     <None Include="shaders\bezier.geom">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="shaders\frame.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\frame.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

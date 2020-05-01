@@ -189,6 +189,8 @@
   <ItemGroup>
     <None Include="position.cpp" />
     <None Include="shaders\bezier.geom" />
+    <None Include="shaders\frame.frag" />
+    <None Include="shaders\frame.vert" />
     <None Include="shaders\point.vert" />
     <None Include="shaders\torus.frag" />
     <None Include="shaders\torus.vert" />

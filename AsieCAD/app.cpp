@@ -52,8 +52,26 @@ int App::Init()
 
 int App::Run()
 {
-	//Shader torusShader("shaders/torus.vert", "shaders/torus.frag");
-
+	glGenVertexArrays(1, &quadVAO);
+	glGenBuffers(1, &quadVBO);
+	glBindVertexArray(quadVAO);
+	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
+	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
+	
+	glGenFramebuffers(1, &framebufferP);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebufferP);
+	glGenTextures(1, &textureColorbuffer);
+	glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
+	auto frameShader = std::make_unique<Shader>("shaders/frame.vert", "shaders/frame.frag");
+	
 	while (!glfwWindowShouldClose(window)) {
 
 		processInput(window);
@@ -61,6 +79,9 @@ int App::Run()
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
+		glBindFramebuffer(GL_FRAMEBUFFER, framebufferP);
+		glEnable(GL_DEPTH_TEST);
+		
 		glClearColor(0.f, 0.f, 0.f, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -70,32 +91,21 @@ int App::Run()
 		
 		viewProjection = glm::perspective(glm::radians(camera.Zoom),
 			(float)screenWidth / screenHeight, 0.1f, 100.0f)
-		* camera.GetViewMatrix();
+			* camera.GetViewMatrix();
 		setMatrices();
 		
 		SceneObject::RenderScene();
 
-		{
-			static float f = 0.0f;
-
-			ImGui::Begin("Settings Window");
-
-			ImGui::SliderFloat("View Angle", &camera.Zoom, 1.0f, 45.0f);
-
-			SceneObject::DrawMenu();
-
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
-				1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			if (ImGui::Button("Quit"))
-				glfwSetWindowShouldClose(window, true);
-			ImGui::End();
-		}
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
-
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		glDisable(GL_DEPTH_TEST);
+		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
+		glClear(GL_COLOR_BUFFER_BIT);
+		frameShader->use();
+		glBindVertexArray(quadVAO);
+		glBindTexture(GL_TEXTURE_2D, textureColorbuffer);	
+		glDrawArrays(GL_TRIANGLES, 0, 6);
+		
+		DrawMenu();
 	}
 
 	ImGui_ImplOpenGL3_Shutdown();
@@ -103,6 +113,31 @@ int App::Run()
 	ImGui::DestroyContext();
 	glfwTerminate();
 	return 0;
+}
+
+void App::DrawMenu()
+{
+	{
+		static float f = 0.0f;
+
+		ImGui::Begin("Settings Window");
+
+		ImGui::SliderFloat("View Angle", &camera.Zoom, 1.0f, 45.0f);
+
+		SceneObject::DrawMenu();
+
+		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
+		            1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		if (ImGui::Button("Quit"))
+			glfwSetWindowShouldClose(window, true);
+		ImGui::End();
+	}
+
+	ImGui::Render();
+	ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+	glfwSwapBuffers(window);
+	glfwPollEvents();
 }
 
 void App::CreateDefaultScene()
