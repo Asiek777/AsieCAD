@@ -176,8 +176,8 @@ void SceneObject::AddItemMenu()
 	ImGui::SameLine();
 	if (ImGui::Button("Add point")) {
 		SceneObjects.emplace_back(std::make_shared<Point>(GetCursorCenter()));
-		if (SceneObjects[selected]->IsCurve())
-			(static_cast<BezierC0*>(SceneObjects[selected].get()))->
+		if (selected >= 0 && SceneObjects[selected]->IsCurve())
+			(static_cast<Curve*>(SceneObjects[selected].get()))->
 			AddPoint(SceneObjects[SceneObjects.size() - 1]);
 	}
 

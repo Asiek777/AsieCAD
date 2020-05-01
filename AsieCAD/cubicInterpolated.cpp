@@ -35,10 +35,13 @@ void CubicInterpolated::Render()
 
 void CubicInterpolated::CalcBezierPoints()
 {
-	int knotCount = points.size();
-	std::vector<glm::vec3> knots(knotCount);
-	for (int i = 0; i < knotCount; i++)
-		knots[i] = points[i].point.lock()->GetCenter();
+	std::vector<glm::vec3> knots;
+	for (int i = 0; i < points.size(); i++) {
+		glm::vec3 knot = points[i].point.lock()->GetCenter();
+		if (i == 0 || knot != knots[knots.size() - 1])
+			knots.emplace_back(knot);
+	}
+	int knotCount = knots.size();
 	std::vector<glm::vec3> a(knotCount - 1), b(knotCount - 1), c(knotCount), d(knotCount - 1);
 	std::vector<float> alfa(knotCount - 1), beta(knotCount - 1), diag(knotCount - 1),
 	                   dist(knotCount - 1);
@@ -54,16 +57,18 @@ void CubicInterpolated::CalcBezierPoints()
 	}
 
 	//solving equation
-	beta[1] /= diag[1];
-	c[1] /= diag[1];
-	for (int i = 2; i < knotCount - 1; i++) {
-		float m = 1.0f / (diag[i] - alfa[i] * beta[i - 1]);
-		beta[i] *= m;
-		c[i] = (c[i] - alfa[i] * c[i - 1]) * m;
-	}
-	for (int i = knotCount - 3; i > 1; i--)
-		c[i] -= beta[i] * c[i + 1];	
-	c[1] -= beta[1] * c[2];
+    if (knotCount > 2) {
+      beta[1] /= diag[1];
+      c[1] /= diag[1];
+      for (int i = 2; i < knotCount - 1; i++) {
+        float m = 1.0f / (diag[i] - alfa[i] * beta[i - 1]);
+        beta[i] *= m;
+        c[i] = (c[i] - alfa[i] * c[i - 1]) * m;
+      }
+      for (int i = knotCount - 3; i > 1; i--)
+        c[i] -= beta[i] * c[i + 1];	
+      c[1] -= beta[1] * c[2];
+    }
 	c[0] = c[knotCount - 1] = glm::vec3(0);
 	
 	for (int i = 0; i < knotCount - 1; i++) {

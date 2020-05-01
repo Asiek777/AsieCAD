@@ -10,18 +10,19 @@ App::App()
 	instance = this;
 }
 
-int App::Run()
+int App::Init()
 {
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(screenWidth, screenHeight, "AsieCAD", NULL, NULL);
+	window = glfwCreateWindow(screenWidth, screenHeight, "AsieCAD", NULL, NULL);
 	if (window == NULL) {
 		std::cout << "Failed to create GLFW window" << std::endl;
 		glfwTerminate();
 		return -1;
+		
 	}
 	glfwMakeContextCurrent(window);
 	glfwSetFramebufferSizeCallback(window, ::framebuffer_size_callback);
@@ -31,6 +32,7 @@ int App::Run()
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
+		
 	}
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -38,17 +40,18 @@ int App::Run()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 
-	glm::vec3 objectColor(1.0f, 0.5f, 0.31f);
-
 	ImGui::CreateContext();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 	ImGui::StyleColorsClassic();
 
-	glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
-
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Cursor>());
 	CreateDefaultScene();
+	return 0;
+}
+
+int App::Run()
+{
 	//Shader torusShader("shaders/torus.vert", "shaders/torus.frag");
 
 	while (!glfwWindowShouldClose(window)) {
@@ -115,6 +118,7 @@ void App::CreateDefaultScene()
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.2, 0.7, 0));
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.8, 0.3, 0));
 }
+
 void App::setMatrices()
 {
 	if (Torus::shader) {
@@ -182,6 +186,7 @@ void App::processInput(GLFWwindow *window) {
 			camera.ProcessKeyboard(RIGHT, deltaTime);
 	}
 }
+
 void App::SelectItem()
 {
 	ImVec2 mousePos = ImGui::GetMousePos();

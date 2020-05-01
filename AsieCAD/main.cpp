@@ -3,6 +3,8 @@
 
 int main() {
 	App app;
+	if (app.Init())
+		return -1;
 	return app.Run();
 }
 

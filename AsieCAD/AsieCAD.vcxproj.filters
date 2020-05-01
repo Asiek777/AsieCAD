@@ -19,6 +19,12 @@
     <Filter Include="Source Files\Imgui">
       <UniqueIdentifier>{33b1ffe2-bb58-468d-86c8-4de9b2bc8517}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\SceneObjects">
+      <UniqueIdentifier>{98191b56-e716-428e-a98c-09607e959066}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\SceneObjects">
+      <UniqueIdentifier>{4dd8fc4d-e979-4f74-a263-93ecb87e8fd8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -42,9 +48,6 @@
     <ClCompile Include="Imgui\imgui_widgets.cpp">
       <Filter>Source Files\Imgui</Filter>
     </ClCompile>
-    <ClCompile Include="torus.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="app.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,26 +57,29 @@
     <ClCompile Include="glad.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="sceneObject.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="point.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="cursor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="curve.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="sceneObject.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
-    <ClCompile Include="BezierC0.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="point.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="curve.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
     <ClCompile Include="bSpline.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="BezierC0.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="torus.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
     <ClCompile Include="cubicInterpolated.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -110,38 +116,38 @@
     <ClInclude Include="shader_s.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="torus.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="app.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="sceneObject.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="point.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cursor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="clickable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="position.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="torus.h">
+      <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="sceneObject.h">
+      <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="point.h">
+      <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
     <ClInclude Include="curve.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BezierC0.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bSpline.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="cubicInterpolated.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="clickable.h">
+      <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="bSpline.h">
+      <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="BezierC0.h">
+      <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
