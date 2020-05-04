@@ -116,7 +116,7 @@ void Curve::RenderSelectedPoints()
 	for (int i = 0; i < points.size(); i++)
 		if(points[i].isSelected)
 			Point::DrawPoint(points[i].point.lock()->GetCenter(),
-				glm::vec3(0, 1, 0));
+				COLORS::CURVE_POINT);
 	glEnable(GL_DEPTH_TEST);
 }
 

@@ -30,7 +30,7 @@ class Framebuffers
 public:
 	Framebuffers(int _screenWidth, int _screenHeight);
 	~Framebuffers();
-	void RenderScene(Camera& camera);
+	void RenderScene(Camera& camera, glm::mat4 &viewProjection);
 	void DrawMenu();
 };
 

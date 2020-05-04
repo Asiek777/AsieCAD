@@ -6,6 +6,7 @@
 #include <vector>
 #include "shader_s.h"
 #include "position.h"
+#include "colors.h"
 
 
 class SceneObject 

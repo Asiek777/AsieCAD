@@ -27,7 +27,7 @@ void BSpline::Render()
 		for (int i = 0; i < pointCount; i++)
 			deBors[i] = points[i].point.lock()->GetCenter();
 		CalcBezierCoordinates(pointCount, deBors, midPoints);
-		glm::vec3 color = isSelected ? glm::vec3(1, 0, 0) : glm::vec3(1);
+		glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
 		BezierC0::DrawBezierCurve(bezierCoords, color);
 		if(drawBroken) {
 			BezierC0::DrawBroken(deBors);
@@ -39,9 +39,9 @@ void BSpline::Render()
 		bezierCoords = std::vector<glm::vec3>();
 		for (int i = 0; i < bezierPoints.size(); i++)
 			bezierCoords.emplace_back(bezierPoints[i]->GetCenter());
-		glm::vec3 color = isSelected ? glm::vec3(1, 0, 0) : glm::vec3(1);
+		glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
 		for (int i = 0; i < bezierPoints.size(); i++) {
-			glm::vec3 color = points[i].isSelected ? glm::vec3(0.1, 1, 0.1) : glm::vec3(1);
+			glm::vec3 color = points[i].isSelected ? COLORS::CURVE_POINT : COLORS::BASE;
 			Point::DrawPoint(bezierCoords[i], color);
 		}
 		BezierC0::DrawBezierCurve(bezierCoords, color);

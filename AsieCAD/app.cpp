@@ -87,7 +87,7 @@ int App::Run()
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
-		framebuffers->RenderScene(camera);
+		framebuffers->RenderScene(camera, viewProjection);
 		/*glEnable(GL_DEPTH_TEST);
 		for (int i = 0; i < 2; ++i) {
 

@@ -20,7 +20,7 @@ public:
 	void RenderCurve();
 	void RenderBroken();
 	void Render() override;
-	static	void DrawBezierCurve(std::vector<glm::vec3>& nodes, glm::vec3 color = glm::vec3(1));
-	static	void DrawBroken(std::vector<glm::vec3>& nodes, glm::vec3 color = glm::vec3(0.3, 0.3, 1));
+	static	void DrawBezierCurve(std::vector<glm::vec3>& nodes, glm::vec3 color = COLORS::BASE);
+	static	void DrawBroken(std::vector<glm::vec3>& nodes, glm::vec3 color = COLORS::BROKEN);
 };
 

@@ -31,10 +31,8 @@ void Cursor::Render()
 	shader->use();
 	shader->setMat4("model", modelMatrix);
 	shader->setMat4("viewProjection", viewProjection);
-	if (isSelected)
-		shader->setVec3("color", 1.f, 0.f, 0.f);
-	else
-		shader->setVec3("color", 1.f, 1.f, 1.f);
+	glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
+	shader->setVec3("color", color);
 	glDrawElements(GL_LINES, 6, GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 }

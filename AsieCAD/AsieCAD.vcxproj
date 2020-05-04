@@ -169,6 +169,7 @@
     <ClInclude Include="bSpline.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="clickable.h" />
+    <ClInclude Include="colors.h" />
     <ClInclude Include="cubicInterpolated.h" />
     <ClInclude Include="cursor.h" />
     <ClInclude Include="curve.h" />

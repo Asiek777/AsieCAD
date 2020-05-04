@@ -57,7 +57,7 @@ glm::mat4 Framebuffers::frustrumMatrix(float cameraZoom, float eyeOffset)
 	return glm::frustum(l, r, b, t, n, farZ);
 }
 
-void Framebuffers::RenderScene(Camera &camera)
+void Framebuffers::RenderScene(Camera &camera, glm::mat4& viewProjection)
 {
 	glEnable(GL_DEPTH_TEST);
 	if(drawStereo)
@@ -69,7 +69,7 @@ void Framebuffers::RenderScene(Camera &camera)
 
 			float eyeOffset = i ? eyeDistance / 2 : -eyeDistance / 2;
 			glm::mat4 frust = frustrumMatrix(camera.Zoom, eyeOffset);
-			glm::mat4 viewProjection = frust *
+			viewProjection = frust *
 				camera.GetViewMatrix(eyeOffset);
 			SceneObject::SetViewProjectionMatrix(viewProjection);
 
@@ -80,7 +80,7 @@ void Framebuffers::RenderScene(Camera &camera)
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer[0]);
 		glClearColor(0.f, 0.f, 0.f, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glm::mat4 viewProjection = frustrumMatrix(camera.Zoom, 0) *
+		viewProjection = frustrumMatrix(camera.Zoom, 0) *
 			camera.GetViewMatrix(0);
 		//glm::mat4 viewProjection = glm::perspective(glm::radians(camera.Zoom),
 		//	(float)screenWidth / screenHeight, nearZ, farZ)

@@ -25,11 +25,12 @@ void CubicInterpolated::Render()
 	if (HasChanged())
 		CalcBezierPoints();
 
-	glm::vec3 color = isSelected ? glm::vec3(1, 0, 0) : glm::vec3(1);
+	glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
 	BezierC0::DrawBezierCurve(bezierPoints, color);
 	if (drawBroken)
 		BezierC0::DrawBroken(bezierPoints);
-	RenderSelectedPoints();
+	if(isSelected)
+		RenderSelectedPoints();
 	hasChanged = 0;
 }
 

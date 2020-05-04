@@ -101,6 +101,7 @@ void SceneObject::DrawMenu()
 	ImGui::Checkbox("Rotate Camera Around Cursor", &rotateAroundCursor);
 	AddItemMenu();
 	ItemListMenu();
+	COLORS::DrawMenu();
 	RenderProperties();
 }
 void SceneObject::AddPointsToCruve()

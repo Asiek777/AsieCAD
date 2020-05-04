@@ -43,10 +43,8 @@ void BezierC0::RenderCurve()
 	bezierShader->use();
 	bezierShader->setMat4("model", glm::mat4(1.0f));
 	bezierShader->setMat4("viewProjection", viewProjection);
-	if (isSelected)
-		bezierShader->setVec3("color", 1.f, 0.f, 0.f);
-	else
-		bezierShader->setVec3("color", 1.f, 1.f, 1.f);
+	glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
+	bezierShader->setVec3("color", color);
 	glBindVertexArray(curveMesh->GetVAO());
 	glDrawElements(GL_LINES_ADJACENCY, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
