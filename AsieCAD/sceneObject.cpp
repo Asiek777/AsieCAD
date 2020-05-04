@@ -171,20 +171,22 @@ void SceneObject::RenderProperties()
 }
 void SceneObject::AddItemMenu()
 {
-	if (ImGui::Button("Add Torus"))
-		SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 2));
-	ImGui::SameLine();
-	if (ImGui::Button("Add point")) {
-		SceneObjects.emplace_back(std::make_shared<Point>(GetCursorCenter()));
-		if (selected >= 0 && SceneObjects[selected]->IsCurve())
-			(static_cast<Curve*>(SceneObjects[selected].get()))->
-			AddPoint(SceneObjects[SceneObjects.size() - 1]);
-	}
+	if (ImGui::CollapsingHeader("Add items")) {
+		if (ImGui::Button("Add Torus"))
+			SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 2));
+		ImGui::SameLine();
+		if (ImGui::Button("Add point")) {
+			SceneObjects.emplace_back(std::make_shared<Point>(GetCursorCenter()));
+			if (selected >= 0 && SceneObjects[selected]->IsCurve())
+				(static_cast<Curve*>(SceneObjects[selected].get()))->
+				AddPoint(SceneObjects[SceneObjects.size() - 1]);
+		}
 
-	if (ImGui::Button("Add Bezier's C0 Curve"))
-		SceneObjects.emplace_back(std::make_shared<BezierC0>());
-	if (ImGui::Button("Add B-spline"))
-		SceneObjects.emplace_back(std::make_shared<BSpline>());
-	if (ImGui::Button("Add Cubic interpolaction curve"))
-		SceneObjects.emplace_back(std::make_shared<CubicInterpolated>());
+		if (ImGui::Button("Add Bezier's C0 Curve"))
+			SceneObjects.emplace_back(std::make_shared<BezierC0>());
+		if (ImGui::Button("Add B-spline"))
+			SceneObjects.emplace_back(std::make_shared<BSpline>());
+		if (ImGui::Button("Add Cubic interpolaction curve"))
+			SceneObjects.emplace_back(std::make_shared<CubicInterpolated>());
+	}
 }

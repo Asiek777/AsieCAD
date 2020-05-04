@@ -47,6 +47,7 @@ int App::Init()
 
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Cursor>());
 	CreateDefaultScene();
+	framebuffers = std::make_unique<Framebuffers>(screenWidth, screenHeight);
 	return 0;
 }
 
@@ -81,21 +82,23 @@ int App::Run()
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+		
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 
-		glEnable(GL_DEPTH_TEST);
+		framebuffers->RenderScene(camera);
+		/*glEnable(GL_DEPTH_TEST);
 		for (int i = 0; i < 2; ++i) {
 
 			glBindFramebuffer(GL_FRAMEBUFFER, framebuffer[i]);		
 			glClearColor(0.f, 0.f, 0.f, 0.f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			float currentFrame = glfwGetTime();
-			deltaTime = currentFrame - lastFrame;
-			lastFrame = currentFrame;
 		
 			viewProjection = glm::perspective(glm::radians(camera.Zoom),
 			                                  (float)screenWidth / screenHeight, 0.1f, 100.0f)
-				* camera.GetViewMatrix(i?1:-1);
+				* camera.GetViewMatrix(i?0.3:-0.3);
 			SceneObject::SetViewProjectionMatrix(viewProjection);
 		
 			SceneObject::RenderScene();
@@ -113,7 +116,7 @@ int App::Run()
 		frameShader->use();
 		frameShader->setInt("frame0", 0);
 		frameShader->setInt("frame1", 1);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawArrays(GL_TRIANGLES, 0, 6);*/
 		
 		DrawMenu();
 	}
@@ -136,6 +139,7 @@ void App::DrawMenu()
 
 		ImGui::SliderFloat("View Angle", &camera.Zoom, 1.0f, 45.0f);
 
+		framebuffers->DrawMenu();
 		SceneObject::DrawMenu();
 
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",

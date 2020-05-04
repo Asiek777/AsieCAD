@@ -16,6 +16,7 @@
 #include "Imgui/imgui_impl_glfw.h"
 #include "Imgui/imgui_impl_opengl3.h"
 #include "torus.h"
+#include "framebuffers.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -27,6 +28,7 @@ class App
 	static App* instance;
 	GLFWwindow* window;
 	unsigned int framebuffer[2], quadVAO, quadVBO, textureColorbuffer[2];
+	std::unique_ptr<Framebuffers> framebuffers;
 	
 	int screenWidth = 1800, screenHeight = 950;
 	float deltaTime = 0.0f;

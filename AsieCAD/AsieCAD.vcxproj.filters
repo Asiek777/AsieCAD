@@ -81,6 +81,9 @@
     <ClCompile Include="cursor.cpp">
       <Filter>Source Files\Shaders</Filter>
     </ClCompile>
+    <ClCompile Include="framebuffers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -148,6 +151,9 @@
     </ClInclude>
     <ClInclude Include="cursor.h">
       <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="framebuffers.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

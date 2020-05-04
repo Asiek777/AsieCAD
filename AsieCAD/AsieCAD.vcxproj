@@ -149,6 +149,7 @@
     <ClCompile Include="cubicInterpolated.cpp" />
     <ClCompile Include="cursor.cpp" />
     <ClCompile Include="curve.cpp" />
+    <ClCompile Include="framebuffers.cpp" />
     <ClCompile Include="glad.c" />
     <ClCompile Include="Imgui\imgui.cpp" />
     <ClCompile Include="Imgui\imgui_demo.cpp" />
@@ -171,6 +172,7 @@
     <ClInclude Include="cubicInterpolated.h" />
     <ClInclude Include="cursor.h" />
     <ClInclude Include="curve.h" />
+    <ClInclude Include="framebuffers.h" />
     <ClInclude Include="Imgui\imconfig.h" />
     <ClInclude Include="Imgui\imgui.h" />
     <ClInclude Include="Imgui\imgui_impl_glfw.h" />
