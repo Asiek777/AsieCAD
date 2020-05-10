@@ -27,7 +27,6 @@ class App
 	const char* glsl_version = "#version 330 core";
 	static App* instance;
 	GLFWwindow* window;
-	unsigned int framebuffer[2], quadVAO, quadVBO, textureColorbuffer[2];
 	std::unique_ptr<Framebuffers> framebuffers;
 	
 	int screenWidth = 1800, screenHeight = 950;
@@ -43,15 +42,6 @@ class App
 	void setCameraRotate(GLFWwindow* window, bool move);
 	void ScreenPosToWorldRay(int mouseX, int mouseY, glm::vec3& out_origin, 
 		glm::vec3& out_direction);
-	float quadVertices[24] = {
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		-1.0f, -1.0f,  0.0f, 0.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
-
-		-1.0f,  1.0f,  0.0f, 1.0f,
-		 1.0f, -1.0f,  1.0f, 0.0f,
-		 1.0f,  1.0f,  1.0f, 1.0f
-	};
 	
 public:
 	App();

@@ -53,27 +53,6 @@ int App::Init()
 
 int App::Run()
 {
-	glGenVertexArrays(1, &quadVAO);
-	glGenBuffers(1, &quadVBO);
-	glBindVertexArray(quadVAO);
-	glBindBuffer(GL_ARRAY_BUFFER, quadVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quadVertices), &quadVertices, GL_STATIC_DRAW);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(1);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	
-	glGenFramebuffers(2, framebuffer);
-	glGenTextures(2, textureColorbuffer);
-	for (int i = 0; i < 2; ++i) {
-
-		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer[i]);
-		glBindTexture(GL_TEXTURE_2D, textureColorbuffer[i]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, screenWidth, screenHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer[i], 0);
-	}
 	auto frameShader = std::make_unique<Shader>("shaders/frame.vert", "shaders/frame.frag");
 	
 	while (!glfwWindowShouldClose(window)) {
@@ -88,36 +67,7 @@ int App::Run()
 		lastFrame = currentFrame;
 
 		framebuffers->RenderScene(camera, viewProjection);
-		/*glEnable(GL_DEPTH_TEST);
-		for (int i = 0; i < 2; ++i) {
 
-			glBindFramebuffer(GL_FRAMEBUFFER, framebuffer[i]);		
-			glClearColor(0.f, 0.f, 0.f, 0.f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		
-			viewProjection = glm::perspective(glm::radians(camera.Zoom),
-			                                  (float)screenWidth / screenHeight, 0.1f, 100.0f)
-				* camera.GetViewMatrix(i?0.3:-0.3);
-			SceneObject::SetViewProjectionMatrix(viewProjection);
-		
-			SceneObject::RenderScene();
-			
-		}
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glDisable(GL_DEPTH_TEST);
-		glClearColor(1.0f, 1.0f, 1.0f, 1.0f); 
-		glClear(GL_COLOR_BUFFER_BIT);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureColorbuffer[0]);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, textureColorbuffer[1]);
-		glBindVertexArray(quadVAO);
-		frameShader->use();
-		frameShader->setInt("frame0", 0);
-		frameShader->setInt("frame1", 1);
-		glDrawArrays(GL_TRIANGLES, 0, 6);*/
-		
 		DrawMenu();
 	}
 
@@ -125,8 +75,6 @@ int App::Run()
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
 	glfwTerminate();
-	glDeleteVertexArrays(1, &quadVAO);
-	glDeleteBuffers(1, &quadVBO);
 	return 0;
 }
 
@@ -163,10 +111,10 @@ void App::CreateDefaultScene()
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1, 0, 0));
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.4, -2, 0));
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.7, 2, 0));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.5, 0));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.5, 3));
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.7, 0));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.4, 1.9, 0));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.2, 0.7, 0));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.4, 1.9, 4));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.2, 0.7, 2));
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.8, 0.3, 0));
 }
 
@@ -190,7 +138,8 @@ void App::mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 
 void App::scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
-	camera.ProcessMouseScroll(yoffset);
+	if(!ImGui::GetIO().WantCaptureMouse)
+		camera.ProcessMouseScroll(yoffset);
 }
 
 void App::processInput(GLFWwindow *window) {

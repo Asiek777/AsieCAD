@@ -48,9 +48,9 @@ void SceneObject::RenderScene()
 		if (SceneObjects[i]->IsCurve())
 			SceneObjects[i]->Render();
 	if (selectedCount > 1)
-		Point::DrawPoint(selectedCenter.location, glm::vec3(1, 1, 0));
-	if (selectedCount == 1)
-		Point::DrawPoint(SceneObjects[selected]->GetCenter(), glm::vec3(1, 1, 0));
+		Point::DrawPoint(selectedCenter.location, COLORS::CENTER);
+	if (selectedCount == 1 && !SceneObjects[selected]->IsPoint())
+		Point::DrawPoint(SceneObjects[selected]->GetCenter(), COLORS::CENTER);
 }
 void SceneObject::ItemListMenu()
 {
