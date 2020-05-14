@@ -30,6 +30,7 @@ class Framebuffers
 public:
 	Framebuffers(int _screenWidth, int _screenHeight);
 	~Framebuffers();
+	glm::mat4 SelectFrustrum(float cameraZoom, float up, float down, float left, float right);
 	void RenderScene(Camera& camera, glm::mat4 &viewProjection);
 	void DrawMenu();
 };

@@ -34,13 +34,14 @@ class App
 	float lastFrame = 0.0f;
 	Camera camera = Camera(glm::vec3(0.f, 0.f, 10.0f));
 	float lastX = screenWidth / 2.f, lastY = screenHeight / 2.f;
-	bool isCameraRotating = false, isCameraMoving = false;
+	float firstX, firstY;
+	bool isCameraRotating = false, isCameraMoving = false, isSelecting = false;
 	glm::mat4 viewProjection;
 
-	void SelectItem();
+	void SelectItem(bool isPressed);
 	void processInput(GLFWwindow *window);
 	void setCameraRotate(GLFWwindow* window, bool move);
-	void ScreenPosToWorldRay(int mouseX, int mouseY, glm::vec3& out_origin, 
+	void screenPosToWorldRay(int mouseX, int mouseY, glm::vec3& out_origin, 
 		glm::vec3& out_direction);
 	
 public:

@@ -45,16 +45,25 @@ Framebuffers::~Framebuffers()
 	glDeleteBuffers(1, &quadVBO);
 }
 
+glm::mat4 Framebuffers::SelectFrustrum(float cameraZoom, float up, float down, 
+	float left, float right)
+{
+	float aspect = (float)screenWidth / screenHeight;
+	float t = nearZ * std::tanf(glm::radians(cameraZoom) / 2);
+	float r = t * aspect;
+	return glm::frustum(r * left, r * right, t * down, t * up, nearZ, farZ);
+}
+
+
 glm::mat4 Framebuffers::frustrumMatrix(float cameraZoom, float eyeOffset)
 {
 	float aspect = (float)screenWidth / screenHeight;
 	float offset = -eyeOffset / projPlaneDist;
-	float n = nearZ;
-	float t = n * std::tanf(glm::radians(cameraZoom)/2);
+	float t = nearZ * std::tanf(glm::radians(cameraZoom)/2);
 	float b = -t;
 	float r = t * aspect + offset;
 	float l = -t * aspect + offset;
-	return glm::frustum(l, r, b, t, n, farZ);
+	return glm::frustum(l, r, b, t, nearZ, farZ);
 }
 
 void Framebuffers::RenderScene(Camera &camera, glm::mat4& viewProjection)
