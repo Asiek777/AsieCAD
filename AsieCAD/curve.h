@@ -1,32 +1,18 @@
 #pragma once
-#include "sceneObject.h"
-
-struct CurvePoint
-{
-	std::weak_ptr<SceneObject> point;
-	bool isSelected;
-};
+#include "pointObject.h"
 
 
 class Curve :
-	public SceneObject
+	public PointObject
 {
 protected:
 	bool drawBroken = false;
-	bool ableMultiSelect = true;
-	std::vector<CurvePoint> points;
-	Position selectedCenter;
-	char hasChanged = 0;
-	int SelectedCount();
-	void clearExpired();
-	void RenderSelectedPoints();
-	char HasChanged() override;
+	
+
 public:
-	Curve(const char* _name) : SceneObject(_name) {}
+	Curve(const char* _name) : PointObject(_name) {}
 	bool IsCurve() override { return true; }
-	glm::vec3 GetCenter() override;
 	bool AddPoint(std::shared_ptr<SceneObject>& point);
-	void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange) override {}
 	void RenderMenu() override;
 };
 

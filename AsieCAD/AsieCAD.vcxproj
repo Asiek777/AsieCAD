@@ -160,6 +160,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshBuffer.cpp" />
     <ClCompile Include="point.cpp" />
+    <ClCompile Include="pointObject.cpp" />
     <ClCompile Include="sceneObject.cpp" />
     <ClCompile Include="torus.cpp" />
   </ItemGroup>
@@ -184,6 +185,7 @@
     <ClInclude Include="Imgui\imstb_truetype.h" />
     <ClInclude Include="meshBuffer.h" />
     <ClInclude Include="point.h" />
+    <ClInclude Include="pointObject.h" />
     <ClInclude Include="position.h" />
     <ClInclude Include="sceneObject.h" />
     <ClInclude Include="shader_s.h" />

@@ -84,6 +84,9 @@
     <ClCompile Include="cursor.cpp">
       <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
+    <ClCompile Include="pointObject.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -157,6 +160,9 @@
     </ClInclude>
     <ClInclude Include="colors.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pointObject.h">
+      <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

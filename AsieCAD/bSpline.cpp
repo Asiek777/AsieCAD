@@ -70,6 +70,7 @@ void BSpline::RenderMenu()
 	if (isBezier) {
 		if(ImGui::Button("Return to de Boor's coordinates'")) {
 			isBezier = false;
+			isEditable = false;
 			ableMultiSelect = true;
 			points = pointsCopy;
 			bezierPoints.erase(bezierPoints.begin(), bezierPoints.end());			
@@ -78,9 +79,10 @@ void BSpline::RenderMenu()
 	else
 		if(ImGui::Button("Edit as beziers")) {
 			isBezier = true;
+			isEditable = false;
 			ableMultiSelect = false;
 			pointsCopy = points;
-			points = std::vector<CurvePoint>();
+			points = std::vector<ControlPoint>();
 			for (int i = 0; i < bezierCoords.size(); i++) {
 				bezierPoints.emplace_back(Point::FakePoint(bezierCoords[i],
 					"bezierPoint " + std::to_string(i)));

@@ -182,11 +182,12 @@ void SceneObject::AddItemMenu()
 				(static_cast<Curve*>(SceneObjects[selected].get()))->
 				AddPoint(SceneObjects[SceneObjects.size() - 1]);
 		}
-
+		ImGui::SameLine();
 		if (ImGui::Button("Add Bezier's C0 Curve"))
 			SceneObjects.emplace_back(std::make_shared<BezierC0>());
 		if (ImGui::Button("Add B-spline"))
 			SceneObjects.emplace_back(std::make_shared<BSpline>());
+		ImGui::SameLine();
 		if (ImGui::Button("Add Cubic interpolaction curve"))
 			SceneObjects.emplace_back(std::make_shared<CubicInterpolated>());
 	}

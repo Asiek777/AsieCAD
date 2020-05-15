@@ -8,7 +8,7 @@ class BSpline :
 	bool isBezier = false;
 	std::vector<glm::vec3> bezierCoords;
 	std::vector<std::shared_ptr<SceneObject>> bezierPoints;
-	std::vector<CurvePoint> pointsCopy;
+	std::vector<ControlPoint> pointsCopy;
 	void UpdateBezierContinuity();
 	void CalcBezierCoordinates(int pointCount, std::vector<glm::vec3>& deBors, 
 		std::vector<glm::vec3>& midPoints);
