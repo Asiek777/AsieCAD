@@ -16,11 +16,24 @@ glm::vec3 PointObject::GetCenter()
 	return center / (float)points.size();
 }
 
+void PointObject::calcSelectioncenter()
+{
+	int selectedCount = SelectedCount();
+	glm::vec3 centerLoc = glm::vec3(0);
+	for (int j = 0; j < points.size(); j++)
+		if (points[j].isSelected) {
+			auto point = points[j].point.lock();
+			centerLoc += point->GetCenter();
+		}
+	selectedCenter = Position(centerLoc / (float)selectedCount);
+}
+
 void PointObject::RenderMenu()
 {
 	if (ableMultiSelect && ImGui::Button("Select all")) {
 		for (int i = 0; i < points.size(); i++)
 			points[i].isSelected = true;
+		calcSelectioncenter();
 	}
 	ImGui::ListBoxHeader("");
 	for (int i = 0; i < points.size(); i++) {
@@ -33,13 +46,7 @@ void PointObject::RenderMenu()
 				points[i].isSelected = !points[i].isSelected;
 				int selectedCount = SelectedCount();
 				if (selectedCount > 1) {
-					glm::vec3 centerLoc = glm::vec3(0);
-					for (int j = 0; j < points.size(); j++)
-						if (points[j].isSelected) {
-							auto point = points[j].point.lock();
-							centerLoc += point->GetCenter();
-						}
-					selectedCenter = Position(centerLoc / (float)selectedCount);
+					calcSelectioncenter();
 				}
 			}
 			else {

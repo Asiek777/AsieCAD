@@ -36,17 +36,17 @@ SceneObject::SceneObject(const char* _name)
 }
 void SceneObject::RenderFullMenu()
 {
-	if (ImGui::InputText(IsCurve()?"Object name ":"Object name", text, 64))
+	if (ImGui::InputText(IsPointObject()?"Object name ":"Object name", text, 64))
 		name = text;
 	RenderMenu();
 }
 void SceneObject::RenderScene()
 {
 	for (int i = 0; i < SceneObjects.size(); i++)
-		if(!SceneObjects[i]->IsCurve())
+		if(!SceneObjects[i]->IsPointObject())
 			SceneObjects[i]->Render();
 	for (int i = 0; i < SceneObjects.size(); i++)
-		if (SceneObjects[i]->IsCurve())
+		if (SceneObjects[i]->IsPointObject())
 			SceneObjects[i]->Render();
 	if (selectedCount > 1)
 		Point::DrawPoint(selectedCenter.location, COLORS::CENTER);
@@ -56,8 +56,8 @@ void SceneObject::RenderScene()
 void SceneObject::ItemListMenu()
 {
 	static bool showPoints = true;
-	ImGui::Checkbox("Show Points", &showPoints);
 	if (ImGui::CollapsingHeader("Object list")) {
+		ImGui::Checkbox("Show Points", &showPoints);
 		ImGui::ListBoxHeader("");
 		for (int i = 0; i < SceneObjects.size(); i++)
 			if (showPoints || !SceneObjects[i]->IsPoint())
