@@ -146,6 +146,7 @@ void SceneObject::RenderProperties()
 		if (std::any_of(SceneObjects.begin(), SceneObjects.end(),
 			[](auto const& object) { return object->isSelected && object->IsDeletable(); })
 			&& ImGui::Button("Delete items")) {
+			
 			auto end = std::remove_if(SceneObjects.begin() + 1, SceneObjects.end(),
 				[](auto const& object) { return object->isSelected && object->IsDeletable(); });
 			SceneObjects.erase(end, SceneObjects.end());

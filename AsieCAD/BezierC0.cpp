@@ -81,7 +81,7 @@ void BezierC0::RenderBroken()
 	brokenShader->use();
 	brokenShader->setMat4("model", glm::mat4(1.0f));
 	brokenShader->setMat4("viewProjection", viewProjection);
-	brokenShader->setVec3("color", 0.f, 0.f, 1.f);
+	brokenShader->setVec3("color", COLORS::BROKEN);
 	glBindVertexArray(curveMesh->GetVAO());
 	glDrawArrays(GL_LINE_STRIP, 0, points.size());
 	glBindVertexArray(0);
