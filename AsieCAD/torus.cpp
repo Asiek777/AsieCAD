@@ -54,7 +54,6 @@ void Torus::Render()
     shader->use();
     shader->setMat4("model", position.GetModelMatrix());
     shader->setMat4("viewProjection", viewProjection);
-    shader->setMat4("viewProjection", viewProjection);
     glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
     shader->setVec3("color", color);
     glDrawElements(GL_LINES, smallCount * bigCount * 4, GL_UNSIGNED_INT, 0);

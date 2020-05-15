@@ -46,6 +46,11 @@ void Point::UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotCh
 }
 void Point::DrawPoint(glm::vec3 position, glm::vec3 color)
 {
+	if (!shader) {
+		shader = std::make_unique<Shader>("shaders/point.vert", "shaders/torus.frag");
+		std::vector<float> vertex{ 0.f,0.f, 0.f };
+		mesh = std::make_unique<MeshBuffer>(vertex);
+	}
 	glBindVertexArray(mesh->GetVAO());
 	shader->use();
 	shader->setVec3("position", position);

@@ -108,14 +108,14 @@ void App::CreateDefaultScene()
 {
 	//SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 4, "torus 1"));
 	//SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 6, "torus 2"));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1, 0, 0));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.4, -2, 0));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.7, 2, 0));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.5, 3));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.7, 0));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.4, 1.9, 4));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.2, 0.7, 2));
-	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.8, 0.3, 0));
+	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1, 0, 0));
+	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.4, -2, 0));
+	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.7, 2, 0));
+	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.5, 3));
+	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.7, 0));
+	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.4, 1.9, 4));
+	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.2, 0.7, 2));
+	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.8, 0.3, 0));
 }
 
 void App::framebuffer_size_callback(GLFWwindow* window, int width, int height) {

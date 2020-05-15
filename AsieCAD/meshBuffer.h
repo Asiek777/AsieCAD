@@ -13,9 +13,10 @@ class MeshBuffer
 	unsigned int VBO, VAO, EBO;
 public:
 	unsigned int inline GetVAO() { return VAO; }
-	MeshBuffer();	
+	MeshBuffer();
+	MeshBuffer(std::vector<float> vertices, int vertSize);
 	MeshBuffer(std::vector<float> vertices, bool hasEBO = false, 
-		std::vector<unsigned>  indices = {});
+	           std::vector<unsigned>  indices = {});
 	~MeshBuffer();
 
 	static std::vector<float> Vec3ToFloats(std::vector<glm::vec3>& vecs);

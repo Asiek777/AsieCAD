@@ -88,7 +88,7 @@
       <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
     <ClCompile Include="bezierPatch.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -168,7 +168,7 @@
       <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="bezierPatch.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -191,6 +191,12 @@
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="shaders\frame.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\bezierPatch.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\bezierPatch.geom">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>

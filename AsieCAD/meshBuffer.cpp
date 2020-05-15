@@ -4,6 +4,20 @@ MeshBuffer::MeshBuffer()
 {
 }
 
+MeshBuffer::MeshBuffer(std::vector<float> vertices, int vertSize)
+{
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), 
+		vertices.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, vertSize, GL_FLOAT, GL_FALSE, vertSize * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+	glBindVertexArray(0);
+}
 
 MeshBuffer::MeshBuffer(std::vector<float> vertices, bool hasEBO, 
 	std::vector<unsigned> indices) {
@@ -12,7 +26,8 @@ MeshBuffer::MeshBuffer(std::vector<float> vertices, bool hasEBO,
 
 	glBindVertexArray(VAO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), 
+		vertices.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);

@@ -196,6 +196,8 @@
   <ItemGroup>
     <None Include="position.cpp" />
     <None Include="shaders\bezier.geom" />
+    <None Include="shaders\bezierPatch.geom" />
+    <None Include="shaders\bezierPatch.vert" />
     <None Include="shaders\frame.frag" />
     <None Include="shaders\frame.vert" />
     <None Include="shaders\point.vert" />
