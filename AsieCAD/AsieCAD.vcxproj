@@ -145,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="app.cpp" />
     <ClCompile Include="BezierC0.cpp" />
+    <ClCompile Include="bezierPatch.cpp" />
     <ClCompile Include="bSpline.cpp" />
     <ClCompile Include="cubicInterpolated.cpp" />
     <ClCompile Include="cursor.cpp" />
@@ -167,6 +168,7 @@
   <ItemGroup>
     <ClInclude Include="app.h" />
     <ClInclude Include="BezierC0.h" />
+    <ClInclude Include="bezierPatch.h" />
     <ClInclude Include="bSpline.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="clickable.h" />

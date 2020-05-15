@@ -18,6 +18,10 @@ glm::vec3 PointObject::GetCenter()
 
 void PointObject::RenderMenu()
 {
+	if (ableMultiSelect && ImGui::Button("Select all")) {
+		for (int i = 0; i < points.size(); i++)
+			points[i].isSelected = true;
+	}
 	ImGui::ListBoxHeader("");
 	for (int i = 0; i < points.size(); i++) {
 		std::shared_ptr<SceneObject> point = points[i].point.lock();
@@ -89,7 +93,6 @@ void PointObject::RenderMenu()
 	}
 
 }
-
 int PointObject::SelectedCount()
 {
 	int result = 0;

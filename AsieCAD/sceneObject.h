@@ -31,6 +31,7 @@ public:
 	virtual bool IsClicable() { return false; }
 	virtual bool IsPoint() { return false; }
 	virtual bool IsCurve() { return false; }
+	virtual bool IsDeletable() { return true; }
 	virtual char HasChanged() { return 0; }
 	
 	virtual glm::vec3 GetCenter() = 0;

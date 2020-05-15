@@ -8,6 +8,7 @@ class Point :
 	static int Number;
 	static std::unique_ptr<MeshBuffer> mesh;
 	char hasChanged;
+	bool isDeletable = true;
 	Point(const char* _name);
 public:
 	static std::unique_ptr<Shader> shader;
@@ -16,7 +17,9 @@ public:
 	void Render() override;
 	void RenderMenu() override;
 	bool IsPoint() override { return true; }
+	bool IsDeletable() override { return isDeletable; }
 	char HasChanged() override { return hasChanged; }
+	void SetDeletability(bool value) { isDeletable = value; }
 	void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange = glm::vec3(1), 
 		glm::vec3 rotChange = glm::vec3(0)) override;
 	static void DrawPoint(glm::vec3 position, glm::vec3 color);

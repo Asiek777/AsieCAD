@@ -7,7 +7,8 @@
 
 int CubicInterpolated::Number = 0;
 
-CubicInterpolated::CubicInterpolated() : Curve(("Cubic curve " + std::to_string(Number)).c_str())
+CubicInterpolated::CubicInterpolated() : Curve(("Cubic curve " + 
+	std::to_string(Number)).c_str())
 {
 	if (!BezierC0::bezierShader) {
 		BezierC0::bezierShader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag",

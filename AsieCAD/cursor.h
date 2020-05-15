@@ -15,6 +15,7 @@ public:
 	Cursor();
 	void Render() override;
 	void RenderMenu() override;
+	bool IsDeletable() override { return false; }
 	void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange) override;
 };
 
