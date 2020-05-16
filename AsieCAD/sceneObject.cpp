@@ -42,10 +42,7 @@ void SceneObject::RenderFullMenu()
 }
 void SceneObject::RenderScene()
 {
-	Point::RenderPoints();/*
-	for (int i = 0; i < SceneObjects.size(); i++)
-		if(SceneObjects[i]->IsPoint())
-			SceneObjects[i]->Render();*/
+	Point::RenderPoints();
 	for (int i = 0; i < SceneObjects.size(); i++)
 		if (!SceneObjects[i]->IsPoint())
 			SceneObjects[i]->Render();
