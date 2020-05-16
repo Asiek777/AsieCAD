@@ -6,10 +6,10 @@ class Point :
 	public Clicable
 {
 	static int Number;
-	static std::unique_ptr<MeshBuffer> mesh;
 	char hasChanged;
 	bool isDeletable = true;
 	Point(const char* _name);
+	static void InitShader();
 public:
 	static std::unique_ptr<Shader> shader;
 	Point(glm::vec3 location);
@@ -22,7 +22,9 @@ public:
 	void SetDeletability(bool value) { isDeletable = value; }
 	void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange = glm::vec3(1), 
 		glm::vec3 rotChange = glm::vec3(0)) override;
+	static void RenderPoints();
 	static void DrawPoint(glm::vec3 position, glm::vec3 color);
+	static void DrawManyPoints(std::vector<glm::vec3> coords, glm::vec3 color);
 	static std::shared_ptr<Point> FakePoint(glm::vec3 location, std::string name);
 };
 

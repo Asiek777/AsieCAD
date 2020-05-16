@@ -44,8 +44,6 @@ BezierPatch::~BezierPatch()
 
 void BezierPatch::Render()
 {
-	if (isSelected)
-		RenderSelectedPoints();
 	if (showMesh)
 		RenderMesh();
 	std::vector<glm::vec3> knots(points.size());
@@ -57,6 +55,8 @@ void BezierPatch::Render()
 			int offset[2] = { 3 * i, 3 * j };
 			DrawPatch(offset, knots);
 		}	
+	if (isSelected)
+		RenderSelectedPoints();
 }
 
 std::unique_ptr<MeshBuffer> BezierPatch::countCurvesPositions(int dim)

@@ -38,7 +38,7 @@ void main(void)
         EmitVertex();
     } else if(B[2] == B[3]) {
         float dist = distance(B[0].xy, B[1].xy) + distance(B[1].xy, B[2].xy);
-        int steps = min(int(dist * 10), 512);
+        int steps = min(int(dist * 10), 511);
         float delta = 1.0 / float(steps);
         for (int i=0; i<=steps; ++i){
             gl_Position = toBezier2(delta, i, B[0], B[1], B[2]);
@@ -48,7 +48,7 @@ void main(void)
         float dist = distance(B[0].xy / B[0].w, B[1].xy / B[1].w) + 
             distance(B[1].xy / B[1].w, B[2].xy / B[2].w) + 
             distance(B[2].xy / B[2].w, B[3].xy / B[3].w);
-        int steps = min(int(dist * 10), 511);
+        int steps = min(int(dist * 30), 511);
         float delta = 1.0 / float(steps);
         for (int i=0; i<=steps; ++i) {
             gl_Position = toBezier3(delta, i, B[0], B[1], B[2], B[3]);

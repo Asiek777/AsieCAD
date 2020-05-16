@@ -42,11 +42,12 @@ void SceneObject::RenderFullMenu()
 }
 void SceneObject::RenderScene()
 {
+	Point::RenderPoints();/*
 	for (int i = 0; i < SceneObjects.size(); i++)
-		if(!SceneObjects[i]->IsPointObject())
-			SceneObjects[i]->Render();
+		if(SceneObjects[i]->IsPoint())
+			SceneObjects[i]->Render();*/
 	for (int i = 0; i < SceneObjects.size(); i++)
-		if (SceneObjects[i]->IsPointObject())
+		if (!SceneObjects[i]->IsPoint())
 			SceneObjects[i]->Render();
 	if (selectedCount > 1)
 		Point::DrawPoint(selectedCenter.location, COLORS::CENTER);

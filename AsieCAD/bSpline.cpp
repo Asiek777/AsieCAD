@@ -16,9 +16,6 @@ void BSpline::Render()
 {
 	clearExpired();
 	if (!isBezier) {
-
-		if (isSelected)
-			RenderSelectedPoints();
 		int pointCount = points.size();
 		if (pointCount < 4)
 			return;
@@ -33,6 +30,8 @@ void BSpline::Render()
 			BezierC0::DrawBroken(deBors);
 			BezierC0::DrawBroken(midPoints);
 		}
+		if (isSelected)
+			RenderSelectedPoints();
 	}
 	else {
 		UpdateBezierContinuity();
@@ -40,9 +39,9 @@ void BSpline::Render()
 		for (int i = 0; i < bezierPoints.size(); i++)
 			bezierCoords.emplace_back(bezierPoints[i]->GetCenter());
 		glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
-		for (int i = 0; i < bezierPoints.size(); i++) {
-			glm::vec3 color = points[i].isSelected ? COLORS::CURVE_POINT : COLORS::BASE;
-			Point::DrawPoint(bezierCoords[i], color);
+		if (isSelected) {
+			Point::DrawManyPoints(bezierCoords, COLORS::BASE);
+			RenderSelectedPoints();
 		}
 		BezierC0::DrawBezierCurve(bezierCoords, color);
 		if (drawBroken)

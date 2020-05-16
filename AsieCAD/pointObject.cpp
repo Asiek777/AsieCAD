@@ -117,10 +117,12 @@ void PointObject::clearExpired()
 void PointObject::RenderSelectedPoints()
 {
 	glDisable(GL_DEPTH_TEST);
+	std::vector<glm::vec3> selected;
 	for (int i = 0; i < points.size(); i++)
 		if (points[i].isSelected)
-			Point::DrawPoint(points[i].point.lock()->GetCenter(),
-				COLORS::CURVE_POINT);
+			selected.emplace_back(points[i].point.lock()->GetCenter());
+	Point::DrawManyPoints(selected, COLORS::CURVE_POINT);
+				
 	glEnable(GL_DEPTH_TEST);
 }
 char PointObject::HasChanged()

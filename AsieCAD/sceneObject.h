@@ -15,12 +15,14 @@ class SceneObject
 	static int selectedCount;
 	static bool rotateAroundCursor;
 	static Position selectedCenter;
+	
 protected:
 	char text[64];
-	bool isSelected = false;
 	virtual void RenderMenu() = 0;
 	static glm::mat4 viewProjection;
+	
 public:
+	bool isSelected = false;
 	std::string name;
 	static std::vector<std::shared_ptr<SceneObject>> SceneObjects;
 	
