@@ -1,6 +1,7 @@
 #include "point.h"
 
 std::unique_ptr<Shader> Point::shader;
+std::unique_ptr<MeshBuffer> Point::points;
 int Point::Number = 0;
 
 Point::Point(const char* _name) : Clicable(_name)
@@ -13,6 +14,8 @@ void Point::InitShader()
 		shader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag");
 		shader->use();
 		shader->setMat4("model", glm::mat4(1));
+		std::vector<float> point = { 0,0,0 };
+		points = std::make_unique<MeshBuffer>(point);
 	}
 }
 
@@ -24,19 +27,19 @@ Point::Point(glm::vec3 _location) : Clicable(("Point " + std::to_string(Number))
 }
 void Point::Render()
 {
-	if (hasChanged > 3)
-		hasChanged--;
-	else if (hasChanged == 2)
-		hasChanged = 0;
-	std::vector<float> coords = { location.x, location.y, location.z };
-	auto mesh = std::make_unique<MeshBuffer>(coords);
-	shader->use();
-	shader->setMat4("viewProjection", viewProjection);
-	glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
-	shader->setVec3("color", color);
-	glBindVertexArray(mesh->GetVAO());
-	glDrawArrays(GL_POINTS, 0, 1);
-	glBindVertexArray(0);
+	//if (hasChanged > 3)
+	//	hasChanged--;
+	//else if (hasChanged == 2)
+	//	hasChanged = 0;
+	//std::vector<float> coords = { location.x, location.y, location.z };
+	//auto mesh = std::make_unique<MeshBuffer>(coords);
+	//shader->use();
+	//shader->setMat4("viewProjection", viewProjection);
+	//glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
+	//shader->setVec3("color", color);
+	//glBindVertexArray(mesh->GetVAO());
+	//glDrawArrays(GL_POINTS, 0, 1);
+	//glBindVertexArray(0);
 }
 void Point::RenderMenu()
 {
@@ -68,11 +71,11 @@ void Point::DrawPoint(glm::vec3 position, glm::vec3 color)
 {
 	InitShader();
 	std::vector<float> coords = { position.x, position.y, position.z };
-	auto mesh = std::make_unique<MeshBuffer>(coords);
+	points->UpdateBuffer(coords);
 	shader->use();
 	shader->setVec3("color", color);
 	shader->setMat4("viewProjection", viewProjection);
-	glBindVertexArray(mesh->GetVAO());
+	glBindVertexArray(points->GetVAO());
 	glDrawArrays(GL_POINTS, 0, 1);
 	glBindVertexArray(0);
 }
@@ -80,11 +83,11 @@ void Point::DrawPoint(glm::vec3 position, glm::vec3 color)
 void Point::DrawManyPoints(std::vector<glm::vec3> coords, glm::vec3 color)
 {
 	InitShader();
-	auto mesh = std::make_unique<MeshBuffer>(MeshBuffer::Vec3ToFloats(coords));
+	points->UpdateBuffer(MeshBuffer::Vec3ToFloats(coords));
 	shader->use();
 	shader->setVec3("color", color);
 	shader->setMat4("viewProjection", viewProjection);
-	glBindVertexArray(mesh->GetVAO());
+	glBindVertexArray(points->GetVAO());
 	glDrawArrays(GL_POINTS, 0, coords.size());
 	glBindVertexArray(0);
 }

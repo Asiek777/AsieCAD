@@ -6,6 +6,7 @@ class Point :
 	public Clicable
 {
 	static int Number;
+	static std::unique_ptr<MeshBuffer> points;
 	char hasChanged;
 	bool isDeletable = true;
 	Point(const char* _name);

@@ -10,7 +10,7 @@ class MeshBuffer
 	static MeshBuffer* slopeBuffer;
 
 
-	unsigned int VBO, VAO, EBO;
+	unsigned int VBO, VAO, EBO, size;
 public:
 	unsigned int inline GetVAO() { return VAO; }
 	MeshBuffer();
@@ -19,6 +19,7 @@ public:
 	           std::vector<unsigned>  indices = {});
 	~MeshBuffer();
 
+	void UpdateBuffer(std::vector<float> vertices);
 	static std::vector<float> Vec3ToFloats(std::vector<glm::vec3>& vecs);
 };
 

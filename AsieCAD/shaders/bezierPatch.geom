@@ -30,17 +30,17 @@ void main(void)
 {
     float u = gl_in[0].gl_Position.x;
     vec4 uCoord = toBernstein3(u);
-    mat4 uKnots[3];
+    mat4 knots[3];
     if (isForward)
         for(int i=0;i<3;i++)
-            uKnots[i] = Knots[i];            
+            knots[i] = Knots[i];            
     else
         for(int i=0;i<3;i++)
-            uKnots[i] = transpose(Knots[i]);
+            knots[i] = transpose(Knots[i]);
 
-    vec4 xCoord = uKnots[0] * uCoord;
-    vec4 yCoord = uKnots[1] * uCoord;
-    vec4 zCoord = uKnots[2] * uCoord;
+    vec4 xCoord = knots[0] * uCoord;
+    vec4 yCoord = knots[1] * uCoord;
+    vec4 zCoord = knots[2] * uCoord;
     vec4 B[4];
     B[0] = viewProjection * vec4(xCoord.x, yCoord.x, zCoord.x, 1);
     B[1] = viewProjection * vec4(xCoord.y, yCoord.y, zCoord.y, 1);
