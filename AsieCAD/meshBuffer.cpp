@@ -43,9 +43,7 @@ MeshBuffer::MeshBuffer(std::vector<float> vertices, bool hasEBO,
 			indices.data(), GL_STATIC_DRAW);
 	}
 	glBindVertexArray(0);
-
 }
-
 
 MeshBuffer::~MeshBuffer()
 {
@@ -61,7 +59,7 @@ void MeshBuffer::UpdateBuffer(std::vector<float> vertices)
 	if (vertices.size() > size) {
 		size *= 2;
 		if (vertices.size() > size)
-			size = vertices.size() * sizeof(GLfloat);
+			size = vertices.size();
 		glBufferData(GL_ARRAY_BUFFER, size * sizeof(GLfloat),
 			nullptr, GL_DYNAMIC_DRAW);
 	}

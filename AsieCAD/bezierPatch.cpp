@@ -11,16 +11,12 @@
 
 
 int BezierPatch::Number = 0;
-int BezierPatch::PatchCount[2] = { 1,1 };
-float BezierPatch::PatchSize[2] = { 3,3 };
-float BezierPatch::CylinderLength = 1;
-float BezierPatch::CylinderRadius = 3;
 std::unique_ptr<Shader> BezierPatch::meshShader;
 std::unique_ptr<Shader> BezierPatch::patchShader;
 
 
 BezierPatch::BezierPatch(std::vector<std::shared_ptr<Point>> _points, bool _isCylinder) :
-	PointObject(("Bezier patch " +	std::to_string(Number)).c_str())
+	Surface(("Bezier patch " +	std::to_string(Number)).c_str())
 {
 	if (!meshShader) {
 		meshShader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag");
@@ -30,12 +26,10 @@ BezierPatch::BezierPatch(std::vector<std::shared_ptr<Point>> _points, bool _isCy
 	for (int i = 0; i < _points.size(); i++)
 		points.emplace_back(
 			ControlPoint{ std::weak_ptr<SceneObject>(_points[i]), false });
-	isEditable = false;
 	isCylinder = _isCylinder;
-	patchCount[0] = PatchCount[0];
-	patchCount[1] = PatchCount[1];
-	curveCount[0] = 4;
-	curveCount[1] = 4;
+	curveIndexes[0] = std::make_unique<MeshBuffer>(std::vector<float>{ 1.f }, 1);
+	curveIndexes[1] = std::make_unique<MeshBuffer>(std::vector<float>{ 1.f }, 1);
+	UpdateCurvesBuffers();
 	Number++;
 }
 
@@ -62,14 +56,6 @@ void BezierPatch::Render()
 		RenderSelectedPoints();
 }
 
-std::unique_ptr<MeshBuffer> BezierPatch::countCurvesPositions(int dim)
-{
-	std::vector<float> curves(curveCount[dim]);
-	for (int i = 0; i < curves.size(); i++)
-		curves[i] = (float)i / (curves.size() - 1);
-	return std::make_unique<MeshBuffer>(curves, 1);
-}
-
 void BezierPatch::DrawPatch(int offset[2], std::vector<glm::vec3>& knots)
 {
 	int pointCount[2] = { patchCount[0] * 3 + 1, isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };
@@ -89,16 +75,24 @@ void BezierPatch::DrawPatch(int offset[2], std::vector<glm::vec3>& knots)
 	patchShader->setBool("isForward", 1);
 	patchShader->setMat4("viewProjection", viewProjection);
 
-	std::unique_ptr<MeshBuffer> curveIndexes = countCurvesPositions(0);
-	glBindVertexArray(curveIndexes->GetVAO());
+	glBindVertexArray(curveIndexes[0]->GetVAO());
 	glDrawArrays(GL_POINTS, 0, curveCount[0]);
 
 	patchShader->setBool("isForward", 0);
-	curveIndexes = countCurvesPositions(1);
-	glBindVertexArray(curveIndexes->GetVAO());
+	glBindVertexArray(curveIndexes[1]->GetVAO());
 	glDrawArrays(GL_POINTS, 0, curveCount[1]);
 	glBindVertexArray(0);
 
+}
+
+void BezierPatch::UpdateCurvesBuffers()
+{
+	for (int dim = 0; dim < 2; dim++) {
+		std::vector<float> curves(curveCount[dim]);
+		for (int i = 0; i < curves.size(); i++)
+			curves[i] = (float)i / (curves.size() - 1);
+		curveIndexes[dim]->UpdateBuffer(curves);
+	}
 }
 
 void BezierPatch::RenderMesh()
@@ -132,51 +126,7 @@ void BezierPatch::RenderMesh()
 void BezierPatch::RenderMenu()
 {
 	ImGui::Checkbox("Show mesh", &showMesh);
-	ImGui::DragInt2("Curves count", curveCount, 1, 2, 50);
+	if(ImGui::DragInt2("Curves count", curveCount, 1, 2, 50))
+		UpdateCurvesBuffers();
 	PointObject::RenderMenu();
-}
-
-void BezierPatch::RenderCreationMenu()
-{
-	if (ImGui::CollapsingHeader("Bezier patch creation")) {
-		ImGui::DragInt2("Patches count", PatchCount, 1, 1, 20);
-		ImGui::DragFloat2("Patches patchCount", PatchSize,0.02, 0);
-		ImGui::DragFloat("Cylinder length", &CylinderLength, 0.02, 0);
-		ImGui::DragFloat("Cylinder radius", &CylinderRadius, 0.001, 0);
-		
-		if(ImGui::Button("Add patch")) {
-			int size[2] = { PatchCount[0] * 3 + 1, PatchCount[1] * 3 + 1 };
-			std::vector<std::shared_ptr<Point>>	points(size[0] * size[1]);
-			glm::vec3 begin = GetCursorCenter();
-			glm::vec2 PointDistance(PatchSize[0] / (size[0]-1), PatchSize[1] / (size[1] - 1));
-			for (int i = 0; i < size[0]; i++)
-				for (int j = 0; j < size[1]; j++)
-					points[i * size[1] + j] = std::make_shared<Point>(begin +
-						glm::vec3(PointDistance.x * i, 0, PointDistance.y * j));
-			SceneObjects.emplace_back(std::make_shared<BezierPatch>(points, false));
-			for (int i = 0; i < points.size(); i++) {
-				points[i]->SetDeletability(false);
-				SceneObjects.push_back(points[i]);
-			}
-		}
-		
-		ImGui::SameLine();
-		if (ImGui::Button("Add cylinder patch")) {
-			int size[2] = { PatchCount[0] * 3 + 1, PatchCount[1] * 3 };
-			std::vector<std::shared_ptr<Point>>	points(size[0] * size[1]);
-			glm::vec3 begin = GetCursorCenter();
-			for (int i = 0; i < size[0]; i++)
-				for (int j = 0; j < size[1]; j++) {
-					float angle = j * glm::two_pi<float>() / size[1];
-					glm::vec3 offset = glm::vec3(i * CylinderLength / size[0],
-						std::sinf(angle) * CylinderRadius, std::cosf(angle) * CylinderRadius);
-					points[i * size[1] + j] = std::make_shared<Point>(begin + offset);
-				}
-			SceneObjects.emplace_back(std::make_shared<BezierPatch>(points, true));
-			for (int i = 0; i < points.size(); i++) {
-				points[i]->SetDeletability(false);
-				SceneObjects.push_back(points[i]);
-			}
-		}
-	}
 }

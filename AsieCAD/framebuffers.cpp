@@ -69,11 +69,13 @@ glm::mat4 Framebuffers::frustrumMatrix(float cameraZoom, float eyeOffset)
 void Framebuffers::RenderScene(Camera &camera, glm::mat4& viewProjection)
 {
 	glEnable(GL_DEPTH_TEST);
+	glm::vec3 clear = COLORS::BACKGROUND;
 	if(drawStereo)
 		for (int i = 0; i < 2; ++i) {
 
 			glBindFramebuffer(GL_FRAMEBUFFER, framebuffer[i]);
-			glClearColor(0.f, 0.f, 0.f, 0.f);
+			
+			glClearColor(clear.x, clear.y, clear.z, 0.f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 			float eyeOffset = i ? eyeDistance / 2 : -eyeDistance / 2;
@@ -87,7 +89,7 @@ void Framebuffers::RenderScene(Camera &camera, glm::mat4& viewProjection)
 		}
 	else {
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer[0]);
-		glClearColor(0.f, 0.f, 0.f, 0.f);
+		glClearColor(clear.x, clear.y, clear.z, 0.f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		viewProjection = frustrumMatrix(camera.Zoom, 0) *
 			camera.GetViewMatrix(0);

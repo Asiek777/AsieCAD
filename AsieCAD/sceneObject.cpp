@@ -7,6 +7,7 @@
 #include "bezierPatch.h"
 #include "bSpline.h"
 #include "cubicInterpolated.h"
+#include "Surface.h"
 
 
 std::vector<std::shared_ptr<SceneObject>> SceneObject::SceneObjects;
@@ -194,6 +195,6 @@ void SceneObject::AddItemMenu()
 		ImGui::SameLine();
 		if (ImGui::Button("Add Cubic interpolaction curve"))
 			SceneObjects.emplace_back(std::make_shared<CubicInterpolated>());
-		BezierPatch::RenderCreationMenu();
+		Surface::RenderCreationMenu();
 	}
 }

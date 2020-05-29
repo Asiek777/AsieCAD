@@ -160,6 +160,8 @@
     <ClCompile Include="Imgui\imgui_widgets.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshBuffer.cpp" />
+    <ClCompile Include="splinePatch.cpp" />
+    <ClCompile Include="surface.cpp" />
     <ClCompile Include="point.cpp" />
     <ClCompile Include="pointObject.cpp" />
     <ClCompile Include="sceneObject.cpp" />
@@ -186,6 +188,8 @@
     <ClInclude Include="Imgui\imstb_textedit.h" />
     <ClInclude Include="Imgui\imstb_truetype.h" />
     <ClInclude Include="meshBuffer.h" />
+    <ClInclude Include="splinePatch.h" />
+    <ClInclude Include="surface.h" />
     <ClInclude Include="point.h" />
     <ClInclude Include="pointObject.h" />
     <ClInclude Include="position.h" />

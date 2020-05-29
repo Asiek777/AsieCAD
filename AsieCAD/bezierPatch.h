@@ -1,19 +1,14 @@
 #pragma once
+#include "Surface.h"
 #include "point.h"
 #include "pointObject.h"
 
 class BezierPatch :
-	public PointObject
+	public Surface
 {
-	bool showMesh = false;
-	int patchCount[2];
-	int curveCount[2];
-	bool isCylinder;
+	std::unique_ptr<MeshBuffer> curveIndexes[2];
 	
 	static int Number;
-	static int PatchCount[2];
-	static float PatchSize[2];
-	static float CylinderRadius, CylinderLength;
 	static std::unique_ptr<Shader> meshShader;
 	static std::unique_ptr<Shader> patchShader;
 	
@@ -23,8 +18,7 @@ public:
 	~BezierPatch();
 	void RenderMesh();
 	void Render();
-	std::unique_ptr<MeshBuffer> countCurvesPositions(int dim);
+	void UpdateCurvesBuffers();
 	void RenderMenu() override;
-	static void RenderCreationMenu();
 };
 
