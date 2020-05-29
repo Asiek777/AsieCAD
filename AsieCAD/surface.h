@@ -13,12 +13,16 @@ protected:
 	static int PatchCount[2];
 	static float PatchSize[2];
 	static float CylinderRadius, CylinderLength;
+	static std::unique_ptr<Shader> meshShader;
+	
+	void RenderMesh(int pointCount[2]);
 
 	static std::vector<std::shared_ptr<Point>> PrepareFlatVertices(int size[]);
 	static std::vector<std::shared_ptr<Point>> PrepareRoundVertices(int size[2]);
 	
-public:
-	Surface(const char* _name);
+public:	
+	Surface(std::vector<std::shared_ptr<Point>> _points, bool _isCylinder, const char* _name);
+	~Surface();
 	
 	static void RenderCreationMenu();
 };
