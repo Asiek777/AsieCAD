@@ -7,6 +7,7 @@
 #include "shader_s.h"
 #include "position.h"
 #include "colors.h"
+#include "tinyxml2/tinyxml2.h"
 
 
 class SceneObject 
@@ -58,4 +59,6 @@ public:
 	
 	static glm::vec3 GetRotationCenter();
 	static glm::vec3 GetCursorCenter();
+
+	friend class ToolXML;
 };

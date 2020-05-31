@@ -1,6 +1,7 @@
 #pragma once
 #include "curve.h"
 
+
 class BSpline :
 	public Curve
 {
@@ -15,6 +16,7 @@ class BSpline :
 public:
 	static glm::mat4 viewProjection;
 	BSpline();
+	BSpline(tinyxml2::XMLElement* data);
 	void Render() override;
 	void RenderMenu() override;
 };

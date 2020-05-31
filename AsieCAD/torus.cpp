@@ -1,5 +1,6 @@
 #include "torus.h"
 #include "point.h"
+#include "toolXML.h"
 #include "Imgui/imgui.h"
 
 std::unique_ptr<Shader> Torus::shader;
@@ -18,6 +19,16 @@ Torus::Torus(int _smallCircle, int _bigCircle, float _smallRadius, float _bigRad
     position.UpdateMatrix();
     prepareBuffers();
     Number++;
+}
+
+Torus::Torus(tinyxml2::XMLElement* data):
+	Torus(data->IntAttribute("VerticalSlices"), data->IntAttribute("HorizontalSlices"),
+     data->FloatAttribute("MinorRadius"), data->FloatAttribute("MajorRadius"))
+{
+    position.location = ToolXML::ReadVector(data->FirstChildElement("Position"));
+    position.rotation = ToolXML::ReadVector(data->FirstChildElement("Rotation"));
+    position.scale = ToolXML::ReadVector(data->FirstChildElement("Scale"));
+    position.UpdateMatrix();	
 }
 
 void Torus::prepareBuffers()

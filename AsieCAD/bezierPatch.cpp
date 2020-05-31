@@ -18,13 +18,22 @@ BezierPatch::BezierPatch(std::vector<std::shared_ptr<Point>> _points, bool _isCy
 	Surface(_points, _isCylinder, ("Bezier patch " +	std::to_string(Number)).c_str())
 {
 	if (!patchShader) {
-		patchShader = std::make_unique<Shader>("shaders/bezierPatch.vert",
+		patchShader = std::make_unique<Shader>("shaders/patch.vert",
 			"shaders/torus.frag", "shaders/bezierPatch.geom");
 	}
-	curveIndexes[0] = std::make_unique<MeshBuffer>(std::vector<float>{ 1.f }, 1);
-	curveIndexes[1] = std::make_unique<MeshBuffer>(std::vector<float>{ 1.f }, 1);
-	UpdateCurvesBuffers();
 	Number++;
+}
+
+BezierPatch::BezierPatch(std::vector<std::shared_ptr<Point>> _points, 
+	tinyxml2::XMLElement* data, bool _isCylinder, int rows, int cols):
+	BezierPatch(_points, _isCylinder)	
+{
+	patchCount[0] = rows / 3;
+	patchCount[1] = cols / 3;
+	showMesh = data->BoolAttribute("ShowControlPolygon");
+	curveCount[0] = data->IntAttribute("RowSlices") + 1;
+	curveCount[1] = data->IntAttribute("ColumnSlices") + 1;
+	UpdateCurvesBuffers();
 }
 
 void BezierPatch::Render()
@@ -73,26 +82,9 @@ void BezierPatch::DrawPatch(int offset[2], std::vector<glm::vec3>& knots)
 
 }
 
-void BezierPatch::UpdateCurvesBuffers()
-{
-	for (int dim = 0; dim < 2; dim++) {
-		std::vector<float> curves(curveCount[dim]);
-		for (int i = 0; i < curves.size(); i++)
-			curves[i] = (float)i / (curves.size() - 1);
-		curveIndexes[dim]->UpdateBuffer(curves);
-	}
-}
-
 void BezierPatch::RenderMesh()
 {
 	int pointCount[2] = { patchCount[0] * 3 + 1, isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };
 	Surface::RenderMesh(pointCount);
 }
 
-void BezierPatch::RenderMenu()
-{
-	ImGui::Checkbox("Show mesh", &showMesh);
-	if(ImGui::DragInt2("Curves count", curveCount, 1, 2, 50))
-		UpdateCurvesBuffers();
-	PointObject::RenderMenu();
-}

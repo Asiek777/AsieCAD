@@ -17,7 +17,10 @@ Surface::Surface(std::vector<std::shared_ptr<Point>> _points, bool _isCylinder, 
 		meshShader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag");
 	patchCount[0] = PatchCount[0];
 	patchCount[1] = PatchCount[1];
+	curveIndexes[0] = std::make_unique<MeshBuffer>(std::vector<float>{ 1.f }, 1);
+	curveIndexes[1] = std::make_unique<MeshBuffer>(std::vector<float>{ 1.f }, 1);
 	isEditable = false;
+	UpdateCurvesBuffers();
 	for (int i = 0; i < _points.size(); i++)
 		points.emplace_back(
 			ControlPoint{ std::weak_ptr<SceneObject>(_points[i]), false });
@@ -57,11 +60,28 @@ void Surface::RenderMesh(int pointCount[2])
 	glBindVertexArray(0);
 }
 
+void Surface::RenderMenu()
+{
+	ImGui::Checkbox("Show mesh", &showMesh);
+	if (ImGui::DragInt2("Curves count", curveCount, 0.3, 2, 64))
+		UpdateCurvesBuffers();
+	PointObject::RenderMenu();
+}
+
+void Surface::UpdateCurvesBuffers()
+{
+	for (int dim = 0; dim < 2; dim++) {
+		std::vector<float> curves(curveCount[dim]);
+		for (int i = 0; i < curves.size(); i++)
+			curves[i] = (float)i / (curves.size() - 1);
+		curveIndexes[dim]->UpdateBuffer(curves);
+	}
+}
 
 void Surface::RenderCreationMenu()
 {
 	if (ImGui::CollapsingHeader("Bezier patch creation")) {
-		ImGui::DragInt2("Patches count", PatchCount, 1, 1, 20);
+		ImGui::DragInt2("Patches count", PatchCount, 0.3, 1, 50);
 		ImGui::DragFloat2("Patches patchCount", PatchSize, 0.02, 0);
 		ImGui::DragFloat("Cylinder length", &CylinderLength, 0.02, 0);
 		ImGui::DragFloat("Cylinder radius", &CylinderRadius, 0.001, 0);

@@ -2,12 +2,11 @@
 #include "torus.h"
 #include "point.h"
 #include <algorithm>
-#include "cursor.h"
 #include "BezierC0.h"
-#include "bezierPatch.h"
 #include "bSpline.h"
 #include "cubicInterpolated.h"
-#include "Surface.h"
+#include "surface.h"
+#include "tinyxml2/tinyxml2.h"
 
 
 std::vector<std::shared_ptr<SceneObject>> SceneObject::SceneObjects;

@@ -19,6 +19,11 @@ BezierC0::BezierC0(const char* _name) : Curve(_name)
 	}
 }
 
+BezierC0::BezierC0(tinyxml2::XMLElement* data) : BezierC0()
+{
+	drawBroken = data->BoolAttribute("ShowControlPolygon");
+}
+
 void BezierC0::Render()
 {
 	clearExpired();

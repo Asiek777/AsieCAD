@@ -17,6 +17,7 @@ public:
 	static std::unique_ptr<Shader> brokenShader;
 	BezierC0();
 	BezierC0(const char* _name);
+	BezierC0(tinyxml2::XMLElement* data);
 	void RenderCurve();
 	void RenderBroken();
 	void Render() override;

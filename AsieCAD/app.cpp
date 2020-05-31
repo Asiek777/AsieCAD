@@ -2,6 +2,8 @@
 #include "point.h"
 #include "cursor.h"
 #include "BezierC0.h"
+#include "tinyxml2/tinyxml2.h"
+#include "toolXML.h"
 
 App* App::instance;
 
@@ -48,6 +50,9 @@ int App::Init()
 	SceneObject::SceneObjects.emplace_back(std::make_shared<Cursor>());
 	CreateDefaultScene();
 	framebuffers = std::make_unique<Framebuffers>(screenWidth, screenHeight);
+	
+	ToolXML::LoadScene("test_scene_AL.xml");
+	
 	return 0;
 }
 

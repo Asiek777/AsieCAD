@@ -25,6 +25,9 @@
     <Filter Include="Header Files\SceneObjects">
       <UniqueIdentifier>{4dd8fc4d-e979-4f74-a263-93ecb87e8fd8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Tinyxml">
+      <UniqueIdentifier>{95e5f516-7122-4d52-9815-25155ac78666}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -93,8 +96,14 @@
     <ClCompile Include="surface.cpp">
       <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
-    <ClCompile Include="splinePatch.cpp">
+    <ClCompile Include="tinyxml2\tinyxml2.cpp">
+      <Filter>Source Files\Tinyxml</Filter>
+    </ClCompile>
+    <ClCompile Include="toolXML.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="splinePatch.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +191,12 @@
     <ClInclude Include="splinePatch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="tinyxml2\tinyxml2.h">
+      <Filter>Source Files\Tinyxml</Filter>
+    </ClInclude>
+    <ClInclude Include="toolXML.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\torus.frag">
@@ -205,10 +220,13 @@
     <None Include="shaders\frame.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="shaders\bezierPatch.vert">
+    <None Include="shaders\bezierPatch.geom">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="shaders\bezierPatch.geom">
+    <None Include="shaders\patch.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
+    <None Include="shaders\splinePatch.geom">
       <Filter>Source Files\Shaders</Filter>
     </None>
   </ItemGroup>

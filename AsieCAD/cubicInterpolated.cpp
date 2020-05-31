@@ -18,6 +18,11 @@ CubicInterpolated::CubicInterpolated() : Curve(("Cubic curve " +
 	Number++;
 }
 
+CubicInterpolated::CubicInterpolated(tinyxml2::XMLElement* data) : CubicInterpolated()
+{
+	drawBroken = data->BoolAttribute("ShowControlPolygon");
+}
+
 void CubicInterpolated::Render()
 {
 	clearExpired();

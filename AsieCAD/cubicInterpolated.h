@@ -8,6 +8,7 @@ class CubicInterpolated :
 	void CalcBezierPoints();
 public:
 	CubicInterpolated();
+	CubicInterpolated(tinyxml2::XMLElement* data);
 	void Render() override;	
 };
 

@@ -19,6 +19,7 @@ public:
 	static std::unique_ptr<Shader> shader;
 	Torus(int _smallCircle, int _bigCircle, float _smallRadius, 
 		float _bigRadius);
+	Torus(tinyxml2::XMLElement* data);
 	virtual ~Torus() {};
 	void Render() override;
 	void RenderMenu() override;

@@ -12,6 +12,16 @@ BSpline::BSpline() : Curve(("Spline " + std::to_string(Number)).c_str())
 	}
 	Number++;
 }
+
+BSpline::BSpline(tinyxml2::XMLElement* data) : BSpline()
+{
+	isBezier = data->BoolAttribute("ShowBernsteinPoints");
+	if(isBezier)
+		drawBroken = data->BoolAttribute("ShowBernsteinPolygon");
+	else
+		drawBroken = data->BoolAttribute("ShowDeBoorPolygon");
+}
+
 void BSpline::Render()
 {
 	clearExpired();

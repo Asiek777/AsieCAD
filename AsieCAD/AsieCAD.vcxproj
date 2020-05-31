@@ -165,6 +165,8 @@
     <ClCompile Include="point.cpp" />
     <ClCompile Include="pointObject.cpp" />
     <ClCompile Include="sceneObject.cpp" />
+    <ClCompile Include="tinyxml2\tinyxml2.cpp" />
+    <ClCompile Include="toolXML.cpp" />
     <ClCompile Include="torus.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -195,16 +197,19 @@
     <ClInclude Include="position.h" />
     <ClInclude Include="sceneObject.h" />
     <ClInclude Include="shader_s.h" />
+    <ClInclude Include="tinyxml2\tinyxml2.h" />
+    <ClInclude Include="toolXML.h" />
     <ClInclude Include="torus.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="position.cpp" />
     <None Include="shaders\bezier.geom" />
     <None Include="shaders\bezierPatch.geom" />
-    <None Include="shaders\bezierPatch.vert" />
+    <None Include="shaders\patch.vert" />
     <None Include="shaders\frame.frag" />
     <None Include="shaders\frame.vert" />
     <None Include="shaders\point.vert" />
+    <None Include="shaders\splinePatch.geom" />
     <None Include="shaders\torus.frag" />
     <None Include="shaders\torus.vert" />
   </ItemGroup>
