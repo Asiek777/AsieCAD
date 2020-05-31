@@ -9,6 +9,7 @@ class CubicInterpolated :
 public:
 	CubicInterpolated();
 	CubicInterpolated(tinyxml2::XMLElement* data);
-	void Render() override;	
+	void Render() override;
+	void Serialize(tinyxml2::XMLElement* scene) override;
 };
 

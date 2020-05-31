@@ -100,6 +100,12 @@ void BSpline::RenderMenu()
 		}		
 	Curve::RenderMenu();
 }
+
+void BSpline::Serialize(tinyxml2::XMLElement* scene)
+{
+	Curve::Serialize("BezierC2", scene);
+}
+
 void BSpline::UpdateBezierContinuity()
 {
 	int i;

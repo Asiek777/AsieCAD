@@ -6,7 +6,7 @@
 #include "bSpline.h"
 #include "cubicInterpolated.h"
 #include "surface.h"
-#include "tinyxml2/tinyxml2.h"
+#include "toolXML.h"
 
 
 std::vector<std::shared_ptr<SceneObject>> SceneObject::SceneObjects;
@@ -101,6 +101,7 @@ void SceneObject::ChangeSelection(int i)
 void SceneObject::DrawMenu()
 {
 	ImGui::Checkbox("Rotate Camera Around Cursor", &rotateAroundCursor);
+	ToolXML::LoadSaveMenu();
 	AddItemMenu();
 	ItemListMenu();
 	COLORS::DrawMenu();

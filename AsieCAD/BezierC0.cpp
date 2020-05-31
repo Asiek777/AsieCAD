@@ -37,6 +37,12 @@ void BezierC0::Render()
 	if(drawBroken)
 		RenderBroken();
 }
+
+void BezierC0::Serialize(tinyxml2::XMLElement* scene)
+{
+	Curve::Serialize("BezierC0", scene);		
+}
+
 void BezierC0::RenderCurve()
 {
 	int pointCount = points.size();

@@ -19,5 +19,6 @@ public:
 	BSpline(tinyxml2::XMLElement* data);
 	void Render() override;
 	void RenderMenu() override;
+	void Serialize(tinyxml2::XMLElement* scene) override;
 };
 

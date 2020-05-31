@@ -3,6 +3,7 @@
 #include "cursor.h"
 #include "BezierC0.h"
 #include "tinyxml2/tinyxml2.h"
+#include "tinyxml2/tinyfiledialogs.h"
 #include "toolXML.h"
 
 App* App::instance;
@@ -51,8 +52,6 @@ int App::Init()
 	CreateDefaultScene();
 	framebuffers = std::make_unique<Framebuffers>(screenWidth, screenHeight);
 	
-	ToolXML::LoadScene("test_scene_AL.xml");
-	
 	return 0;
 }
 
@@ -70,9 +69,8 @@ int App::Run()
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-
+		
 		framebuffers->RenderScene(camera, viewProjection);
-
 		DrawMenu();
 	}
 

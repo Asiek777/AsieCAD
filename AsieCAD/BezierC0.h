@@ -21,6 +21,7 @@ public:
 	void RenderCurve();
 	void RenderBroken();
 	void Render() override;
+	void Serialize(tinyxml2::XMLElement* scene) override;
 	static	void DrawBezierCurve(std::vector<glm::vec3>& nodes, glm::vec3 color = COLORS::BASE);
 	static	void DrawBroken(std::vector<glm::vec3>& nodes, glm::vec3 color = COLORS::BROKEN);
 };

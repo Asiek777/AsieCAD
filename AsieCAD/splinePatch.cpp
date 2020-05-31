@@ -43,6 +43,12 @@ void SplinePatch::Render()
 		RenderSelectedPoints();
 }
 
+void SplinePatch::Serialize(tinyxml2::XMLElement* scene)
+{
+	int pointCount[2] = { patchCount[0] + 3, isCylinder ? patchCount[1] : patchCount[1] + 3 };
+	Surface::Serialize(pointCount, scene, "PatchC2");
+}
+
 void SplinePatch::DrawPatch(int offset[2], std::vector<glm::vec3> knots)
 {
 	int pointCount[2] = { patchCount[0] + 3, isCylinder ? patchCount[1] : patchCount[1] + 3 };

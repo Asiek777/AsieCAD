@@ -30,7 +30,8 @@ Surface::Surface(std::vector<std::shared_ptr<Point>> _points, bool _isCylinder, 
 Surface::~Surface()
 {
 	for (int i = 0; i < points.size(); i++)
-		static_cast<Point*> (points[i].point.lock().get())->SetDeletability(true);
+		if(!points[i].point.expired())
+			static_cast<Point*> (points[i].point.lock().get())->SetDeletability(true);
 }
 
 void Surface::RenderMesh(int pointCount[2])
@@ -66,6 +67,24 @@ void Surface::RenderMenu()
 	if (ImGui::DragInt2("Curves count", curveCount, 0.3, 2, 64))
 		UpdateCurvesBuffers();
 	PointObject::RenderMenu();
+}
+
+void Surface::Serialize(int pointCount[2], tinyxml2::XMLElement* scene, std::string type)
+{
+	auto ptr = scene->InsertNewChildElement(type.c_str());
+	ptr->SetAttribute("Name", name.c_str());
+	ptr->SetAttribute("ShowControlPolygon", showMesh);
+	ptr->SetAttribute("RowSlices", curveCount[0] - 1);
+	ptr->SetAttribute("ColumnSlices", curveCount[1] - 1);
+	ptr->SetAttribute("WrapDirection", isCylinder?"Column":"None");
+	auto pointRefs = ptr->InsertNewChildElement("Points");
+	for (int i = 0; i < points.size(); i++) {
+		auto pRef = pointRefs->InsertNewChildElement("PointRef");
+		pRef->SetAttribute("Name", points[i].point.lock()->name.c_str());
+		pRef->SetAttribute("Row", i / pointCount[1]);
+		pRef->SetAttribute("Column", i % pointCount[1]);
+	}
+	
 }
 
 void Surface::UpdateCurvesBuffers()

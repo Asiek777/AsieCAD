@@ -92,3 +92,17 @@ void Torus::UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotCh
 {
     position.UpdatePosition(pos, scaleChange, rotChange);
 }
+
+void Torus::Serialize(tinyxml2::XMLElement* scene)
+{
+    auto ptr = scene->InsertNewChildElement("Torus");
+    ptr->SetAttribute("Name", name.c_str());
+    ToolXML::SaveVec3(position.location, "Position", ptr);
+    ToolXML::SaveVec3(position.rotation, "Rotation", ptr);
+    ToolXML::SaveVec3(position.scale, "Scale", ptr);
+    ptr->SetAttribute("MajorRadius", bigRadius);
+    ptr->SetAttribute("MinorRadius", smallRadius);
+
+    ptr->SetAttribute("VerticalSlices", smallCount);
+    ptr->SetAttribute("HorizontalSlices", bigCount);
+}

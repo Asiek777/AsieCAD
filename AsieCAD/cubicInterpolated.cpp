@@ -40,6 +40,11 @@ void CubicInterpolated::Render()
 	hasChanged = 0;
 }
 
+void CubicInterpolated::Serialize(tinyxml2::XMLElement* scene)
+{
+	Curve::Serialize("BezierInter", scene);
+}
+
 void CubicInterpolated::CalcBezierPoints()
 {
 	std::vector<glm::vec3> knots;

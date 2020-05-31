@@ -18,5 +18,6 @@ public:
 		tinyxml2::XMLElement* data, bool _isCylinder, int rows, int cols);
 	void RenderMesh();
 	void Render() override;
+	void Serialize(tinyxml2::XMLElement* scene) override;
 };
 

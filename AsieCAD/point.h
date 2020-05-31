@@ -17,6 +17,7 @@ public:
 	Point(float x, float y, float z) : Point(glm::vec3(x,y,z)) {}
 	void Render() override;
 	void RenderMenu() override;
+	void Serialize(tinyxml2::XMLElement* scene) override;
 	bool IsPoint() override { return true; }
 	bool IsDeletable() override { return isDeletable; }
 	char HasChanged() override { return hasChanged; }

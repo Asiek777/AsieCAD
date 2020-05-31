@@ -12,5 +12,6 @@ public:
 	void RenderMesh();
 	void DrawPatch(int offset[2], std::vector<glm::vec3> knots);
 	void Render() override;
+	void Serialize(tinyxml2::XMLElement* scene) override;
 };
 

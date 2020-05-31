@@ -47,6 +47,17 @@ void Point::RenderMenu()
 	if (ImGui::DragFloat3("location", &location.x, 0.02f))
 		hasChanged = 1;
 }
+
+void Point::Serialize(tinyxml2::XMLElement* scene)
+{
+	auto ptr = scene->InsertNewChildElement("Point");
+	ptr->SetAttribute("Name", name.c_str());
+	auto pos = ptr->InsertNewChildElement("Position");
+	pos->SetAttribute("X", location.x);
+	pos->SetAttribute("Y", location.y);
+	pos->SetAttribute("Z", location.z);
+}
+
 void Point::UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange)
 {
 	hasChanged = 3;

@@ -21,5 +21,8 @@ class ToolXML
 public:
 	static void LoadScene(std::string path);
 	static glm::vec3 ReadVector(tinyxml2::XMLElement* Pos);
+	static bool SaveScene(std::string path);
+	static void SaveVec3(glm::vec3 vec, std::string Name, tinyxml2::XMLElement* elem);
+	static void LoadSaveMenu();
 };
 

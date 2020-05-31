@@ -25,7 +25,7 @@
     <Filter Include="Header Files\SceneObjects">
       <UniqueIdentifier>{4dd8fc4d-e979-4f74-a263-93ecb87e8fd8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Tinyxml">
+    <Filter Include="Source Files\IOlibs">
       <UniqueIdentifier>{95e5f516-7122-4d52-9815-25155ac78666}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -97,13 +97,16 @@
       <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2\tinyxml2.cpp">
-      <Filter>Source Files\Tinyxml</Filter>
+      <Filter>Source Files\IOlibs</Filter>
     </ClCompile>
     <ClCompile Include="toolXML.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="splinePatch.cpp">
       <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="tinyxml2\tinyfiledialogs.c">
+      <Filter>Source Files\IOlibs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -188,14 +191,17 @@
     <ClInclude Include="surface.h">
       <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
-    <ClInclude Include="splinePatch.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="tinyxml2\tinyxml2.h">
-      <Filter>Source Files\Tinyxml</Filter>
+      <Filter>Source Files\IOlibs</Filter>
     </ClInclude>
     <ClInclude Include="toolXML.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tinyxml2\tinyfiledialogs.h">
+      <Filter>Source Files\IOlibs</Filter>
+    </ClInclude>
+    <ClInclude Include="splinePatch.h">
+      <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

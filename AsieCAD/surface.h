@@ -26,7 +26,7 @@ public:
 	Surface(std::vector<std::shared_ptr<Point>> _points, bool _isCylinder, const char* _name);
 	~Surface();
 	void RenderMenu() override;
-	
+	void Serialize(int pointCount[], tinyxml2::XMLElement* scene, std::string type);
 	static void RenderCreationMenu();
 };
 

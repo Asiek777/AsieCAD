@@ -14,5 +14,6 @@ public:
 	bool IsCurve() override { return true; }
 	bool AddPoint(std::shared_ptr<SceneObject>& point);
 	void RenderMenu() override;
+	void Serialize(std::string type, tinyxml2::XMLElement* scene);
 };
 

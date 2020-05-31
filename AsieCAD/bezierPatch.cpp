@@ -53,6 +53,12 @@ void BezierPatch::Render()
 		RenderSelectedPoints();
 }
 
+void BezierPatch::Serialize(tinyxml2::XMLElement* scene)
+{
+	int pointCount[2] = { patchCount[0] * 3 + 1, isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };
+	Surface::Serialize(pointCount, scene, "PatchC0");
+}
+
 void BezierPatch::DrawPatch(int offset[2], std::vector<glm::vec3>& knots)
 {
 	int pointCount[2] = { patchCount[0] * 3 + 1, isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };

@@ -7,6 +7,7 @@
 #include "cubicInterpolated.h"
 #include "splinePatch.h"
 #include "torus.h"
+#include "tinyxml2/tinyfiledialogs.h"
 
 
 void ToolXML::LoadScene(std::string path)
@@ -28,7 +29,6 @@ void ToolXML::LoadPoints(tinyxml2::XMLElement* scene)
 		LoadPoint(elem);
 	}
 }
-
 void ToolXML::LoadPoint(tinyxml2::XMLElement* elem)
 {
 	std::string name = elem->Attribute("Name");
@@ -37,7 +37,6 @@ void ToolXML::LoadPoint(tinyxml2::XMLElement* elem)
 	point->name = name;
 	SceneObject::SceneObjects.emplace_back(point);
 }
-
 glm::vec3 ToolXML::ReadVector(tinyxml2::XMLElement* Pos)
 {
 	glm::vec3 pos;
@@ -46,7 +45,6 @@ glm::vec3 ToolXML::ReadVector(tinyxml2::XMLElement* Pos)
 	pos.z = Pos->FloatAttribute("Z");
 	return pos;
 }
-
 void ToolXML::LoadNotPoints(tinyxml2::XMLElement* scene)
 {
 	for (auto elem = scene->FirstChildElement(); elem != nullptr;
@@ -112,7 +110,6 @@ void ToolXML::LoadTorus(tinyxml2::XMLElement* data)
 	torus->name = name;
 	SceneObject::SceneObjects.emplace_back(torus);
 }
-
 void ToolXML::LoadPatchC0(tinyxml2::XMLElement* data)
 {
 	std::string name = data->Attribute("Name");
@@ -123,7 +120,6 @@ void ToolXML::LoadPatchC0(tinyxml2::XMLElement* data)
 	patch->name = name;
 	SceneObject::SceneObjects.emplace_back(patch);
 }
-
 void ToolXML::LoadPatchC2(tinyxml2::XMLElement* data)
 {
 	std::string name = data->Attribute("Name");
@@ -134,7 +130,6 @@ void ToolXML::LoadPatchC2(tinyxml2::XMLElement* data)
 	patch->name = name;
 	SceneObject::SceneObjects.emplace_back(patch);
 }
-
 std::vector<std::shared_ptr<Point>> ToolXML::FillSurface(tinyxml2::XMLElement* data,
                                                          int& rows, int& cols)
 {
@@ -154,16 +149,18 @@ std::vector<std::shared_ptr<Point>> ToolXML::FillSurface(tinyxml2::XMLElement* d
 	     elem = elem->NextSiblingElement()) {
 		int Row = elem->IntAttribute("Row");
 		int Column = elem->IntAttribute("Column");
+		auto point = FindPoint(elem);
+		point->SetDeletability(0);
 		if (isRowDirect)
-			points[Column * rows + Row] = FindPoint(elem);
+			points[Column * rows + Row] = point;
 		else
-			points[Row * cols + Column] = FindPoint(elem);
+			points[Row * cols + Column] = point;
+		
 	}
 	//if (isRowDirect)
 	//	std::swap(rows, cols);
 	return points;
 }
-
 void ToolXML::FillCurve(tinyxml2::XMLElement* points, std::shared_ptr<Curve> curve)
 {
 	for (auto elem = points->FirstChildElement(); elem != nullptr;
@@ -172,7 +169,6 @@ void ToolXML::FillCurve(tinyxml2::XMLElement* points, std::shared_ptr<Curve> cur
 		curve->AddPoint(ptr);
 	}
 }
-
 std::shared_ptr<Point> ToolXML::FindPoint(tinyxml2::XMLElement* elem)
 {
 	std::string ref = elem->Attribute("Name");
@@ -180,4 +176,55 @@ std::shared_ptr<Point> ToolXML::FindPoint(tinyxml2::XMLElement* elem)
 		if (SceneObject::SceneObjects[i]->name == ref && 
 			SceneObject::SceneObjects[i]->IsPoint())
 			return std::static_pointer_cast<Point>(SceneObject::SceneObjects[i]);
+}
+
+bool ToolXML::SaveScene(std::string path)
+{
+	tinyxml2::XMLDocument doc;
+
+	auto declaration = doc.NewDeclaration();
+	auto scene = doc.NewElement("Scene");
+	for(int i=0;i<SceneObject::SceneObjects.size();i++) {
+		SceneObject::SceneObjects[i]->Serialize(scene);
+	}
+	doc.LinkEndChild(scene);
+	return doc.SaveFile(path.c_str()) == tinyxml2::XML_SUCCESS;
+
+}
+void ToolXML::SaveVec3(glm::vec3 vec, std::string Name, tinyxml2::XMLElement* elem)
+{
+	auto vector = elem->InsertNewChildElement(Name.c_str());
+	vector->SetAttribute("X", vec.x);
+	vector->SetAttribute("Y", vec.y);
+	vector->SetAttribute("Z", vec.z);
+}
+void ToolXML::LoadSaveMenu()
+{
+	char const* lTheSaveFileName, *lTheOpenFileName;
+	char const* lFilterPatterns[] = { "*.xml" };
+
+	if (ImGui::Button("Open file")) {
+		lTheOpenFileName = tinyfd_openFileDialog(
+			"Choose an XML file to read",
+			"",
+			1,
+			lFilterPatterns,
+			NULL,
+			0);
+		if(lTheOpenFileName) {
+			LoadScene(lTheOpenFileName);
+		}
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Save file as...")) {
+		lTheSaveFileName = tinyfd_saveFileDialog(
+			"Save your scene as",
+			"rybcia.xml",
+			1,
+			lFilterPatterns,
+			NULL);
+		if(lTheSaveFileName) {
+			SaveScene(lTheSaveFileName);
+		}
+	}
 }
