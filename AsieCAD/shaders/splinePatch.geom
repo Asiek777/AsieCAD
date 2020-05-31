@@ -57,10 +57,10 @@ void main(void)
     mat4 knots[3];
     if (isForward)
         for(int i = 0; i < 3; i++)
-            knots[i] = Knots[i];            
+            knots[i] = transpose(Knots[i]);
     else
         for(int i = 0; i < 3; i++)
-            knots[i] = transpose(Knots[i]);
+            knots[i] = Knots[i];            
 
     vec4 xCoord = knots[0] * uCoord;
     vec4 yCoord = knots[1] * uCoord;
