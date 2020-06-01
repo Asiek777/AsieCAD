@@ -41,7 +41,10 @@ struct Position
 	void Update()
 	{
 		rotationChange = rotation - lastRotation;
-		scaleChange = scale / lastScale;
+		
+		scaleChange.x = lastScale.x == 0 ? 1 : scale.x / lastScale.x;
+		scaleChange.y = lastScale.y == 0 ? 1 : scale.y / lastScale.y;
+		scaleChange.z = lastScale.z == 0 ? 1 : scale.z / lastScale.z;
 		locationChange = location - lastLocation;
 		if (isCursorCenter) {			
 			glm::vec3 toCenter = location - cursor;
@@ -93,6 +96,20 @@ struct Position
 		hasChanged |= ImGui::DragFloat3("location", &location.x, 0.02f);
 		hasChanged |= ImGui::DragFloat3("rotation", &rotation.x, 0.5f);
 		hasChanged |= ImGui::DragFloat3("scale", &scale.x, 0.015f);
+		if (ImGui::Button("Clamp X")) {
+			scale.x = 0;
+			hasChanged = true;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Clamp Y")) {
+			scale.y = 0;
+			hasChanged = true;
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Clamp Z")) {
+			scale.z = 0;
+			hasChanged = true;
+		}
 		if (hasChanged) {
 			Update();
 			return true;

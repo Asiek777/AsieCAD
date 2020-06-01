@@ -77,8 +77,8 @@ void Torus::RenderMenu()
     bool hasChanged = false;
     hasChanged |= ImGui::SliderInt("Ring vertice count", &smallCount, 3, 70);
 	hasChanged |= ImGui::SliderInt("Ring count", &bigCount, 3, 200);
-    hasChanged |= ImGui::SliderFloat("Small radius", &smallRadius, 0.1, 10);
-    hasChanged |= ImGui::SliderFloat("Big radius", &bigRadius, 0.2, 15);
+    hasChanged |= ImGui::SliderFloat("Small radius", &smallRadius, 0, 10);
+    hasChanged |= ImGui::SliderFloat("Big radius", &bigRadius, 0, 15);
     if (hasChanged)
         prepareBuffers();
     if (ImGui::CollapsingHeader("Position"))
