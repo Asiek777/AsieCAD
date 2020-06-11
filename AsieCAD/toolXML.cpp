@@ -184,6 +184,9 @@ bool ToolXML::SaveScene(std::string path)
 
 	auto declaration = doc.NewDeclaration();
 	auto scene = doc.NewElement("Scene");
+	scene->SetAttribute("xmlns:xsd", "http://www.w3.org/2001/XMLSchema");
+	scene->SetAttribute("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+	scene->SetAttribute("xmlns", "http://mini.pw.edu.pl/mg1");
 	for(int i=0;i<SceneObject::SceneObjects.size();i++) {
 		SceneObject::SceneObjects[i]->Serialize(scene);
 	}

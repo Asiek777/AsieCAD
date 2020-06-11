@@ -1,5 +1,7 @@
 #include "point.h"
 
+#include "pointObject.h"
+
 std::unique_ptr<Shader> Point::shader;
 std::unique_ptr<MeshBuffer> Point::points;
 int Point::Number = 0;
@@ -102,6 +104,41 @@ void Point::DrawManyPoints(std::vector<glm::vec3> coords, glm::vec3 color)
 	glDrawArrays(GL_POINTS, 0, coords.size());
 	glBindVertexArray(0);
 }
+
+
+void Point::MergePointsMenu()
+{
+	if(selectedCount == 2) {
+		for (int i = 0; i < SceneObjects.size(); i++)
+			if (SceneObjects[i]->isSelected && !SceneObjects[i]->IsPoint())
+				return;
+		if (ImGui::Button("Merge points"))
+			MergePoints();
+	}
+}
+
+void Point::MergePoints()
+{
+	int first = -1, second;
+	for (int i = 0; i < SceneObjects.size(); i++)
+		if(SceneObjects[i]->isSelected) {
+			if (first == -1)
+				first = i;
+			else {
+				second = i;
+				break;
+			}
+		}
+	for(int i=0;i<SceneObjects.size();i++) {
+		if(SceneObjects[i]->IsPointObject()) {
+			auto object = static_cast<PointObject*>(SceneObjects[i].get());
+			object->SetPointRefToPoint(SceneObjects[first], SceneObjects[second]);			
+		}
+	}
+	SceneObjects.erase(SceneObjects.begin() + second);
+	Select(first);
+}
+
 std::shared_ptr<Point> Point::FakePoint(glm::vec3 _location, std::string name)
 {
 	Point* point = new Point(name.c_str());

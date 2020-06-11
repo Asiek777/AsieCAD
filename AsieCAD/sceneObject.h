@@ -13,14 +13,15 @@
 class SceneObject 
 {
 	static int selected;
-	static int selectedCount;
 	static bool rotateAroundCursor;
+	static bool hidePoints;
 	static Position selectedCenter;
 	
 protected:
 	char text[64];
 	virtual void RenderMenu() = 0;
 	static glm::mat4 viewProjection;
+	static int selectedCount;
 	
 public:
 	bool isSelected = false;

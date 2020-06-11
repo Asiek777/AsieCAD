@@ -100,6 +100,15 @@ void PointObject::RenderMenu()
 	}
 
 }
+
+void PointObject::SetPointRefToPoint(std::shared_ptr<SceneObject>& merged,
+	std::shared_ptr<SceneObject>& deleted)
+{
+	for (int i = 0; i < points.size(); i++)
+		if (points[i].point.lock() == deleted)
+			points[i].point = merged;
+}
+
 int PointObject::SelectedCount()
 {
 	int result = 0;

@@ -27,5 +27,6 @@ public:
 	void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange) override {}
 	void RenderMenu() override;
 	bool IsPointObject() override { return true; }
+	void SetPointRefToPoint(std::shared_ptr<SceneObject>& merged, std::shared_ptr<SceneObject>& deleted);
 };
 

@@ -13,6 +13,7 @@ std::vector<std::shared_ptr<SceneObject>> SceneObject::SceneObjects;
 int SceneObject::selected = -1;
 int SceneObject::selectedCount = 0;
 bool SceneObject::rotateAroundCursor = false;
+bool SceneObject::hidePoints = false;
 Position SceneObject::selectedCenter;
 glm::mat4 SceneObject::viewProjection;
 
@@ -42,7 +43,8 @@ void SceneObject::RenderFullMenu()
 }
 void SceneObject::RenderScene()
 {
-	Point::RenderPoints();
+	if (!hidePoints)
+		Point::RenderPoints();
 	for (int i = 0; i < SceneObjects.size(); i++)
 		if (!SceneObjects[i]->IsPoint())
 			SceneObjects[i]->Render();
@@ -101,6 +103,7 @@ void SceneObject::ChangeSelection(int i)
 void SceneObject::DrawMenu()
 {
 	ImGui::Checkbox("Rotate Camera Around Cursor", &rotateAroundCursor);
+	ImGui::Checkbox("Hide Points", &hidePoints);
 	ToolXML::LoadSaveMenu();
 	AddItemMenu();
 	ItemListMenu();
@@ -127,7 +130,7 @@ void SceneObject::AddCurveFromPoints()
 }
 void SceneObject::RenderProperties()
 {
-	ImGui::Begin("Properties");
+	ImGui::Begin("Properties");	
 	if (selectedCount == 1) {
 
 		if (SceneObjects[selected]->IsDeletable() && ImGui::Button("Delete object")) {
@@ -139,6 +142,7 @@ void SceneObject::RenderProperties()
 			SceneObjects[selected]->RenderFullMenu();
 	}
 	else if (selectedCount > 1) {
+		Point::MergePointsMenu();
 		std::string text = "Selected " + std::to_string(selectedCount) + " items";
 		
 		ImGui::Text(text.c_str());

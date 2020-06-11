@@ -27,6 +27,8 @@ public:
 	static void RenderPoints();
 	static void DrawPoint(glm::vec3 position, glm::vec3 color);
 	static void DrawManyPoints(std::vector<glm::vec3> coords, glm::vec3 color);
+	static void MergePoints();
+	static void MergePointsMenu();
 	static std::shared_ptr<Point> FakePoint(glm::vec3 location, std::string name);
 };
 
