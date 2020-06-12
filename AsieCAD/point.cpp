@@ -129,12 +129,16 @@ void Point::MergePoints()
 				break;
 			}
 		}
-	for(int i=0;i<SceneObjects.size();i++) {
-		if(SceneObjects[i]->IsPointObject()) {
+	for (int i = 0; i < SceneObjects.size(); i++) {
+		if (SceneObjects[i]->IsPointObject()) {
 			auto object = static_cast<PointObject*>(SceneObjects[i].get());
-			object->SetPointRefToPoint(SceneObjects[first], SceneObjects[second]);			
+			object->SetPointRefToPoint(SceneObjects[first], SceneObjects[second]);
 		}
 	}
+	auto point1 = static_cast<Point*>(SceneObjects[first].get());
+	auto point2 = static_cast<Point*>(SceneObjects[first].get());
+	point1->undeletableRefs += point2->undeletableRefs;
+	point1->UpdatePosition((point1->GetCenter() + point2->GetCenter()) / 2.f);
 	SceneObjects.erase(SceneObjects.begin() + second);
 	Select(first);
 }

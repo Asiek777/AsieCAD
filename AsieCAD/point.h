@@ -8,7 +8,7 @@ class Point :
 	static int Number;
 	static std::unique_ptr<MeshBuffer> points;
 	char hasChanged;
-	bool isDeletable = true;
+	char undeletableRefs = 0;
 	Point(const char* _name);
 	static void InitShader();
 public:
@@ -19,9 +19,9 @@ public:
 	void RenderMenu() override;
 	void Serialize(tinyxml2::XMLElement* scene) override;
 	bool IsPoint() override { return true; }
-	bool IsDeletable() override { return isDeletable; }
+	bool IsDeletable() override { return !undeletableRefs; }
 	char HasChanged() override { return hasChanged; }
-	void SetDeletability(bool value) { isDeletable = value; }
+	void SetDeletability(bool value) { undeletableRefs += value ? -1 : 1; }
 	void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange = glm::vec3(1), 
 		glm::vec3 rotChange = glm::vec3(0)) override;
 	static void RenderPoints();
