@@ -3,6 +3,7 @@
 #include "point.h"
 #include <algorithm>
 #include "BezierC0.h"
+#include "bezierPatch.h"
 #include "bSpline.h"
 #include "cubicInterpolated.h"
 #include "surface.h"
@@ -143,6 +144,7 @@ void SceneObject::RenderProperties()
 	}
 	else if (selectedCount > 1) {
 		Point::MergePointsMenu();
+		BezierPatch::FillSurfaceMenu();
 		std::string text = "Selected " + std::to_string(selectedCount) + " items";
 		
 		ImGui::Text(text.c_str());

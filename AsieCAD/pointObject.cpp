@@ -1,4 +1,7 @@
 #include "pointObject.h"
+
+#include <algorithm>
+
 #include "point.h"
 
 
@@ -101,13 +104,6 @@ void PointObject::RenderMenu()
 
 }
 
-void PointObject::SetPointRefToPoint(std::shared_ptr<SceneObject>& merged,
-	std::shared_ptr<SceneObject>& deleted)
-{
-	for (int i = 0; i < points.size(); i++)
-		if (points[i].point.lock() == deleted)
-			points[i].point = merged;
-}
 
 int PointObject::SelectedCount()
 {
@@ -140,4 +136,27 @@ char PointObject::HasChanged()
 		if (points[i].point.lock()->HasChanged())
 			return 1;
 	return hasChanged;
+}
+
+void PointObject::SetPointRefToPoint(std::shared_ptr<SceneObject>& merged,
+	std::shared_ptr<SceneObject>& deleted)
+{
+	for (int i = 0; i < points.size(); i++)
+		if (points[i].point.lock() == deleted)
+			points[i].point = merged;
+}
+std::vector<std::shared_ptr<Point>> PointObject::CommonPoints(std::shared_ptr<PointObject> p1,
+	std::shared_ptr<PointObject> p2)
+{
+	std::vector<std::shared_ptr<Point>> result;
+	for (int i = 0; i < p1->points.size(); i++)
+		for (int j = 0; j < p2->points.size(); j++)
+			if (p1->points[i].point.lock() == p2->points[j].point.lock()) {
+				result.emplace_back(std::static_pointer_cast<Point>(p1->points[i].point.lock()));
+				break;
+			}
+	std::sort(result.begin(), result.end());
+	result.erase(std::unique(result.begin(), result.end()), result.end());
+	return result;
+
 }

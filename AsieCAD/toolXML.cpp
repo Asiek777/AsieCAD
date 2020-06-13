@@ -230,4 +230,8 @@ void ToolXML::LoadSaveMenu()
 			SaveScene(lTheSaveFileName);
 		}
 	}
+	ImGui::SameLine();
+	if (ImGui::Button("Clear scene"))
+		SceneObject::SceneObjects.erase(SceneObject::SceneObjects.begin() + 1,
+			SceneObject::SceneObjects.end());
 }

@@ -94,3 +94,93 @@ void BezierPatch::RenderMesh()
 	Surface::RenderMesh(pointCount);
 }
 
+void BezierPatch::FillSurfaceMenu()
+{
+	if (selectedCount == 3) {
+		std::shared_ptr<BezierPatch> patch[3];
+		for (int i = 0; i < SceneObjects.size(); i++)
+			if (SceneObjects[i]->isSelected) {
+				if(!SceneObjects[i]->IsBezierPatch())
+					return;
+				if (!patch[0])
+					patch[0] = std::static_pointer_cast<BezierPatch>(SceneObjects[i]);
+				else if (!patch[1])
+					patch[1] = std::static_pointer_cast<BezierPatch>(SceneObjects[i]);
+				else {
+					patch[2] = std::static_pointer_cast<BezierPatch>(SceneObjects[i]);
+					break;
+				}
+			}
+		for (int i = 0; i < 3; i++)
+			if (patch[i]->patchCount[0] != 1 || patch[i]->patchCount[1] != 1)
+				return;
+		std::vector<std::shared_ptr<Point>> commonPoint[3];
+		for (int i = 0; i < 3; i++) {
+			commonPoint[i] = CommonPoints(patch[i], patch[(i + 1) % 3]);
+			if (commonPoint[i].empty())
+				return;
+		}
+		std::shared_ptr<Point> corner[3];
+		for (int i = 0; i < 3; i++) {
+			auto p1 = patch[i]->GetCornerOnePatch(commonPoint[i]);
+			auto p2 = patch[(i + 1) % 3]->GetCornerOnePatch(commonPoint[i]);
+			if (p1 != p2)
+				return;
+			corner[i] = p1;
+		}
+		Border border[3];
+		for (int i = 0; i < 3; i++) {
+			border[i] = patch[i]->GetBorder(corner[i], corner[(i + 2) % 3]);
+			if (border[i] == none)
+				return;
+		}
+		
+		if(ImGui::Button("Fill hole")) {
+			std::cout << "whole filled :P\n";
+		}
+		
+	}
+}
+
+std::shared_ptr<Point> BezierPatch::GetCornerOnePatch(
+	std::vector<std::shared_ptr<Point>> _points)
+{
+	if (patchCount[0] != 1 || patchCount[1] != 1)
+		throw "za duzo platkow";
+	int corners[] = { 0,3,12,15 };
+	for (int i = 0; i < _points.size(); i++)
+		for (int j = 0; j < 4; j++)
+			if (_points[i] == points[corners[j]].point.lock())
+				return _points[i];
+	return std::shared_ptr<Point>();	
+}
+
+Border BezierPatch::GetBorder(std::shared_ptr<Point> p1, std::shared_ptr<Point> p2)
+{
+	if(p1 == points[0].point.lock()) {
+		if (p2 == points[3].point.lock())
+			return b03;
+		if (p2 == points[12].point.lock())
+			return b012;
+	}
+	if (p1 == points[3].point.lock()) {
+		if (p2 == points[0].point.lock())
+			return b30;
+		if (p2 == points[15].point.lock())
+			return b315;
+	}
+	if (p1 == points[12].point.lock()) {
+		if (p2 == points[15].point.lock())
+			return b1215;
+		if (p2 == points[0].point.lock())
+			return b120;
+	}
+	if (p1 == points[15].point.lock()) {
+		if (p2 == points[12].point.lock())
+			return b1512;
+		if (p2 == points[3].point.lock())
+			return b153;
+	}
+	return none;
+}
+

@@ -136,7 +136,7 @@ void Point::MergePoints()
 		}
 	}
 	auto point1 = static_cast<Point*>(SceneObjects[first].get());
-	auto point2 = static_cast<Point*>(SceneObjects[first].get());
+	auto point2 = static_cast<Point*>(SceneObjects[second].get());
 	point1->undeletableRefs += point2->undeletableRefs;
 	point1->UpdatePosition((point1->GetCenter() + point2->GetCenter()) / 2.f);
 	SceneObjects.erase(SceneObjects.begin() + second);
