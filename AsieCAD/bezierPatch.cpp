@@ -1,13 +1,9 @@
 #include "bezierPatch.h"
-
-
-
-#include <iosfwd>
 #include <iosfwd>
 #include <vector>
-#include <vector>
 #include <glm/detail/type_mat.hpp>
-#include <glm/detail/type_mat.hpp>
+
+#include "gregoryPatch.h"
 
 
 int BezierPatch::Number = 0;
@@ -122,27 +118,28 @@ void BezierPatch::FillSurfaceMenu()
 		}
 		std::shared_ptr<Point> corner[3];
 		for (int i = 0; i < 3; i++) {
-			auto p1 = patch[i]->GetCornerOnePatch(commonPoint[i]);
-			auto p2 = patch[(i + 1) % 3]->GetCornerOnePatch(commonPoint[i]);
+			auto p1 = patch[i]->GetCorner(commonPoint[i]);
+			auto p2 = patch[(i + 1) % 3]->GetCorner(commonPoint[i]);
 			if (p1 != p2)
 				return;
 			corner[i] = p1;
 		}
 		Border border[3];
 		for (int i = 0; i < 3; i++) {
-			border[i] = patch[i]->GetBorder(corner[i], corner[(i + 2) % 3]);
+			border[i] = patch[i]->GetBorderEnum(corner[i], corner[(i + 2) % 3]);
 			if (border[i] == none)
 				return;
 		}
 		
-		if(ImGui::Button("Fill hole")) {
+		if (ImGui::Button("Fill hole")) {
 			std::cout << "whole filled :P\n";
-		}
-		
+			for (int i = 0; i < 3; i++)
+				SceneObjects.emplace_back(std::make_shared<GregoryPatch>(patch, border, i));
+		}		
 	}
 }
 
-std::shared_ptr<Point> BezierPatch::GetCornerOnePatch(
+std::shared_ptr<Point> BezierPatch::GetCorner(
 	std::vector<std::shared_ptr<Point>> _points)
 {
 	if (patchCount[0] != 1 || patchCount[1] != 1)
@@ -155,7 +152,7 @@ std::shared_ptr<Point> BezierPatch::GetCornerOnePatch(
 	return std::shared_ptr<Point>();	
 }
 
-Border BezierPatch::GetBorder(std::shared_ptr<Point> p1, std::shared_ptr<Point> p2)
+Border BezierPatch::GetBorderEnum(std::shared_ptr<Point> p1, std::shared_ptr<Point> p2)
 {
 	if(p1 == points[0].point.lock()) {
 		if (p2 == points[3].point.lock())
@@ -182,5 +179,41 @@ Border BezierPatch::GetBorder(std::shared_ptr<Point> p1, std::shared_ptr<Point> 
 			return b153;
 	}
 	return none;
+}
+
+std::vector<glm::vec3> BezierPatch::GetBorderPoints(Border border)
+{
+	std::vector<int> pointIndices;
+	switch (border) {
+	case b30:
+		pointIndices = {3, 2, 1, 0, 7, 6, 5, 4};
+		break;
+	case b012:
+		pointIndices = {0, 4, 8, 12, 1, 5, 9, 13};
+		break;
+	case b1215:
+		pointIndices = {12, 13, 14, 15, 8, 9, 10, 11};
+		break;
+	case b153:
+		pointIndices = {15, 11, 7, 3, 14, 10, 6, 2};
+		break;
+	case b03:
+		pointIndices = {0, 1, 2, 3, 4, 5, 6, 7};
+		break;
+	case b120:
+		pointIndices = {12, 8, 4, 0, 13, 9, 5, 1};
+		break;
+	case b1512:
+		pointIndices = {15, 14, 13, 12, 11, 10, 9, 8};
+		break;
+	case b315:
+		pointIndices = {3, 7, 11, 15, 2, 6, 10, 14};
+		break;
+	}
+	auto result = std::vector<glm::vec3>(pointIndices.size());
+	for (int i = 0; i < pointIndices.size(); i++)
+		result[i] = points[pointIndices[i]].point.lock()->GetCenter();
+	return result;
+
 }
 

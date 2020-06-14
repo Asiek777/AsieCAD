@@ -108,6 +108,9 @@
     <ClCompile Include="tinyxml2\tinyfiledialogs.c">
       <Filter>Source Files\IOlibs</Filter>
     </ClCompile>
+    <ClCompile Include="gregoryPatch.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h">
@@ -201,6 +204,9 @@
       <Filter>Source Files\IOlibs</Filter>
     </ClInclude>
     <ClInclude Include="splinePatch.h">
+      <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="gregoryPatch.h">
       <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
   </ItemGroup>
