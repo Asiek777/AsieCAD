@@ -41,7 +41,17 @@ void main(void)
     mat[3][0] = p[15];
     mat[2][0] = p[17];
     mat[1][0] = p[1];
-    int steps = 100;
+
+    vec4 corner[4];
+    corner[0] = viewProjection * vec4(p[0], 1);
+    corner[1] = viewProjection * vec4(p[5], 1);
+    corner[2] = viewProjection * vec4(p[10], 1);
+    corner[3] = viewProjection * vec4(p[15], 1);
+    float dist = distance(corner[0].xy / corner[0].w, corner[1].xy / corner[1].w) + 
+        distance(corner[1].xy / corner[1].w, corner[2].xy / corner[2].w) + 
+        distance(corner[2].xy / corner[2].w, corner[3].xy / corner[3].w) +
+        distance(corner[3].xy / corner[3].w, corner[0].xy / corner[0].w);
+    int steps = min(int(dist * 20), 511);
     float delta = 1.0 / float(steps);
     for (int i = 0; i <= steps; ++i) {
         if (isForward) {
