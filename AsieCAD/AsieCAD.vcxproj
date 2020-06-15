@@ -209,6 +209,7 @@
     <None Include="position.cpp" />
     <None Include="shaders\bezier.geom" />
     <None Include="shaders\bezierPatch.geom" />
+    <None Include="shaders\gregoryPatch.geom" />
     <None Include="shaders\patch.vert" />
     <None Include="shaders\frame.frag" />
     <None Include="shaders\frame.vert" />

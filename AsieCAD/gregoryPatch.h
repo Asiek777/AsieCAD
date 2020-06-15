@@ -18,15 +18,17 @@ class GregoryPatch : public SceneObject
 	bool showMesh = false;
 	int curveCount[2] = {4, 4};
 	GregoryCorner points[4];
+	std::shared_ptr<MeshBuffer> curveIndexes[2];
 	
 	void UpdatePoints();
 	std::vector<glm::vec3> CalcBezierHalf(std::vector<glm::vec3> curve);
 	void RenderMesh();
 public:
 	GregoryPatch(std::shared_ptr<BezierPatch> _patches[3], Border _border[3], int index);
+	void UpdateCurvesBuffers();
 	void Render() override;
 	void RenderMenu() override;
 	void Serialize(tinyxml2::XMLElement* scene) override {}
-	glm::vec3 GetCenter() override { return glm::vec3(0); }
+	glm::vec3 GetCenter() override;
 };
 
