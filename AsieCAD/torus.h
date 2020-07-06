@@ -4,9 +4,10 @@
 #include "shader_s.h"
 #include "sceneObject.h"
 #include "position.h"
+#include "surface.h"
 # define M_PI  3.14159265358979323846 
 
-class Torus : public SceneObject
+class Torus : public SceneObject, public Surface
 {
 	static int Number;
 	unsigned int VBO, VAO;
@@ -24,7 +25,11 @@ public:
 	void Render() override;
 	void RenderMenu() override;
 	glm::vec3 GetCenter() override;
+	bool IsSurface() override { return true; }
 	void UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotChange) override;
 	void Serialize(tinyxml2::XMLElement* scene) override;
+
+	glm::vec3 GetPointAt(float u, float v) override;
+	TngSpace GetTangentAt(float u, float v) override;
 };
 

@@ -1,12 +1,11 @@
 #pragma once
-#include "surface.h"
+#include "PointSurface.h"
 #include "point.h"
 #include "pointObject.h"
 
 enum Border;
 
-class BezierPatch :
-	public Surface
+class BezierPatch :	public PointSurface
 {
 	static int Number;
 	static std::unique_ptr<Shader> patchShader;
@@ -14,6 +13,7 @@ class BezierPatch :
 	void DrawPatch(int offset[], std::vector<glm::vec3>& knots);
 	std::shared_ptr<Point> GetCorner(std::vector<std::shared_ptr<Point>> _points);
 	Border GetBorderEnum(std::shared_ptr<Point> p1, std::shared_ptr<Point> p2);
+	
 	
 public:
 	BezierPatch(std::vector<std::shared_ptr<Point>> _points, bool _isCylinder);
@@ -26,7 +26,10 @@ public:
 
 	std::vector<glm::vec3> GetBorderPoints(Border border);
 	static void FillSurfaceMenu();
-	
+	glm::vec3 GetPointAt(float u, float v) override;
+	TngSpace GetTangentAt(float u, float v) override;
+	static glm::vec4 Bernstein3(float t);
+	static glm::vec4 BezierDiff(float t);
 };
 
 enum Border

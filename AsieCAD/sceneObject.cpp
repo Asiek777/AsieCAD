@@ -6,7 +6,7 @@
 #include "bezierPatch.h"
 #include "bSpline.h"
 #include "cubicInterpolated.h"
-#include "surface.h"
+#include "PointSurface.h"
 #include "toolXML.h"
 
 
@@ -133,6 +133,7 @@ void SceneObject::RenderProperties()
 {
 	ImGui::Begin("Properties");	
 	if (selectedCount == 1) {
+		Surface::SurfaceInteresectionMenu();
 
 		if (SceneObjects[selected]->IsDeletable() && ImGui::Button("Delete object")) {
 			SceneObjects.erase(SceneObjects.begin() + selected);
@@ -143,6 +144,7 @@ void SceneObject::RenderProperties()
 			SceneObjects[selected]->RenderFullMenu();
 	}
 	else if (selectedCount > 1) {
+		Surface::SurfaceInteresectionMenu();
 		Point::MergePointsMenu();
 		BezierPatch::FillSurfaceMenu();
 		std::string text = "Selected " + std::to_string(selectedCount) + " items";
@@ -201,6 +203,6 @@ void SceneObject::AddItemMenu()
 		ImGui::SameLine();
 		if (ImGui::Button("Add Cubic interpolaction curve"))
 			SceneObjects.emplace_back(std::make_shared<CubicInterpolated>());
-		Surface::RenderCreationMenu();
+		PointSurface::RenderCreationMenu();
 	}
 }

@@ -51,7 +51,7 @@ void main(void)
         distance(corner[1].xy / corner[1].w, corner[2].xy / corner[2].w) + 
         distance(corner[2].xy / corner[2].w, corner[3].xy / corner[3].w) +
         distance(corner[3].xy / corner[3].w, corner[0].xy / corner[0].w);
-    int steps = min(int(dist * 20), 511);
+    int steps = min(int(dist * 20) + 1, 511);
     float delta = 1.0 / float(steps);
     for (int i = 0; i <= steps; ++i) {
         if (isForward) {

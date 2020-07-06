@@ -1,4 +1,6 @@
 #include "bezierPatch.h"
+
+#include <algorithm>
 #include <iosfwd>
 #include <vector>
 #include <glm/detail/type_mat.hpp>
@@ -11,7 +13,7 @@ std::unique_ptr<Shader> BezierPatch::patchShader;
 
 
 BezierPatch::BezierPatch(std::vector<std::shared_ptr<Point>> _points, bool _isCylinder) :
-	Surface(_points, _isCylinder, ("Bezier patch " +	std::to_string(Number)).c_str())
+	PointSurface(_points, _isCylinder, ("Bezier patch " +	std::to_string(Number)).c_str())
 {
 	if (!patchShader) {
 		patchShader = std::make_unique<Shader>("shaders/patch.vert",
@@ -52,12 +54,13 @@ void BezierPatch::Render()
 void BezierPatch::Serialize(tinyxml2::XMLElement* scene)
 {
 	int pointCount[2] = { patchCount[0] * 3 + 1, isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };
-	Surface::Serialize(pointCount, scene, "PatchC0");
+	PointSurface::Serialize(pointCount, scene, "PatchC0");
 }
 
 void BezierPatch::DrawPatch(int offset[2], std::vector<glm::vec3>& knots)
 {
-	int pointCount[2] = { patchCount[0] * 3 + 1, isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };
+	int pointCount[2] = { patchCount[0] * 3 + 1,
+		isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };
 	glm::mat4 coords[3];
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 4; j++) {
@@ -87,7 +90,7 @@ void BezierPatch::DrawPatch(int offset[2], std::vector<glm::vec3>& knots)
 void BezierPatch::RenderMesh()
 {
 	int pointCount[2] = { patchCount[0] * 3 + 1, isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };
-	Surface::RenderMesh(pointCount);
+	PointSurface::RenderMesh(pointCount);
 }
 
 void BezierPatch::FillSurfaceMenu()
@@ -215,5 +218,72 @@ std::vector<glm::vec3> BezierPatch::GetBorderPoints(Border border)
 		result[i] = points[pointIndices[i]].point.lock()->GetCenter();
 	return result;
 
+}
+
+glm::vec3 BezierPatch::GetPointAt(float u, float v)
+{
+	u = glm::clamp(u, 0.f, 1.f);
+	v = glm::clamp(v, 0.f, 1.f);
+	int pointCount[2] = { patchCount[0] * 3 + 1,
+		isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };
+	u *= patchCount[0];
+	v *= patchCount[1];
+	int offset[2] = { std::min((int)std::floor(u),patchCount[0] - 1),
+		std::min((int)std::floor(v),patchCount[1] - 1) };
+	glm::vec4 uCoords = Bernstein3(u - offset[0]);
+	glm::vec4 vCoords = Bernstein3(v - offset[1]);
+	glm::vec3 sum = glm::vec3(0);
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++) {
+			int index = (i + 3 * offset[0]) * pointCount[1] + (j + 3 * offset[1]) % pointCount[1];
+			sum += points[index].point.lock()->GetCenter() * uCoords[i] * vCoords[j];
+		}
+	return sum;
+}
+
+glm::vec4 BezierPatch::Bernstein3(float t)
+{
+	float t2 = t * t;
+	float one_minus_t = 1.0 - t;
+	float one_minus_t2 = one_minus_t * one_minus_t;
+	return glm::vec4(one_minus_t2 * one_minus_t, 3.0 * t * one_minus_t2, 
+		3.0 * t2 * one_minus_t, t2 * t);
+}
+
+glm::vec4 BezierPatch::BezierDiff(float t)
+{
+	float t2 = t * t;
+	return glm::vec4(-3 + 6 * t - 3 * t2,
+		3 - 12 * t + 9 * t2, 6 * t - 9 * t2, 3 * t2);
+}
+
+TngSpace BezierPatch::GetTangentAt(float u, float v)
+{
+	u = glm::clamp(u, 0.f, 1.f);
+	v = glm::clamp(v, 0.f, 1.f);
+	int pointCount[2] = { patchCount[0] * 3 + 1,
+		isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };
+	u *= patchCount[0];
+	v *= patchCount[1];
+	int offset[2] = { std::min((int)std::floor(u),patchCount[0] - 1),
+		std::min((int)std::floor(v),patchCount[1] - 1) };
+	glm::vec4 uCoords = Bernstein3(u - offset[0]);
+	glm::vec4 vCoords = Bernstein3(v - offset[1]);
+	glm::vec4 uBezDiff = BezierDiff(u - offset[0]);
+	glm::vec4 vBezDiff = BezierDiff(v - offset[1]);
+	TngSpace result;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++) {
+			int index = (i + 3 * offset[0]) * pointCount[1] + (j + 3 * offset[1]) % pointCount[1];
+			//sum += points[index].point.lock()->GetCenter() * uCoords[i] * vCoords[j];
+			glm::vec3 pos = points[index].point.lock()->GetCenter();
+			result.pos += pos * uCoords[i] * vCoords[j];
+			result.diffU += pos * uBezDiff[i] * vCoords[j];
+			result.diffV += pos * uCoords[i] * vBezDiff[j];
+		}
+	result.normal = normalize(glm::cross(result.diffU, result.diffV));
+	result.diffU *= patchCount[0];
+	result.diffV *= patchCount[1];
+	return result;
 }
 

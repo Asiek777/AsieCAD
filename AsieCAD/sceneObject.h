@@ -36,6 +36,7 @@ public:
 	virtual bool IsPoint() { return false; }
 	virtual bool IsCurve() { return false; }
 	virtual bool IsPointObject() { return false; }
+	virtual bool IsSurface() { return false; }
 	virtual bool IsBezierPatch() { return false; }
 	virtual bool IsDeletable() { return true; }
 	virtual char HasChanged() { return 0; }
@@ -64,4 +65,5 @@ public:
 	static glm::vec3 GetCursorCenter();
 
 	friend class ToolXML;
+	friend class Surface;
 };

@@ -1,32 +1,32 @@
 #pragma once
 #include "point.h"
-#include "pointObject.h"
+#include "glm/glm.hpp"
 
-class Surface : public PointObject
+struct TngSpace
 {
-protected:
-	bool showMesh = false;
-	bool isCylinder = false;
-	int patchCount[2];
-	int curveCount[2];
-	std::shared_ptr<MeshBuffer> curveIndexes[2];
-	
-	static int PatchCount[2];
-	static float PatchSize[2];
-	static float CylinderRadius, CylinderLength;
-	static std::unique_ptr<Shader> meshShader;
-	
-	void RenderMesh(int pointCount[2]);
-	void UpdateCurvesBuffers();
-
-	static std::vector<std::shared_ptr<Point>> PrepareFlatVertices(int size[]);
-	static std::vector<std::shared_ptr<Point>> PrepareRoundVertices(int size[2]);
-	
-public:	
-	Surface(std::vector<std::shared_ptr<Point>> _points, bool _isCylinder, const char* _name);
-	~Surface();
-	void RenderMenu() override;
-	void Serialize(int pointCount[], tinyxml2::XMLElement* scene, std::string type);
-	static void RenderCreationMenu();
+	TngSpace()
+	{
+		pos = diffV = diffU = normal = glm::vec3(0);
+	}
+	glm::vec3 pos, diffU, diffV, normal;
 };
 
+class Surface
+{
+	static glm::vec4 minusGradient(glm::vec4 pos, TngSpace& space1, TngSpace& space2);
+	static float calcFunction(std::shared_ptr<Surface>& s1,
+		std::shared_ptr<Surface>& s2, glm::vec4 pos);
+	static void FindIntersection(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
+	static std::shared_ptr<Surface> SceneObjectToSurface(std::shared_ptr<SceneObject> object);
+	static float FunctionMin(glm::vec4 x, glm::vec4 p, 
+		std::shared_ptr<Surface>& s1, std::shared_ptr<Surface>& s2);
+	
+protected:
+	void TestSurfaceMenu();
+	
+public:
+	virtual ~Surface() {}
+	virtual glm::vec3 GetPointAt(float u, float v) = 0;
+	virtual TngSpace GetTangentAt(float u, float v) = 0;
+	static void SurfaceInteresectionMenu();
+};

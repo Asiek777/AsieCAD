@@ -1,7 +1,7 @@
 #pragma once
-#include "surface.h"
+#include "PointSurface.h"
 class SplinePatch :
-	public Surface
+	public PointSurface
 {
 	static int Number;
 	static std::unique_ptr<Shader> patchShader;
@@ -13,5 +13,9 @@ public:
 	void DrawPatch(int offset[2], std::vector<glm::vec3> knots);
 	void Render() override;
 	void Serialize(tinyxml2::XMLElement* scene) override;
+
+	glm::vec3 GetPointAt(float u, float v) override;
+	float Spline(float t, float ti, int n);
+	TngSpace GetTangentAt(float u, float v) override;
 };
 

@@ -25,7 +25,7 @@
     <Filter Include="Header Files\SceneObjects">
       <UniqueIdentifier>{4dd8fc4d-e979-4f74-a263-93ecb87e8fd8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\IOlibs">
+    <Filter Include="Resource Files\IOlibs">
       <UniqueIdentifier>{95e5f516-7122-4d52-9815-25155ac78666}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -93,11 +93,8 @@
     <ClCompile Include="bezierPatch.cpp">
       <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
-    <ClCompile Include="surface.cpp">
-      <Filter>Source Files\SceneObjects</Filter>
-    </ClCompile>
     <ClCompile Include="tinyxml2\tinyxml2.cpp">
-      <Filter>Source Files\IOlibs</Filter>
+      <Filter>Resource Files\IOlibs</Filter>
     </ClCompile>
     <ClCompile Include="toolXML.cpp">
       <Filter>Source Files</Filter>
@@ -106,10 +103,16 @@
       <Filter>Source Files\SceneObjects</Filter>
     </ClCompile>
     <ClCompile Include="tinyxml2\tinyfiledialogs.c">
-      <Filter>Source Files\IOlibs</Filter>
+      <Filter>Resource Files\IOlibs</Filter>
     </ClCompile>
     <ClCompile Include="gregoryPatch.cpp">
       <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="pointSurface.cpp">
+      <Filter>Source Files\SceneObjects</Filter>
+    </ClCompile>
+    <ClCompile Include="surface.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -191,23 +194,26 @@
     <ClInclude Include="bezierPatch.h">
       <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
-    <ClInclude Include="surface.h">
-      <Filter>Header Files\SceneObjects</Filter>
-    </ClInclude>
     <ClInclude Include="tinyxml2\tinyxml2.h">
-      <Filter>Source Files\IOlibs</Filter>
-    </ClInclude>
-    <ClInclude Include="toolXML.h">
-      <Filter>Header Files</Filter>
+      <Filter>Resource Files\IOlibs</Filter>
     </ClInclude>
     <ClInclude Include="tinyxml2\tinyfiledialogs.h">
-      <Filter>Source Files\IOlibs</Filter>
+      <Filter>Resource Files\IOlibs</Filter>
     </ClInclude>
     <ClInclude Include="splinePatch.h">
       <Filter>Header Files\SceneObjects</Filter>
     </ClInclude>
     <ClInclude Include="gregoryPatch.h">
       <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="pointSurface.h">
+      <Filter>Header Files\SceneObjects</Filter>
+    </ClInclude>
+    <ClInclude Include="toolXML.h">
+      <Filter>Resource Files\IOlibs</Filter>
+    </ClInclude>
+    <ClInclude Include="surface.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -83,6 +83,7 @@ void Torus::RenderMenu()
         prepareBuffers();
     if (ImGui::CollapsingHeader("Position"))
         position.RenderMenu(GetCursorCenter());
+    TestSurfaceMenu();
 }
 glm::vec3 Torus::GetCenter()
 {
@@ -105,4 +106,30 @@ void Torus::Serialize(tinyxml2::XMLElement* scene)
 
     ptr->SetAttribute("VerticalSlices", smallCount);
     ptr->SetAttribute("HorizontalSlices", bigCount);
+}
+
+glm::vec3 Torus::GetPointAt(float u, float v)
+{
+    float bigAngle = 2 * M_PI * u;
+    float smallAngle = 2 * M_PI * v;
+    glm::vec3 pos(
+        (bigRadius + smallRadius * std::cosf(smallAngle)) * std::cosf(bigAngle),
+        smallRadius * std::sinf(smallAngle),
+        (bigRadius + smallRadius * std::cosf(smallAngle)) * std::sinf(bigAngle));
+    return position.GetModelMatrix() * glm::vec4(pos, 1.0f);
+}
+
+TngSpace Torus::GetTangentAt(float u, float v)
+{
+    glm::vec3 diffU[2], antiNormal;
+    TngSpace result;
+    result.pos = GetPointAt(u, v);
+    antiNormal = GetPointAt(u, v + 0.5f);
+    diffU[0] = GetPointAt(u + 0.25f, v);
+    diffU[1] = GetPointAt(u - 0.25f, v);
+    result.diffU = (diffU[1] - diffU[0]) * (float)-M_PI;
+    result.normal = glm::normalize(result.pos - antiNormal);	
+    result.diffV = glm::normalize(glm::cross(result.diffU, result.normal));
+    result.diffV *= (float)(smallRadius * 2 * M_PI);
+    return result;
 }

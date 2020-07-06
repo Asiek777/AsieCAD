@@ -162,10 +162,11 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshBuffer.cpp" />
     <ClCompile Include="splinePatch.cpp" />
-    <ClCompile Include="surface.cpp" />
+    <ClCompile Include="pointSurface.cpp" />
     <ClCompile Include="point.cpp" />
     <ClCompile Include="pointObject.cpp" />
     <ClCompile Include="sceneObject.cpp" />
+    <ClCompile Include="surface.cpp" />
     <ClCompile Include="tinyxml2\tinyfiledialogs.c" />
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="toolXML.cpp" />
@@ -194,12 +195,13 @@
     <ClInclude Include="Imgui\imstb_truetype.h" />
     <ClInclude Include="meshBuffer.h" />
     <ClInclude Include="splinePatch.h" />
-    <ClInclude Include="surface.h" />
+    <ClInclude Include="pointSurface.h" />
     <ClInclude Include="point.h" />
     <ClInclude Include="pointObject.h" />
     <ClInclude Include="position.h" />
     <ClInclude Include="sceneObject.h" />
     <ClInclude Include="shader_s.h" />
+    <ClInclude Include="surface.h" />
     <ClInclude Include="tinyxml2\tinyfiledialogs.h" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
     <ClInclude Include="toolXML.h" />

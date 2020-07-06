@@ -13,7 +13,8 @@ vec4 toBernstein3(float t)
     float t2 = t * t;
     float one_minus_t = 1.0 - t;
     float one_minus_t2 = one_minus_t * one_minus_t;
-    return vec4(one_minus_t2 * one_minus_t, 3.0 * t * one_minus_t2, 3.0 * t2 * one_minus_t, t2 * t);
+    return vec4(one_minus_t2 * one_minus_t, 3.0 * t * one_minus_t2, 
+        3.0 * t2 * one_minus_t, t2 * t);
 }
 
 vec4 toBezier3(float delta, int i, vec4 P0, vec4 P1, vec4 P2, vec4 P3)
@@ -46,8 +47,6 @@ void main(void)
     B[1] = viewProjection * vec4(xCoord.y, yCoord.y, zCoord.y, 1);
     B[2] = viewProjection * vec4(xCoord.z, yCoord.z, zCoord.z, 1);
     B[3] = viewProjection * vec4(xCoord.w, yCoord.w, zCoord.w, 1);
-    //for (int i = 0; i < 4; i++)
-    //    B[i] /= B[i].w;
 
     float dist = distance(B[0].xy / B[0].w, B[1].xy / B[1].w) + 
         distance(B[1].xy / B[1].w, B[2].xy / B[2].w) + 
