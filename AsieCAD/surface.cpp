@@ -2,6 +2,7 @@
 #include "colors.h"
 #include "PointSurface.h"
 #include "torus.h"
+#include "cubicInterpolated.h"
 
 
 void Surface::TestSurfaceMenu()
@@ -38,8 +39,38 @@ void Surface::SurfaceInteresectionMenu()
 
 void Surface::FindIntersection(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2)
 {
+	glm::vec4 pos = CalcFirstPoint(s1, s2);
+	auto curve = std::make_shared<CubicInterpolated>();
+	SceneObject::SceneObjects.emplace_back(curve);
+	
+	for (int j = 0; j < 25; ++j) {
+		glm::vec4 newPos = pos;
+		float d = 0.1f;
+		for (int i = 0; i < 20; ++i) {
+			TngSpace space1 = s1->GetTangentAt(newPos.s, newPos.t);
+			TngSpace space2 = s2->GetTangentAt(newPos.p, newPos.q);
+			glm::vec3 t = glm::cross(space1.normal, space2.normal);
+			glm::vec4 jac[4];
+			jac[0] = glm::vec4(space1.diffU, glm::dot(space1.diffU, t));
+			jac[1] = glm::vec4(space1.diffV, glm::dot(space1.diffV, t));
+			jac[2] = glm::vec4(-space2.diffU, 0.f);
+			jac[3] = glm::vec4(-space2.diffV, 0.f);
+			glm::mat4 jacobian(jac[0], jac[1], jac[2], jac[3]);
+			glm::vec4 f = glm::vec4(space1.pos - space2.pos,
+			                        glm::dot(space1.pos - s1->GetPointAt(pos.s, pos.t), t) - d);
+			newPos = newPos - glm::inverse(jacobian) * f;
+		}
+		pos = newPos;
+		auto point = std::make_shared<Point>(s1->GetPointAt(newPos.s, newPos.t));
+		curve->AddPoint(point);
+		SceneObject::SceneObjects.emplace_back(point);
+	}
+}
+
+glm::vec4 Surface::CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2)
+{
 	float divide = 5, minDist = 100000000;
-	glm::vec4 pos(0.5f), lastPos;
+	glm::vec4 pos(0.5f);
 	for (int i = 0; i <= divide; i++)
 		for (int j = 0; j <= divide; j++)
 			for (int k = 0; k <= divide; k++)
@@ -53,31 +84,29 @@ void Surface::FindIntersection(std::shared_ptr<Surface> s1, std::shared_ptr<Surf
 				}
 	TngSpace space1 = s1->GetTangentAt(pos.s, pos.t);
 	TngSpace space2 = s2->GetTangentAt(pos.p, pos.q);
-	lastPos = pos;
-	auto point = std::make_shared<Point>(space1.pos);
-	SceneObject::SceneObjects.emplace_back(point);
+	//auto point = std::make_shared<Point>(space1.pos);
+	//SceneObject::SceneObjects.emplace_back(point);
 	glm::vec4 gradient = minusGradient(pos, space1, space2);
 	float alfa = FunctionMin(pos, gradient, s1, s2);
-	point = std::make_shared<Point>(s1->GetPointAt(
-		pos.s + alfa * gradient.s, pos.t + alfa * gradient.t));
-	SceneObject::SceneObjects.emplace_back(point);
-	for (int i = 0; i < 30; i++) {
+	for (int i = 0; i < 100; i++) {
 		space1 = s1->GetTangentAt(pos.s, pos.t);
 		space2 = s2->GetTangentAt(pos.p, pos.q);
 		glm::vec4 gradient = minusGradient(pos, space1, space2);
 		float alfa = FunctionMin(pos, gradient, s1, s2);
 		std::cout << alfa << std::endl;
 		pos += alfa * gradient;
+		if (alfa < 0.0000001f)
+			break;
 	}
-	point = std::make_shared<Point>(s1->GetPointAt(pos.s, pos.t));
+	auto point = std::make_shared<Point>(s1->GetPointAt(pos.s, pos.t));
 	SceneObject::SceneObjects.emplace_back(point);
 	point = std::make_shared<Point>(s2->GetPointAt(pos.p, pos.q));
 	SceneObject::SceneObjects.emplace_back(point);
-	
+	return pos;
 }
 
 float Surface::calcFunction(std::shared_ptr<Surface>& s1, std::shared_ptr<Surface>& s2, 
-	glm::vec4 pos)
+                            glm::vec4 pos)
 {
 	auto p1 = s1->GetPointAt(pos.s, pos.t);
 	auto p2 = s2->GetPointAt(pos.p, pos.q);
@@ -114,7 +143,7 @@ float Surface::FunctionMin(glm::vec4 x, glm::vec4 p, std::shared_ptr<Surface>& s
 	float min = 0, max = 0.2, right, left;
 	bool lastCalcedRight = true;
 	right = calcFunction(s1, s2, x + p * ((max - min) / phi + min));
-	for (int i = 0; i < 30; i++) {
+	for (int i = 0; i < 40; i++) {
 		if (lastCalcedRight)
 			left = calcFunction(s1, s2, x + p * (max - (max - min) / phi));
 		else

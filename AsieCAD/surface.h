@@ -29,4 +29,5 @@ public:
 	virtual glm::vec3 GetPointAt(float u, float v) = 0;
 	virtual TngSpace GetTangentAt(float u, float v) = 0;
 	static void SurfaceInteresectionMenu();
+	static glm::vec4 CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
 };

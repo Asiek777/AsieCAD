@@ -2,7 +2,7 @@
 
 #include "point.h"
 
-bool Curve::AddPoint(std::shared_ptr<SceneObject>& point)
+bool Curve::AddPoint(std::shared_ptr<SceneObject> point)
 {
 	if (!point->IsPoint())
 		return false;
