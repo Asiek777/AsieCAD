@@ -18,7 +18,7 @@ void Surface::TestSurfaceMenu()
 
 void Surface::SurfaceInteresectionMenu()
 {
-	if(SceneObject::selectedCount == 2) {
+	if (SceneObject::selectedCount == 2) {
 		std::shared_ptr<Surface> surface[2];
 		for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
 			if (SceneObject::SceneObjects[i]->isSelected) {
@@ -31,8 +31,10 @@ void Surface::SurfaceInteresectionMenu()
 					break;
 				}				
 			}
-		if (ImGui::Button("Calculate intersection")) {
-			FindIntersection(surface[0], surface[1]);
+		if (ImGui::CollapsingHeader("Find Intersection")) {
+			if (ImGui::Button("Calculate intersection")) {
+				FindIntersection(surface[0], surface[1]);
+			}
 		}
 	}
 }
@@ -40,16 +42,33 @@ void Surface::SurfaceInteresectionMenu()
 void Surface::FindIntersection(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2)
 {
 	glm::vec4 pos = CalcFirstPoint(s1, s2);
-	auto curve = std::make_shared<CubicInterpolated>();
+	std::vector <IntersectionPoint> points;
+	points.emplace_back(IntersectionPoint{ pos, s1->GetPointAt(pos.s, pos.t) });
+	FindAnotherPoints(pos, points, false, s1, s2);
+	auto curve = std::make_shared<IntersectionCurve>(points, s1, s2);
 	SceneObject::SceneObjects.emplace_back(curve);
-	
-	for (int j = 0; j < 25; ++j) {
+	//for (int i = 0; i < points.size(); i++) {
+	//	auto point = std::make_shared<Point>(points[i].location);
+	//	curve->AddPoint(point);
+	//	SceneObject::SceneObjects.emplace_back(point);
+	//}
+	//auto point = std::make_shared<Point>(points[0].location);
+	//curve->AddPoint(point);
+	//SceneObject::SceneObjects.emplace_back(point);
+}
+
+void Surface::FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& points, 
+	bool isReverse, std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2)
+{
+	while (true) {
 		glm::vec4 newPos = pos;
 		float d = 0.1f;
 		for (int i = 0; i < 20; ++i) {
 			TngSpace space1 = s1->GetTangentAt(newPos.s, newPos.t);
 			TngSpace space2 = s2->GetTangentAt(newPos.p, newPos.q);
 			glm::vec3 t = glm::cross(space1.normal, space2.normal);
+			if (isReverse)
+				t *= -1.f;
 			glm::vec4 jac[4];
 			jac[0] = glm::vec4(space1.diffU, glm::dot(space1.diffU, t));
 			jac[1] = glm::vec4(space1.diffV, glm::dot(space1.diffV, t));
@@ -61,11 +80,24 @@ void Surface::FindIntersection(std::shared_ptr<Surface> s1, std::shared_ptr<Surf
 			newPos = newPos - glm::inverse(jacobian) * f;
 		}
 		pos = newPos;
-		auto point = std::make_shared<Point>(s1->GetPointAt(newPos.s, newPos.t));
-		curve->AddPoint(point);
-		SceneObject::SceneObjects.emplace_back(point);
+		glm::vec3 location = s1->GetPointAt(pos.s, pos.t);
+		if (pos.s < 0 || pos.s > 1 || pos.t < 0 || pos.t > 1 ||
+			pos.p < 0 || pos.p > 1 || pos.q < 0 || pos.q > 1) {
+			if (!isReverse) {
+				glm::vec4 coords = points[0].coords;
+				std::reverse(points.begin(), points.end());
+				FindAnotherPoints(coords, points, true, s1, s2);
+			}
+			return;
+		}
+
+		IntersectionPoint inter{ pos, location };
+		points.emplace_back(inter);
+		if (glm::length(location - points[0].location) < d)
+			return;		
 	}
 }
+
 
 glm::vec4 Surface::CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2)
 {
@@ -84,7 +116,7 @@ glm::vec4 Surface::CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<S
 				}
 	TngSpace space1 = s1->GetTangentAt(pos.s, pos.t);
 	TngSpace space2 = s2->GetTangentAt(pos.p, pos.q);
-	//auto point = std::make_shared<Point>(space1.pos);
+	//auto point = std::make_shared<Point>(space1.location);
 	//SceneObject::SceneObjects.emplace_back(point);
 	glm::vec4 gradient = minusGradient(pos, space1, space2);
 	float alfa = FunctionMin(pos, gradient, s1, s2);
@@ -98,10 +130,10 @@ glm::vec4 Surface::CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<S
 		if (alfa < 0.0000001f)
 			break;
 	}
-	auto point = std::make_shared<Point>(s1->GetPointAt(pos.s, pos.t));
-	SceneObject::SceneObjects.emplace_back(point);
-	point = std::make_shared<Point>(s2->GetPointAt(pos.p, pos.q));
-	SceneObject::SceneObjects.emplace_back(point);
+	//auto point = std::make_shared<Point>(s1->GetPointAt(pos.s, pos.t));
+	//SceneObject::SceneObjects.emplace_back(point);
+	//point = std::make_shared<Point>(s2->GetPointAt(pos.p, pos.q));
+	//SceneObject::SceneObjects.emplace_back(point);
 	return pos;
 }
 
