@@ -17,6 +17,7 @@ class IntersectionCurve :
 	std::shared_ptr<Surface> s1, s2;
 	
 	std::unique_ptr<MeshBuffer> mesh;
+	static bool intersectionNotFound;
 	static int Number;
 	static std::unique_ptr<Shader> shader;
 	static std::weak_ptr<IntersectionCurve> newest;

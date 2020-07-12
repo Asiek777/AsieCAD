@@ -5,6 +5,7 @@
 
 std::unique_ptr<Shader> IntersectionCurve::shader;
 int IntersectionCurve::Number = 0;
+bool IntersectionCurve::intersectionNotFound = false;
 std::weak_ptr<IntersectionCurve> IntersectionCurve::newest;
 
 IntersectionCurve::IntersectionCurve(std::vector<IntersectionPoint> _points,
@@ -65,6 +66,13 @@ glm::vec3 IntersectionCurve::GetCenter()
 
 void IntersectionCurve::RenderPlot()
 {
+	if(intersectionNotFound) {
+		ImGui::Begin("Information");
+		ImGui::Text("Intersection not found");
+		if (ImGui::Button("OK"))
+			intersectionNotFound = false;
+		ImGui::End();
+	}
 	if (newest.expired())
 		return;
 	ImGui::Begin("Intersection plot");
@@ -97,7 +105,7 @@ void IntersectionCurve::RenderPlot()
 				x[i] = curve->points[i].coords.p + minU[j];
 				y[i] = curve->points[i].coords.q + minV[j];
 			}
-			ImPlot::PlotLine(("#polygon 2" + std::to_string(j)).c_str(), 
+			ImPlot::PlotLine("#polygon" , 
 				x.data(), y.data(), x.size(), 0);
 		}
 		ImPlot::EndPlot();

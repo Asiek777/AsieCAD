@@ -23,7 +23,21 @@ void Surface::TestSurfaceMenu()
 
 void Surface::SurfaceInteresectionMenu()
 {
-	if (SceneObject::selectedCount == 2) {
+	if (SceneObject::selectedCount == 1) {
+		if (SceneObject::SceneObjects[SceneObject::selected]->IsSurface()) {
+			auto surface = SceneObjectToSurface(
+				SceneObject::SceneObjects[SceneObject::selected]);
+			if (ImGui::CollapsingHeader("Find Intersection")) {
+				ImGui::Checkbox("Begin from cursor", &beginFromCursor);
+				ImGui::DragFloat("Step length", &stepLength, 0.001, 0.001f, 1.f);
+
+				if (ImGui::Button("Calculate intersection")) {
+					FindIntersection(surface, surface);
+				}
+			}
+		}
+	}
+	else if (SceneObject::selectedCount == 2) {
 		std::shared_ptr<Surface> surface[2];
 		for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
 			if (SceneObject::SceneObjects[i]->isSelected) {
@@ -50,24 +64,123 @@ void Surface::SurfaceInteresectionMenu()
 void Surface::FindIntersection(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2)
 {
 	glm::vec4 pos = CalcFirstPoint(s1, s2);
-	if (pos.x == -1)
+	if (pos.x == -1) {
+		IntersectionCurve::intersectionNotFound = true;
 		return;
+	}
 	for (int j = 0; j < 4; j++)
 		if (pos[j] > 1 || pos[j] < 0)
-			pos[j] = pos[j] -
-			std::floorf(pos[j]);
+			pos[j] = pos[j] - std::floorf(pos[j]);
 	std::vector <IntersectionPoint> points;
 	points.emplace_back(IntersectionPoint{ pos, s1->GetPointAt(pos.s, pos.t) });
 	FindAnotherPoints(pos, points, false, s1, s2);
-	//for (int i = 0; i < points.size(); i++)
-	//	for (int j = 0; j < 4; j++)
-	//		if (points[i].coords[j] > 1 || points[i].coords[j] < 0)
-	//			points[i].coords[j] = points[i].coords[j] -
-	//				std::floorf(points[i].coords[j]);
 
 	auto curve = std::make_shared<IntersectionCurve>(points, s1, s2);
 	IntersectionCurve::newest = curve;
 	SceneObject::SceneObjects.emplace_back(curve);
+}
+
+glm::vec4 Surface::CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2)
+{
+	float divide = 5;
+	if (s1 == s2)
+		return FirstPointFromOneSurface(s1, divide);
+	if (beginFromCursor) {
+		return FirstPointFromCursor(s1, s2, divide);
+	}
+	else {
+		return FirstPointFromTwoSurfaces(s1, s2, divide);
+	}
+}
+
+glm::vec4 Surface::FirstPointFromCursor(std::shared_ptr<Surface> s1, 
+	std::shared_ptr<Surface> s2, float divide)
+{
+	float minDist[] = { 10000000, 10000000 };
+	glm::vec4 pos(0.5f), newPos;
+	auto cursor = std::dynamic_pointer_cast<Cursor>(SceneObject::SceneObjects[0]);
+	glm::vec4 startPos[2];
+	for (int i = 0; i <= divide; i++)
+		for (int j = 0; j <= divide; j++) {
+			newPos = glm::vec4 (i / divide, j / divide, 0, 0);
+			float dist[2] = { calcFunction(s1, cursor, newPos),
+				calcFunction(s2, cursor, newPos) };
+			if(dist[0]<minDist[0]) {
+				minDist[0] = dist[0];
+				pos.s = newPos.s;
+				pos.t = newPos.t;
+			}
+			if(dist[1] < minDist[1]) {
+				minDist[1] = dist[1];
+				pos.p = newPos.s;
+				pos.q = newPos.t;
+			}
+		}
+	glm::vec4 s1Pos = GradientMinimalization(pos, s1, cursor);
+	glm::vec4 s2Pos = GradientMinimalization(pos, cursor, s2);
+	pos = glm::vec4(s1Pos.s, s1Pos.t, s2Pos.p, s2Pos.q);
+	pos = GradientMinimalization(pos, s1, s2);
+	float dist = glm::length(s1->GetPointAt(pos.s, pos.t) -
+		s2->GetPointAt(pos.p, pos.q));
+	if (dist < 0.01f)
+		return pos;
+	return glm::vec4(-1);
+}
+
+glm::vec4 Surface::FirstPointFromTwoSurfaces(std::shared_ptr<Surface> s1, 
+	std::shared_ptr<Surface> s2, float divide)
+{
+	std::vector<std::pair<float, int>> bestPos;
+	std::vector<glm::vec4> startPos;
+	int index = 0;
+
+	for (int i = 0; i <= divide; i++)
+		for (int j = 0; j <= divide; j++)
+			for (int k = 0; k <= divide; k++)
+				for (int l = 0; l <= divide; l++) {
+					glm::vec4 newPos(i / divide, j / divide, k / divide, l / divide);
+					float dist = calcFunction(s1, s2, newPos);
+					startPos.emplace_back(newPos);
+					bestPos.emplace_back(std::make_pair(dist, index++));
+				}
+	std::sort(bestPos.begin(), bestPos.end());
+	for (int i = 0; i < bestPos.size(); i++) {
+		glm::vec4 pos = GradientMinimalization(startPos[bestPos[i].second], s1, s2);
+		float dist = glm::length(s1->GetPointAt(pos.s, pos.t) - 
+			s2->GetPointAt(pos.p, pos.q));
+		if (dist < 0.01f)
+			return pos;
+		std::cout << "checked " << i << " of " << bestPos.size() << " possible begginnings\n";
+	}
+	return glm::vec4(-1);
+}
+
+glm::vec4 Surface::FirstPointFromOneSurface(std::shared_ptr<Surface> s1, float divide)
+{
+	std::vector<std::pair<float, int>> bestPos;
+	std::vector<glm::vec4> startPos;
+	int index = 0;
+
+	for (int i = 0; i <= divide; i++)
+		for (int j = 0; j <= divide; j++)
+			for (int k = 0; k <= divide; k++)
+				for (int l = 0; l <= divide; l++)
+					if (i != k || j != l) {
+						glm::vec4 newPos(i / divide, j / divide, k / divide, l / divide);
+						float dist = calcFunction(s1, s1, newPos);
+						startPos.emplace_back(newPos);
+						bestPos.emplace_back(std::make_pair(dist, index++));
+					}
+	std::sort(bestPos.begin(), bestPos.end());
+	for (int i = 0; i < bestPos.size(); i++) {
+		glm::vec4 pos = GradientMinimalization(startPos[bestPos[i].second], s1, s1);
+		float dist = glm::length(s1->GetPointAt(pos.s, pos.t) -
+			s1->GetPointAt(pos.p, pos.q));
+		if (dist < 0.01f && glm::length(glm::vec2(pos.s - pos.p, pos.t - pos.q))>0.01f)
+			return pos;
+		std::cout << "checked " << i << " of " << bestPos.size() << " possible begginnings\n";
+	}
+	return glm::vec4(-1);
 }
 
 void Surface::FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& points, 
@@ -109,66 +222,6 @@ void Surface::FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& p
 		if (glm::length(location - points[0].location) < stepLength)
 			return;		
 	}
-}
-
-
-glm::vec4 Surface::CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2)
-{
-	float divide = 5;
-	if (beginFromCursor) {
-		float minDist[] = { 10000000, 10000000 };
-		glm::vec4 pos(0.5f), newPos;
-		auto cursor = std::dynamic_pointer_cast<Cursor>(SceneObject::SceneObjects[0]);
-		glm::vec4 startPos[2];
-		for (int i = 0; i <= divide; i++)
-			for (int j = 0; j <= divide; j++) {
-				newPos = glm::vec4 (i / divide, j / divide, 0, 0);
-				float dist[2] = { calcFunction(s1, cursor, newPos),
-					calcFunction(s2, cursor, newPos) };
-				if(dist[0]<minDist[0]) {
-					minDist[0] = dist[0];
-					pos.s = newPos.s;
-					pos.t = newPos.t;
-				}
-				if(dist[1] < minDist[1]) {
-					minDist[1] = dist[1];
-					pos.p = newPos.s;
-					pos.q = newPos.t;
-				}
-			}
-		glm::vec4 s1Pos = GradientMinimalization(pos, s1, cursor);
-		glm::vec4 s2Pos = GradientMinimalization(pos, cursor, s2);
-		pos = glm::vec4(s1Pos.s, s1Pos.t, s2Pos.p, s2Pos.q);
-		pos = GradientMinimalization(pos, s1, s2);
-		float dist = glm::length(s1->GetPointAt(pos.s, pos.t) -
-			s2->GetPointAt(pos.p, pos.q));
-		if (dist < 0.01f)
-			return pos;
-	}
-	else {
-		std::vector<std::pair<float, int>> bestPos;
-		std::vector<glm::vec4> startPos;
-		int index = 0;
-
-		for (int i = 0; i <= divide; i++)
-			for (int j = 0; j <= divide; j++)
-				for (int k = 0; k <= divide; k++)
-					for (int l = 0; l <= divide; l++) {
-						glm::vec4 newPos(i / divide, j / divide, k / divide, l / divide);
-						float dist = calcFunction(s1, s2, newPos);
-						startPos.emplace_back(newPos);
-						bestPos.emplace_back(std::make_pair(dist, index++));
-					}
-		std::sort(bestPos.begin(), bestPos.end());
-		for (int i = 0; i < divide * divide * divide * divide; i++) {
-			glm::vec4 pos = GradientMinimalization(startPos[bestPos[i].second], s1, s2);
-			float dist = glm::length(s1->GetPointAt(pos.s, pos.t) - 
-				s2->GetPointAt(pos.p, pos.q));
-			if (dist < 0.01f)
-				return pos;
-		}
-	}
-	return glm::vec4(-1);
 }
 
 glm::vec4 Surface::GradientMinimalization(glm::vec4 pos, std::shared_ptr<Surface> s1, 

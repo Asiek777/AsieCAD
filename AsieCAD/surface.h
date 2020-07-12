@@ -22,13 +22,22 @@ class Surface
 	static glm::vec4 minusGradient(glm::vec4 pos, TngSpace& space1, TngSpace& space2);
 	static float calcFunction(std::shared_ptr<Surface> s1,
 		std::shared_ptr<Surface> s2, glm::vec4 pos);
+	
 	static void FindIntersection(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
+	static glm::vec4 CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
+	
+	static glm::vec4 FirstPointFromCursor(std::shared_ptr<Surface> s1,
+		std::shared_ptr<Surface> s2, float divide);
+	static glm::vec4 FirstPointFromTwoSurfaces(std::shared_ptr<Surface> s1,
+		std::shared_ptr<Surface> s2, float divide);
+	static glm::vec4 FirstPointFromOneSurface(std::shared_ptr<Surface> s1, float divide);
+	static glm::vec4 GradientMinimalization(glm::vec4 pos, 
+		std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
+	
 	static std::shared_ptr<Surface> SceneObjectToSurface(std::shared_ptr<SceneObject> object);
 	static float FunctionMin(glm::vec4 x, glm::vec4 p, 
 		std::shared_ptr<Surface>& s1, std::shared_ptr<Surface>& s2);
-	static glm::vec4 CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
 
-	static glm::vec4 GradientMinimalization(glm::vec4 pos, std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
 	
 	static void FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& points,
 		bool isReverse, std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
