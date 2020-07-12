@@ -16,6 +16,9 @@ struct IntersectionPoint;
 
 class Surface
 {
+	static float stepLength;
+	static bool beginFromCursor;
+	
 	static glm::vec4 minusGradient(glm::vec4 pos, TngSpace& space1, TngSpace& space2);
 	static float calcFunction(std::shared_ptr<Surface>& s1,
 		std::shared_ptr<Surface>& s2, glm::vec4 pos);
@@ -24,6 +27,8 @@ class Surface
 	static float FunctionMin(glm::vec4 x, glm::vec4 p, 
 		std::shared_ptr<Surface>& s1, std::shared_ptr<Surface>& s2);
 	static glm::vec4 CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
+
+	static glm::vec4 GradientMinimalization(glm::vec4 pos, std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
 	
 	static void FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& points,
 		bool isReverse, std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);

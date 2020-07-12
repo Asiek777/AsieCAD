@@ -8,6 +8,7 @@
 #include "cubicInterpolated.h"
 #include "PointSurface.h"
 #include "toolXML.h"
+#include "Imgui/implot.h"
 
 
 std::vector<std::shared_ptr<SceneObject>> SceneObject::SceneObjects;
@@ -110,6 +111,7 @@ void SceneObject::DrawMenu()
 	ItemListMenu();
 	COLORS::DrawMenu();
 	RenderProperties();
+	IntersectionCurve::RenderPlot();
 }
 void SceneObject::AddPointsToCruve()
 {
