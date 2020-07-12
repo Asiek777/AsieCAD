@@ -20,8 +20,8 @@ class Surface
 	static bool beginFromCursor;
 	
 	static glm::vec4 minusGradient(glm::vec4 pos, TngSpace& space1, TngSpace& space2);
-	static float calcFunction(std::shared_ptr<Surface>& s1,
-		std::shared_ptr<Surface>& s2, glm::vec4 pos);
+	static float calcFunction(std::shared_ptr<Surface> s1,
+		std::shared_ptr<Surface> s2, glm::vec4 pos);
 	static void FindIntersection(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
 	static std::shared_ptr<Surface> SceneObjectToSurface(std::shared_ptr<SceneObject> object);
 	static float FunctionMin(glm::vec4 x, glm::vec4 p, 

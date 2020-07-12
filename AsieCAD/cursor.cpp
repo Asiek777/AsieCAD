@@ -47,3 +47,10 @@ void Cursor::UpdatePosition(glm::vec3 pos, glm::vec3 scaleChange, glm::vec3 rotC
 	location = pos;
 	modelMatrix = glm::translate(glm::mat4(1), location);
 }
+
+TngSpace Cursor::GetTangentAt(float u, float v)
+{
+	TngSpace result;
+	result.pos = GetCenter();
+	return result;
+}

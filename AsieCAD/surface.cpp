@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "colors.h"
+#include "cursor.h"
 #include "PointSurface.h"
 #include "torus.h"
 
@@ -101,11 +102,35 @@ void Surface::FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& p
 
 glm::vec4 Surface::CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2)
 {
+	float divide = 5;
 	if (beginFromCursor) {
-		
+		float minDist[] = { 10000000, 10000000 };
+		glm::vec4 pos(0.5f);
+		auto cursor = std::dynamic_pointer_cast<Cursor>(SceneObject::SceneObjects[0]);
+		glm::vec4 startPos[2];
+		for (int i = 0; i <= divide; i++)
+			for (int j = 0; j <= divide; j++) {
+				glm::vec4 newPos(i / divide, j / divide, 0, 0);
+				float dist[2] = { calcFunction(s1, cursor, newPos),
+					calcFunction(s2, cursor, newPos) };
+				if(dist[0]<minDist[0]) {
+					minDist[0] = dist[0];
+					pos.s = newPos.s;
+					pos.t = newPos.t;
+				}
+				if(dist[1] < minDist[1]) {
+					minDist[1] = dist[1];
+					pos.p = newPos.s;
+					pos.q = newPos.t;
+				}
+			}
+		pos = GradientMinimalization(pos, s1, s2);
+		float dist = glm::length(s1->GetPointAt(pos.s, pos.t) -
+			s2->GetPointAt(pos.p, pos.q));
+		if (dist < 0.01f)
+			return pos;
 	}
 	else {
-		float divide = 5;
 		std::vector<std::pair<float, int>> bestPos;
 		std::vector<glm::vec4> startPos;
 		int index = 0;
@@ -149,7 +174,7 @@ glm::vec4 Surface::GradientMinimalization(glm::vec4 pos, std::shared_ptr<Surface
 	return pos;
 }
 
-float Surface::calcFunction(std::shared_ptr<Surface>& s1, std::shared_ptr<Surface>& s2, 
+float Surface::calcFunction(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2, 
                             glm::vec4 pos)
 {
 	auto p1 = s1->GetPointAt(pos.s, pos.t);
