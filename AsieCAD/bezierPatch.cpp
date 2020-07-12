@@ -223,7 +223,7 @@ std::vector<glm::vec3> BezierPatch::GetBorderPoints(Border border)
 glm::vec3 BezierPatch::GetPointAt(float u, float v)
 {
 	u = glm::clamp(u, 0.f, 1.f);
-	v = glm::clamp(v, 0.f, 1.f);
+	v = isCylinder ? v - std::floorf(v) : glm::clamp(v, 0.f, 1.f);
 	int pointCount[2] = { patchCount[0] * 3 + 1,
 		isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };
 	u *= patchCount[0];
@@ -260,7 +260,7 @@ glm::vec4 BezierPatch::BezierDiff(float t)
 TngSpace BezierPatch::GetTangentAt(float u, float v)
 {
 	u = glm::clamp(u, 0.f, 1.f);
-	v = glm::clamp(v, 0.f, 1.f);
+	v = isCylinder ? v - std::floorf(v) : glm::clamp(v, 0.f, 1.f);
 	int pointCount[2] = { patchCount[0] * 3 + 1,
 		isCylinder ? patchCount[1] * 3 : patchCount[1] * 3 + 1 };
 	u *= patchCount[0];

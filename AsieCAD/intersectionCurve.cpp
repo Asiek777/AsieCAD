@@ -9,7 +9,7 @@ std::weak_ptr<IntersectionCurve> IntersectionCurve::newest;
 
 IntersectionCurve::IntersectionCurve(std::vector<IntersectionPoint> _points,
 	std::shared_ptr<Surface> _s1, std::shared_ptr<Surface> _s2) :
-	SceneObject(("Interpolation curve " + std::to_string(Number)).c_str()),
+	SceneObject(("Intersection curve " + std::to_string(Number)).c_str()),
 	s1(_s1), s2(_s2)
 {
 	Number++;
@@ -70,29 +70,36 @@ void IntersectionCurve::RenderPlot()
 	ImGui::Begin("Intersection plot");
 	auto curve = newest.lock();
 	ImPlot::SetNextPlotLimits(0, 1, 0, 1);
-	std::vector<float> x1(curve->points.size());
-	std::vector<float> x2(curve->points.size());
-	std::vector<float> y1(curve->points.size());
-	std::vector<float> y2(curve->points.size());
-	for (int i = 0; i < curve->points.size(); i++) {
-		x1[i] = curve->points[i].coords.s;
-		y1[i] = curve->points[i].coords.t;
-		x2[i] = curve->points[i].coords.p;
-		y2[i] = curve->points[i].coords.q;
-	}
+	std::vector<float> x(curve->points.size());
+	std::vector<float> y(curve->points.size());
+	float minU[] = { 0,0,-1,-1 }, minV[] = { 0,-1,0,-1 };
+	ImVec4 colors[] = { ImVec4(1,1,1,1), ImVec4(1,1,1,1) };
+	ImPlot::SetColormap(&colors[0], 2);
 	if (ImPlot::BeginPlot("plot 1", "U", "V", ImVec2(-1, 0),
 		ImPlotFlags_Default ^ ImPlotFlags_Legend))
 	{
-		ImPlot::PlotLine("#polygon", x1.data(), y1.data(),
-			x1.size(), 0, sizeof(float));
+		for (int j = 0; j < 4; j++) {
+			for (int i = 0; i < curve->points.size(); i++) {
+				x[i] = curve->points[i].coords.s + minU[j];
+				y[i] = curve->points[i].coords.t + minV[j];
+			}
+			ImPlot::PlotLine("#polygon" , 
+				x.data(), y.data(), x.size(), 0);
+		}
 		ImPlot::EndPlot();
 	}
 	//ImGui::SameLine();
 	if (ImPlot::BeginPlot("plot 2", "U", "V", ImVec2(-1, 0),
 		ImPlotFlags_Default ^ ImPlotFlags_Legend))
 	{
-		ImPlot::PlotLine("#polygon 2", x2.data(), y2.data(),
-			x2.size(), 0, sizeof(float));
+		for (int j = 0; j < 4; j++) {
+			for (int i = 0; i < curve->points.size(); i++) {
+				x[i] = curve->points[i].coords.p + minU[j];
+				y[i] = curve->points[i].coords.q + minV[j];
+			}
+			ImPlot::PlotLine(("#polygon 2" + std::to_string(j)).c_str(), 
+				x.data(), y.data(), x.size(), 0);
+		}
 		ImPlot::EndPlot();
 	}
 	if (ImGui::Button("Close window"))

@@ -90,7 +90,7 @@ void SplinePatch::RenderMesh()
 glm::vec3 SplinePatch::GetPointAt(float u, float v)
 {
 	u = glm::clamp(u, 0.f, 1.f);
-	v = glm::clamp(v, 0.f, 1.f);
+	v = isCylinder ? v - std::floorf(v) : glm::clamp(v, 0.f, 1.f);
 	int pointCount[2] = { patchCount[0] + 3, isCylinder ? patchCount[1] : patchCount[1] + 3 };
 	u *= patchCount[0];
 	v *= patchCount[1];
@@ -136,7 +136,7 @@ float SplinePatch::Spline(float t, float ti, int n)
 TngSpace SplinePatch::GetTangentAt(float u, float v)
 {
 	u = glm::clamp(u, 0.f, 1.f);
-	v = glm::clamp(v, 0.f, 1.f);
+	v = isCylinder ? v - std::floorf(v) : glm::clamp(v, 0.f, 1.f);
 	int pointCount[2] = { patchCount[0] + 3, isCylinder ? patchCount[1] : patchCount[1] + 3 };
 	u *= patchCount[0];
 	v *= patchCount[1];

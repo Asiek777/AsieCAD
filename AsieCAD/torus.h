@@ -31,5 +31,7 @@ public:
 
 	glm::vec3 GetPointAt(float u, float v) override;
 	TngSpace GetTangentAt(float u, float v) override;
+	bool RollU() override { return true; }
+	bool RollV() override { return true; }
 };
 

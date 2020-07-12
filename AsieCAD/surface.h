@@ -40,6 +40,8 @@ public:
 	virtual ~Surface() {}
 	virtual glm::vec3 GetPointAt(float u, float v) = 0;
 	virtual TngSpace GetTangentAt(float u, float v) = 0;
+	virtual bool RollU() { return false; }
+	virtual bool RollV() { return false; }
 	static void SurfaceInteresectionMenu();
 
 	

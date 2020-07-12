@@ -29,6 +29,7 @@ public:
 	void RenderMenu() override;
 	bool IsSurface() override { return true; }
 	void Serialize(int pointCount[], tinyxml2::XMLElement* scene, std::string type);
+	bool RollV() override { return isCylinder; }
 	static void RenderCreationMenu();
 };
 
