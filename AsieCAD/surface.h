@@ -13,6 +13,7 @@ struct TngSpace
 };
 
 struct IntersectionPoint;
+class IntersectionCurve;
 
 class Surface
 {
@@ -39,10 +40,13 @@ class Surface
 		std::shared_ptr<Surface>& s1, std::shared_ptr<Surface>& s2);
 
 	
-	static void FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& points,
-		bool isReverse, std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
+	static bool FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& points,
+	                              bool isReverse, std::shared_ptr<Surface> s1,
+	                              std::shared_ptr<Surface> s2);
 	
 protected:
+	std::weak_ptr<IntersectionCurve> trimCurve;
+	bool isFirst;
 	void TestSurfaceMenu();
 	
 public:
@@ -51,6 +55,8 @@ public:
 	virtual TngSpace GetTangentAt(float u, float v) = 0;
 	virtual bool RollU() { return false; }
 	virtual bool RollV() { return false; }
+	virtual void SetTrimCurve(std::shared_ptr<IntersectionCurve> curve, bool _isFirst)
+		{	trimCurve = curve; isFirst = _isFirst;	}
 	static void SurfaceInteresectionMenu();
 
 	

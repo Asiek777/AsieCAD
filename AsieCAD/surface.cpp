@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+
+
 #include "colors.h"
 #include "cursor.h"
 #include "PointSurface.h"
@@ -73,10 +75,14 @@ void Surface::FindIntersection(std::shared_ptr<Surface> s1, std::shared_ptr<Surf
 			pos[j] = pos[j] - std::floorf(pos[j]);
 	std::vector <IntersectionPoint> points;
 	points.emplace_back(IntersectionPoint{ pos, s1->GetPointAt(pos.s, pos.t) });
-	FindAnotherPoints(pos, points, false, s1, s2);
-
-	auto curve = std::make_shared<IntersectionCurve>(points, s1, s2);
+	bool isClosed = FindAnotherPoints(pos, points, false, s1, s2);
+	auto curve = std::make_shared<IntersectionCurve>(points, isClosed, s1, s2);
+	if (isClosed) {
+		s1->SetTrimCurve(curve, true);
+		s2->SetTrimCurve(curve, false);
+	}
 	IntersectionCurve::newest = curve;
+	
 	SceneObject::SceneObjects.emplace_back(curve);
 }
 
@@ -183,7 +189,7 @@ glm::vec4 Surface::FirstPointFromOneSurface(std::shared_ptr<Surface> s1, float d
 	return glm::vec4(-1);
 }
 
-void Surface::FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& points, 
+bool Surface::FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& points,
 	bool isReverse, std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2)
 {
 	while (true) {
@@ -215,12 +221,12 @@ void Surface::FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& p
 				std::reverse(points.begin(), points.end());
 				FindAnotherPoints(coords, points, true, s1, s2);
 			}
-			return;
+			return false;
 		}
 		IntersectionPoint inter{ pos, location };
 		points.emplace_back(inter);
 		if (glm::length(location - points[0].location) < stepLength)
-			return;		
+			return true;
 	}
 }
 

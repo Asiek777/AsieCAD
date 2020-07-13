@@ -265,5 +265,8 @@
     <None Include="shaders\gregoryPatch.geom">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="shaders\patch.frag">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

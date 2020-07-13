@@ -1,10 +1,12 @@
 #version 330
 
 layout(points) in;
-layout(line_strip, max_vertices = 512) out;
+layout(line_strip, max_vertices = 256) out;
+out vec3 coords;
 
 uniform mat4 Knots[3];
 uniform bool isForward;
+uniform vec2 coordsRange;
 uniform mat4 viewProjection;
 
 
@@ -52,10 +54,12 @@ void main(void)
         distance(B[1].xy / B[1].w, B[2].xy / B[2].w) + 
         distance(B[2].xy / B[2].w, B[3].xy / B[3].w) + 0.04;
 
-    int steps = min(int(dist * 30), 511);
+    int steps = min(int(dist * 30), 255);
     float delta = 1.0 / float(steps);
     for (int i=0; i<=steps; ++i){
         gl_Position = toBezier3(delta, i, B[0], B[1], B[2], B[3]);
+        coords = vec3(delta * i * (coordsRange[1] - coordsRange[0]) + coordsRange[0],
+            gl_in[0].gl_Position.yz);
         EmitVertex();
     }
 }

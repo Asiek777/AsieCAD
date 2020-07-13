@@ -10,6 +10,7 @@ protected:
 	bool isCylinder = false;
 	int patchCount[2];
 	int curveCount[2];
+	bool isTrimmed = false;
 	std::shared_ptr<MeshBuffer> curveIndexes[2];
 	
 	static int PatchCount[2];
@@ -30,6 +31,7 @@ public:
 	bool IsSurface() override { return true; }
 	void Serialize(int pointCount[], tinyxml2::XMLElement* scene, std::string type);
 	bool RollV() override { return isCylinder; }
+	void SetTrimCurve(std::shared_ptr<IntersectionCurve> curve, bool _isFirst) override;
 	static void RenderCreationMenu();
 };
 

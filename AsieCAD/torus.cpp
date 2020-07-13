@@ -121,15 +121,16 @@ glm::vec3 Torus::GetPointAt(float u, float v)
 
 TngSpace Torus::GetTangentAt(float u, float v)
 {
-    glm::vec3 diffU[2], antiNormal;
+    glm::vec3 diffU[2], diffV[2], antiNormal;
     TngSpace result;
     result.pos = GetPointAt(u, v);
     antiNormal = GetPointAt(u, v + 0.5f);
     diffU[0] = GetPointAt(u + 0.25f, v);
     diffU[1] = GetPointAt(u - 0.25f, v);
+    diffV[0] = GetPointAt(u, v + 0.25f);
+    diffV[1] = GetPointAt(u, v - 0.25f);
     result.diffU = (diffU[1] - diffU[0]) * (float)-M_PI;
-    result.normal = glm::normalize(result.pos - antiNormal);	
-    result.diffV = glm::normalize(glm::cross(result.diffU, result.normal));
-    result.diffV *= (float)(smallRadius * 2 * M_PI);
+    result.diffV = (diffV[1] - diffV[0]) * (float)-M_PI;
+    result.normal = glm::normalize(glm::cross(result.diffV, result.diffU));
     return result;
 }

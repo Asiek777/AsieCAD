@@ -17,8 +17,8 @@ PointSurface::PointSurface(std::vector<std::shared_ptr<Point>> _points, bool _is
 		meshShader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag");
 	patchCount[0] = PatchCount[0];
 	patchCount[1] = PatchCount[1];
-	curveIndexes[0] = std::make_unique<MeshBuffer>(std::vector<float>{ 1.f }, 1);
-	curveIndexes[1] = std::make_unique<MeshBuffer>(std::vector<float>{ 1.f }, 1);
+	curveIndexes[1] = std::make_unique<MeshBuffer>(std::vector<float>{ 1, 1, 1 });
+	curveIndexes[0] = std::make_unique<MeshBuffer>(std::vector<float>{ 1, 1, 1 });
 	isEditable = false;
 	UpdateCurvesBuffers();
 	for (int i = 0; i < _points.size(); i++)
@@ -91,11 +91,35 @@ void PointSurface::Serialize(int pointCount[2], tinyxml2::XMLElement* scene, std
 void PointSurface::UpdateCurvesBuffers()
 {
 	for (int dim = 0; dim < 2; dim++) {
-		std::vector<float> curves(curveCount[dim]);
-		for (int i = 0; i < curves.size(); i++)
-			curves[i] = (float)i / (curves.size() - 1);
-		curveIndexes[dim]->UpdateBuffer(curves);
+		std::vector<glm::vec3> curves(curveCount[dim] * patchCount[dim]);
+		if (!isTrimmed) {
+			for (int i = 0; i < patchCount[dim]; i++) 
+				for (int j = 0; j < curveCount[dim]; j++) {
+					curves[i * curveCount[dim] + j] = glm::vec3(
+						(float)j / (curveCount[dim] - 1), -1, -1);
+				}
+		}
+		else {
+			auto curve = trimCurve.lock();
+			//bool alongU = dynamic_cast<BezierPatch*>(this) ? !dim : dim;
+			auto izolines = curve->CalcTrimming((curveCount[dim] - 1) * patchCount[dim] + 1,
+				dim, isFirst);
+			for (int i = 0; i < patchCount[dim]; i++)
+				for (int j = 0; j < curveCount[dim]; j++) {
+					glm::vec2 coordsRange = izolines[i * (curveCount[dim] - 1) + j];
+					curves[i * curveCount[dim] + j] = glm::vec3(
+						(float)j / (curveCount[dim] - 1), coordsRange.s, coordsRange.t);
+				}
+		}
+		curveIndexes[dim]->UpdateBuffer(MeshBuffer::Vec3ToFloats(curves));
 	}
+}
+
+void PointSurface::SetTrimCurve(std::shared_ptr<IntersectionCurve> curve, bool _isFirst)
+{
+	isTrimmed = true;
+	Surface::SetTrimCurve(curve, _isFirst);
+	UpdateCurvesBuffers();
 }
 
 void PointSurface::RenderCreationMenu()

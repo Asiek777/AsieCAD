@@ -17,7 +17,7 @@ BezierPatch::BezierPatch(std::vector<std::shared_ptr<Point>> _points, bool _isCy
 {
 	if (!patchShader) {
 		patchShader = std::make_unique<Shader>("shaders/patch.vert",
-			"shaders/torus.frag", "shaders/bezierPatch.geom");
+			"shaders/patch.frag", "shaders/bezierPatch.geom");
 	}
 	Number++;
 }
@@ -76,10 +76,16 @@ void BezierPatch::DrawPatch(int offset[2], std::vector<glm::vec3>& knots)
 	patchShader->setVec3("color", color);
 	patchShader->setBool("isForward", 1);
 	patchShader->setMat4("viewProjection", viewProjection);
+	glm::vec2 coordsRange(offset[0] / 3 / (float)patchCount[0],
+		(offset[0] / 3 + 1) / (float)patchCount[0]);
+	patchShader->setVec2("coordsRange", coordsRange);
 
 	glBindVertexArray(curveIndexes[0]->GetVAO());
 	glDrawArrays(GL_POINTS, 0, curveCount[0]);
 
+	coordsRange = glm::vec2(offset[1] / 3 / (float)patchCount[1],
+		(offset[1] / 3 + 1) / (float)patchCount[1]);
+	patchShader->setVec2("coordsRange", coordsRange);
 	patchShader->setBool("isForward", 0);
 	glBindVertexArray(curveIndexes[1]->GetVAO());
 	glDrawArrays(GL_POINTS, 0, curveCount[1]);
