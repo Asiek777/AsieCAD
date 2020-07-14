@@ -33,5 +33,6 @@ public:
 	TngSpace GetTangentAt(float u, float v) override;
 	bool RollU() override { return true; }
 	bool RollV() override { return true; }
+	void SetTrimCurve(std::shared_ptr<IntersectionCurve> curve, bool _isFirst) override;
 };
 

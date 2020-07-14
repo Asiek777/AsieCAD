@@ -47,6 +47,7 @@ class Surface
 protected:
 	std::weak_ptr<IntersectionCurve> trimCurve;
 	bool isFirst;
+	bool reverseTrimming = false;
 	void TestSurfaceMenu();
 	
 public:

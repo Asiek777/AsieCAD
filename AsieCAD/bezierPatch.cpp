@@ -36,6 +36,10 @@ BezierPatch::BezierPatch(std::vector<std::shared_ptr<Point>> _points,
 
 void BezierPatch::Render()
 {
+	if(isTrimmed && trimCurve.expired()) {
+		isTrimmed = false;
+		UpdateCurvesBuffers();
+	}
 	std::vector<glm::vec3> knots(points.size());
 	for (int i = 0; i < points.size(); i++)
 		knots[i] = points[i].point.lock()->GetCenter();
@@ -75,6 +79,7 @@ void BezierPatch::DrawPatch(int offset[2], std::vector<glm::vec3>& knots)
 	glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
 	patchShader->setVec3("color", color);
 	patchShader->setBool("isForward", 1);
+	patchShader->setBool("reverseTrimming", reverseTrimming && isTrimmed);
 	patchShader->setMat4("viewProjection", viewProjection);
 	glm::vec2 coordsRange(offset[0] / 3 / (float)patchCount[0],
 		(offset[0] / 3 + 1) / (float)patchCount[0]);

@@ -64,6 +64,7 @@ void PointSurface::RenderMesh(int pointCount[2])
 void PointSurface::RenderMenu()
 {
 	ImGui::Checkbox("Show mesh", &showMesh);
+	ImGui::Checkbox("Reverse trimming", &reverseTrimming);
 	if (ImGui::DragInt2("Curves count", curveCount, 0.3, 2, 64))
 		UpdateCurvesBuffers();
 	PointObject::RenderMenu();
@@ -101,9 +102,9 @@ void PointSurface::UpdateCurvesBuffers()
 		}
 		else {
 			auto curve = trimCurve.lock();
-			bool alongU = dynamic_cast<BezierPatch*>(this) ? !dim : dim;
+			//bool alongU = dynamic_cast<BezierPatch*>(this) ? !dim : dim;
 			auto izolines = curve->CalcTrimming((curveCount[dim] - 1) * patchCount[dim] + 1,
-				alongU, isFirst);
+				!dim, isFirst);
 			for (int i = 0; i < patchCount[dim]; i++)
 				for (int j = 0; j < curveCount[dim]; j++) {
 					glm::vec2 coordsRange = izolines[i * (curveCount[dim] - 1) + j];

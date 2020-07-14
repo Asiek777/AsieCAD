@@ -14,16 +14,20 @@ class IntersectionCurve :
     public SceneObject
 {
 	std::vector<IntersectionPoint> points;
-	std::shared_ptr<Surface> s1, s2;
-	
+	std::shared_ptr<Surface> s1, s2;	
 	std::unique_ptr<MeshBuffer> mesh;
+	std::vector<std::vector<float>> grid[4];
+	
 	static bool intersectionNotFound;
 	static int Number;
 	static std::unique_ptr<Shader> shader;
 	static std::weak_ptr<IntersectionCurve> newest;
 	friend class Surface;
 	void IzolineIntersection(float line, std::vector<float>& intersections, 
-		glm::vec2 p1, glm::vec2 p2);
+		glm::vec2 p1, glm::vec2 p2, bool isReversed);
+	static void RenderPlotGrid(std::shared_ptr<IntersectionCurve> curve, int offset);
+	void CalcLineInteresctions(float line, std::vector<glm::vec2>& coords, 
+	                           std::vector<float>& intersections, bool isReversed);
 	
 public:
 	IntersectionCurve(std::vector<IntersectionPoint> _points, bool isClosed,

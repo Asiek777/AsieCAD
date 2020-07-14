@@ -32,6 +32,10 @@ SplinePatch::SplinePatch(std::vector<std::shared_ptr<Point>> _points,
 
 void SplinePatch::Render()
 {
+	if (isTrimmed && trimCurve.expired()) {
+		isTrimmed = false;
+		UpdateCurvesBuffers();
+	}
 	std::vector<glm::vec3> knots(points.size());
 	for (int i = 0; i < points.size(); i++)
 		knots[i] = points[i].point.lock()->GetCenter();
@@ -70,6 +74,7 @@ void SplinePatch::DrawPatch(int offset[2], std::vector<glm::vec3> knots)
 	
 	patchShader->setVec3("color", color);
 	patchShader->setBool("isForward", 1);
+	patchShader->setBool("reverseTrimming", reverseTrimming && isTrimmed);
 	patchShader->setMat4("viewProjection", viewProjection);
 	glm::vec2 coordsRange(offset[1] / (float)patchCount[1],
 		(offset[1] + 1) / (float)patchCount[1]);

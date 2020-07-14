@@ -66,7 +66,7 @@ void Surface::SurfaceInteresectionMenu()
 void Surface::FindIntersection(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2)
 {
 	glm::vec4 pos = CalcFirstPoint(s1, s2);
-	if (pos.x == -1) {
+	if (pos.x == -1 || isnan(pos.x)) {
 		IntersectionCurve::intersectionNotFound = true;
 		return;
 	}
@@ -182,7 +182,8 @@ glm::vec4 Surface::FirstPointFromOneSurface(std::shared_ptr<Surface> s1, float d
 		glm::vec4 pos = GradientMinimalization(startPos[bestPos[i].second], s1, s1);
 		float dist = glm::length(s1->GetPointAt(pos.s, pos.t) -
 			s1->GetPointAt(pos.p, pos.q));
-		if (dist < 0.01f && glm::length(glm::vec2(pos.s - pos.p, pos.t - pos.q))>0.01f)
+		float coordDist = glm::length(glm::vec2(pos.s - pos.p, pos.t - pos.q));
+		if (dist < 0.01f && coordDist > 0.01f)
 			return pos;
 		std::cout << "checked " << i << " of " << bestPos.size() << " possible begginnings\n";
 	}
@@ -194,6 +195,7 @@ bool Surface::FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& p
 {
 	while (true) {
 		glm::vec4 newPos = pos;
+		glm::vec4 f;
 		for (int i = 0; i < 20; ++i) {
 			TngSpace space1 = s1->GetTangentAt(newPos.s, newPos.t);
 			TngSpace space2 = s2->GetTangentAt(newPos.p, newPos.q);
@@ -206,13 +208,18 @@ bool Surface::FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& p
 			jac[2] = glm::vec4(-space2.diffU, 0.f);
 			jac[3] = glm::vec4(-space2.diffV, 0.f);
 			glm::mat4 jacobian(jac[0], jac[1], jac[2], jac[3]);
-			glm::vec4 f = glm::vec4(space1.pos - space2.pos,
+			f = glm::vec4(space1.pos - space2.pos,
 				glm::dot(space1.pos - s1->GetPointAt(pos.s, pos.t), t) - stepLength);
 			newPos = newPos - glm::inverse(jacobian) * f;
+			if(isnan(newPos.x)) {
+				f = glm::vec4(1);
+				break;
+			}
+
 		}
 		pos = newPos;
-		glm::vec3 location = s1->GetPointAt(pos.s, pos.t);
-		if ((!s1->RollU() && (pos.s < 0 || pos.s > 1)) ||
+		if (glm::length(f) > 0.1 ||
+			(!s1->RollU() && (pos.s < 0 || pos.s > 1)) ||
 			(!s1->RollV() && (pos.t < 0 || pos.t > 1)) ||
 			(!s2->RollU() && (pos.p < 0 || pos.p > 1)) ||
 			(!s2->RollV() && (pos.q < 0 || pos.q > 1))) {
@@ -223,6 +230,7 @@ bool Surface::FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& p
 			}
 			return false;
 		}
+		glm::vec3 location = s1->GetPointAt(pos.s, pos.t);
 		IntersectionPoint inter{ pos, location };
 		points.emplace_back(inter);
 		if (glm::length(location - points[0].location) < stepLength)
@@ -235,6 +243,8 @@ glm::vec4 Surface::GradientMinimalization(glm::vec4 pos, std::shared_ptr<Surface
 {
 	TngSpace space1 = s1->GetTangentAt(pos.s, pos.t);
 	TngSpace space2 = s2->GetTangentAt(pos.p, pos.q);
+	if (space1.pos == space2.pos)
+		return pos;
 	glm::vec4 gradient = minusGradient(pos, space1, space2);
 	float alfa = FunctionMin(pos, gradient, s1, s2);
 	for (int i = 0; i < 100; i++) {

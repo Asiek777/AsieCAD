@@ -20,8 +20,11 @@ IntersectionCurve::IntersectionCurve(std::vector<IntersectionPoint> _points, boo
 	if (!shader)
 		shader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag");
 	points = _points;
-	if (isClosed)
+	if (isClosed) {
 		points.emplace_back(points[0]);
+		for (int i = 0; i < 4; i++)
+			points[points.size() - 1].coords[i] += std::floorf(points[points.size() - 2].coords[i]);
+	}
 	std::vector <glm::vec3> pointsPos(points.size());
 	for (int i = 0; i < points.size(); i++) {
 		pointsPos[i] = points[i].location;
@@ -30,7 +33,7 @@ IntersectionCurve::IntersectionCurve(std::vector<IntersectionPoint> _points, boo
 }
 
 void IntersectionCurve::Render()
-{
+{	
 	glBindVertexArray(mesh->GetVAO());
 	shader->use();
 	shader->setMat4("model", glm::mat4(1));
@@ -70,9 +73,11 @@ glm::vec3 IntersectionCurve::GetCenter()
 }
 
 
-std::vector<glm::vec2> IntersectionCurve::CalcTrimming(int lineCount, bool alongU,
-                                                       bool isFirst)
-{	
+
+std::vector<glm::vec2> IntersectionCurve::CalcTrimming(int lineCount, 
+	bool alongU, bool isFirst)
+{
+	grid[alongU + 2*!isFirst] = std::vector<std::vector<float>>(lineCount);
 	std::vector<glm::vec2> coords;
 	std::vector<glm::vec2> result(lineCount);
 	for (int i = 0; i < points.size(); i++) {
@@ -83,38 +88,59 @@ std::vector<glm::vec2> IntersectionCurve::CalcTrimming(int lineCount, bool along
 		if (alongU)
 			std::swap(coords[i].s, coords[i].t);
 	}
-
+	std::vector<float> startLine;
+	CalcLineInteresctions(0, coords, startLine, true);
+	
 	for (int i = 0; i < lineCount; i++) {
-		float line = i / (float)(lineCount - 1);
 		std::vector<float> intersections = std::vector<float>();
-		for (int j = 0; j < coords.size() - 1; j++) {
-			glm::vec2 p1(coords[j]), p2(coords[j + 1]);
-			IzolineIntersection(line, intersections, p1, p2);
-			//IzolineIntersection(line + 1, intersections, p1, p2);
-			//IzolineIntersection(line - 1, intersections, p1, p2);
-			
-		}
-		std::sort(intersections.begin(), intersections.end());
+		float line = i / (float)(lineCount - 1);
+		for (int j = 0; j < startLine.size(); j += 2)
+			if (line > startLine[j] && (j == startLine.size() - 1 || line < startLine[j + 1])) {
+				intersections.emplace_back(0);
+				break;
+			}				
+		
+		CalcLineInteresctions(line, coords, intersections, false);
+		
 		if (intersections.empty()) {
 			result[i] = glm::vec2(-1, -1);
 		}
-		else if(intersections.size() % 2 == 0) {
-			result[i] = glm::vec2(intersections[0], 
+		else {
+			if (intersections.size() % 2 == 1) 
+				intersections.emplace_back(1);			
+			result[i] = glm::vec2(intersections[0],
 				intersections[intersections.size() - 1]);
 		}
-		else {
-			result[i] = glm::vec2(intersections[0], 1);
-		}
+		grid[alongU + 2*!isFirst][i] = intersections;
 	}
 	return result;
 }
 
-void IntersectionCurve::IzolineIntersection(float line, std::vector<float>& intersections, 
-	glm::vec2 p1, glm::vec2 p2)
+void IntersectionCurve::CalcLineInteresctions(float line, std::vector<glm::vec2>& coords, 
+	std::vector<float>& intersections, bool isReversed)
 {
+	for (int j = 0; j < coords.size() - 1; j++) {
+		glm::vec2 p1(coords[j]), p2(coords[j + 1]);
+		IzolineIntersection(line, intersections, p1, p2, isReversed);
+		IzolineIntersection(line + 1, intersections, p1, p2, isReversed);
+		IzolineIntersection(line - 1, intersections, p1, p2, isReversed);
+			
+	}
+	std::sort(intersections.begin(), intersections.end());
+}
+
+void IntersectionCurve::IzolineIntersection(float line, std::vector<float>& intersections, 
+	glm::vec2 p1, glm::vec2 p2, bool isReversed)
+{
+	if(isReversed) {
+		std::swap(p1.x, p1.y);
+		std::swap(p2.x, p2.y);
+	}
 	if ((p1.y - line) * (p2.y - line) < 0) {				
 		float x = (p2.y * p1.x - line * p1.x + p2.x * line - p2.x * p1.y) /
 			(p2.y - p1.y);
+		if (x < 0 || x > 1)
+			x -= std::floorf(x);
 		intersections.emplace_back(x);
 	}
 }
@@ -137,6 +163,7 @@ void IntersectionCurve::RenderPlot()
 	std::vector<float> y(curve->points.size());
 	float offset[] = { 1,0,-1 };
 	ImVec4 colors[] = { ImVec4(1,1,1,1), ImVec4(1,1,1,1) };
+	
 	ImPlot::SetColormap(&colors[0], 2);
 	if (ImPlot::BeginPlot("plot 1", "U", "V", ImVec2(-1, 0),
 		ImPlotFlags_Default ^ ImPlotFlags_Legend))
@@ -150,6 +177,7 @@ void IntersectionCurve::RenderPlot()
 				ImPlot::PlotLine("#polygon" , 
 					x.data(), y.data(), x.size(), 0);
 			}
+		RenderPlotGrid(curve, 0);		
 		ImPlot::EndPlot();
 	}
 	//ImGui::SameLine();
@@ -165,9 +193,33 @@ void IntersectionCurve::RenderPlot()
 				ImPlot::PlotLine("#polygon" , 
 					x.data(), y.data(), x.size(), 0);
 			}
+		RenderPlotGrid(curve, 2);
 		ImPlot::EndPlot();
 	}
 	if (ImGui::Button("Close window"))
 		newest.reset();
 	ImGui::End();
+}
+
+void IntersectionCurve::RenderPlotGrid(std::shared_ptr<IntersectionCurve> curve, int offset)
+{
+	float x[2], y[2];
+	std::vector<std::vector<float>> *grid = &curve->grid[offset];
+	for (int i = 0; i < (*grid).size(); i++)
+		for (int j = 0; j < (*grid)[i].size(); j += 2) {
+			x[0] = (*grid)[i][j];
+			x[1] = (*grid)[i][j + 1];
+			y[0] = i / (float)((*grid).size() - 1);
+			y[1] = i / (float)((*grid).size() - 1);
+			ImPlot::PlotLine("#grid", x, y, 2);
+		}
+	grid = &curve->grid[offset + 1];
+	for (int i = 0; i < (*grid).size(); i++)
+		for (int j = 0; j < (*grid)[i].size(); j += 2) {
+			y[0] = (*grid)[i][j];
+			y[1] = (*grid)[i][j + 1];
+			x[0] = i / (float)((*grid).size() - 1);
+			x[1] = i / (float)((*grid).size() - 1);
+			ImPlot::PlotLine("#grid", x, y, 2);
+		}
 }

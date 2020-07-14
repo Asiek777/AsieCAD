@@ -134,3 +134,10 @@ TngSpace Torus::GetTangentAt(float u, float v)
     result.normal = glm::normalize(glm::cross(result.diffV, result.diffU));
     return result;
 }
+
+void Torus::SetTrimCurve(std::shared_ptr<IntersectionCurve> curve, bool _isFirst)
+{
+    Surface::SetTrimCurve(curve, _isFirst);
+    curve->CalcTrimming(20, 0, isFirst);
+    curve->CalcTrimming(20, 1, isFirst);
+}
