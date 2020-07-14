@@ -101,9 +101,9 @@ void PointSurface::UpdateCurvesBuffers()
 		}
 		else {
 			auto curve = trimCurve.lock();
-			//bool alongU = dynamic_cast<BezierPatch*>(this) ? !dim : dim;
+			bool alongU = dynamic_cast<BezierPatch*>(this) ? !dim : dim;
 			auto izolines = curve->CalcTrimming((curveCount[dim] - 1) * patchCount[dim] + 1,
-				dim, isFirst);
+				alongU, isFirst);
 			for (int i = 0; i < patchCount[dim]; i++)
 				for (int j = 0; j < curveCount[dim]; j++) {
 					glm::vec2 coordsRange = izolines[i * (curveCount[dim] - 1) + j];
