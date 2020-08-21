@@ -13,8 +13,9 @@ class Torus : public SceneObject, public Surface
 	unsigned int VBO, VAO;
 	int smallCount, bigCount;
 	float smallRadius, bigRadius;
-	std::unique_ptr<MeshBuffer> mesh;
+	std::unique_ptr<MeshBuffer> mesh[2];
 	Position position;
+	size_t size;
 	void prepareBuffers();
 public:
 	static std::unique_ptr<Shader> shader;

@@ -14,13 +14,13 @@ bool Surface::beginFromCursor = false;
 
 void Surface::TestSurfaceMenu()
 {
-	static glm::vec2 coords = glm::vec2(0.5f, 0.5f);
-	ImGui::DragFloat2("Point coords", &coords.x, 0.002, 0, 1);
-	TngSpace space = GetTangentAt(coords.x, coords.y);
-	Point::DrawPoint(space.pos, COLORS::CURVE_POINT);
-	Point::DrawPoint(space.pos + 0.3f * space.normal, COLORS::CURVE_POINT);
-	Point::DrawPoint(space.pos + space.diffU, COLORS::CURVE_POINT);
-	Point::DrawPoint(space.pos + space.diffV, COLORS::CURVE_POINT);
+	//static glm::vec2 coords = glm::vec2(0.5f, 0.5f);
+	//ImGui::DragFloat2("Point coords", &coords.x, 0.002, 0, 1);
+	//TngSpace space = GetTangentAt(coords.x, coords.y);
+	//Point::DrawPoint(space.pos, COLORS::CURVE_POINT);
+	//Point::DrawPoint(space.pos + 0.3f * space.normal, COLORS::CURVE_POINT);
+	//Point::DrawPoint(space.pos + space.diffU, COLORS::CURVE_POINT);
+	//Point::DrawPoint(space.pos + space.diffV, COLORS::CURVE_POINT);
 }
 
 void Surface::SurfaceInteresectionMenu()
@@ -182,7 +182,11 @@ glm::vec4 Surface::FirstPointFromOneSurface(std::shared_ptr<Surface> s1, float d
 		glm::vec4 pos = GradientMinimalization(startPos[bestPos[i].second], s1, s1);
 		float dist = glm::length(s1->GetPointAt(pos.s, pos.t) -
 			s1->GetPointAt(pos.p, pos.q));
+		//if (dist < 0.00001f)
+		//	continue;
 		float coordDist = glm::length(glm::vec2(pos.s - pos.p, pos.t - pos.q));
+		if(std::max(std::abs(pos.s - pos.p), std::abs(pos.t - pos.q)) > 0.999f)
+			continue;
 		if (dist < 0.01f && coordDist > 0.01f)
 			return pos;
 		std::cout << "checked " << i << " of " << bestPos.size() << " possible begginnings\n";
@@ -251,6 +255,8 @@ glm::vec4 Surface::GradientMinimalization(glm::vec4 pos, std::shared_ptr<Surface
 		space1 = s1->GetTangentAt(pos.s, pos.t);
 		space2 = s2->GetTangentAt(pos.p, pos.q);
 		glm::vec4 gradient = minusGradient(pos, space1, space2);
+		if (isnan(gradient.x))	
+			return pos;
 		float alfa = FunctionMin(pos, gradient, s1, s2);
 		pos += alfa * gradient;
 		if (alfa < 0.0000001f)

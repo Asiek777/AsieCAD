@@ -225,6 +225,7 @@
     <None Include="shaders\splinePatch.geom" />
     <None Include="shaders\torus.frag" />
     <None Include="shaders\torus.vert" />
+    <None Include="shaders\torusTrim.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

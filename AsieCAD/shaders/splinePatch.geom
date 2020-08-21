@@ -94,7 +94,7 @@ void main(void)
     
     int steps = min(int(dist * 30), 255);
     float delta = 1.0 / float(steps);
-    for (int i=0; i<=steps; ++i){
+    for (int i = 0; i <= steps; ++i){
         gl_Position = toBezier3(delta, i, B[0], B[1], B[2], B[3]);
         coords = vec3(delta * i * (coordsRange[1] - coordsRange[0]) + coordsRange[0],
             gl_in[0].gl_Position.yz);

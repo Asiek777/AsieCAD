@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <xstring>
 #include <glad/glad.h>
 #include <GL/gl.h>
 #include <glm/glm.hpp>
@@ -17,6 +18,8 @@ public:
 	MeshBuffer(std::vector<float> vertices, int vertSize);
 	MeshBuffer(std::vector<float> vertices, bool hasEBO = false, 
 	           std::vector<unsigned>  indices = {});
+	MeshBuffer(std::vector<float> vertices, bool hasEBO, std::vector<unsigned> indices,
+	           std::string s1);
 	~MeshBuffer();
 
 	void UpdateBuffer(std::vector<float> vertices);

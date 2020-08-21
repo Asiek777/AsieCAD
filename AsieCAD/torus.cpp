@@ -10,7 +10,7 @@ Torus::Torus(int _smallCircle, int _bigCircle, float _smallRadius, float _bigRad
 	SceneObject(("Torus " + std::to_string(Number)).c_str())
 {
 	if(!shader)
-        shader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag");
+        shader = std::make_unique<Shader>("shaders/torusTrim.vert", "shaders/patch.frag");
     bigCount = _bigCircle;
     smallCount = _smallCircle;
     smallRadius = _smallRadius;
@@ -33,12 +33,18 @@ Torus::Torus(tinyxml2::XMLElement* data):
 
 void Torus::prepareBuffers()
 {
+    std::vector<glm::vec2> izolinesSmall, izolinesBig;
+	if (isTrimmed) {
+        auto curve = trimCurve.lock();
+        izolinesSmall = curve->CalcTrimming(smallCount + 1, 0, isFirst);
+        izolinesBig = curve->CalcTrimming(bigCount + 1, 1, isFirst);
+	}
     std::vector<float> vertices;
-    std::vector<unsigned> indices;
-    for (int i = 0; i < bigCount; i++)
+    std::vector<unsigned> indices[2];
+    for (int i = 0; i <= bigCount; i++)
     {
         float bigAngle = 2 * M_PI * i / bigCount;
-        for (int j = 0; j < smallCount; j++)
+        for (int j = 0; j <= smallCount; j++)
         {
             float smallAngle = 2 * M_PI * j / smallCount;
             vertices.emplace_back((bigRadius + smallRadius * std::cosf(smallAngle))
@@ -46,34 +52,56 @@ void Torus::prepareBuffers()
             vertices.emplace_back(smallRadius * std::sinf(smallAngle));
             vertices.emplace_back((bigRadius + smallRadius * std::cosf(smallAngle))
                 * std::sinf(bigAngle));
-        }
-        for (int i = 0; i < bigCount; i++)
-            for (int j = 0; j < smallCount; j++)
-            {
-                indices.emplace_back(i * smallCount + j);
-                indices.emplace_back(((i + 1) % bigCount * smallCount) + j);
-                indices.emplace_back(i * smallCount + j);
-                indices.emplace_back(i * smallCount + ((j + 1) % smallCount));
+            if (isTrimmed) {
+                vertices.emplace_back(i / (float)smallCount);
+                vertices.emplace_back(j / (float)bigCount);
+                vertices.emplace_back(izolinesSmall[j].x);
+                vertices.emplace_back(izolinesSmall[j].y);
+                vertices.emplace_back(izolinesBig[i].x);
+                vertices.emplace_back(izolinesBig[i].y);
             }
+            else
+                for (int k = 0; k < 6; k++)
+                    vertices.emplace_back(0);        	
+        }
     }
-    mesh = std::make_unique<MeshBuffer>(vertices, true, indices);
+    for (int i = 0; i < bigCount; i++)
+        for (int j = 0; j <= smallCount; j++)
+        {
+            indices[0].emplace_back(i * (smallCount + 1) + j);
+            indices[0].emplace_back((i + 1) * (smallCount + 1) + j);
+        }
+    for (int i = 0; i <= bigCount; i++)
+		for (int j = 0; j < smallCount; j++) {
+            indices[1].emplace_back(i * (smallCount + 1) + j);
+            indices[1].emplace_back(i * (smallCount + 1) + (j + 1));
+        }
+    size = indices[0].size();
+    mesh[0] = std::make_unique<MeshBuffer>(vertices, true, indices[0], "TODO - po");
+    mesh[1] = std::make_unique<MeshBuffer>(vertices, true, indices[1], "TODO - po");
 }
 
 void Torus::Render()
 {
-    glBindVertexArray(mesh->GetVAO());
+    glBindVertexArray(mesh[0]->GetVAO());
     shader->use();
     shader->setMat4("model", position.GetModelMatrix());
     shader->setMat4("viewProjection", viewProjection);
+    shader->setBool("reverseTrimming", reverseTrimming && isTrimmed);
     glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
     shader->setVec3("color", color);
-    glDrawElements(GL_LINES, smallCount * bigCount * 4, GL_UNSIGNED_INT, 0);
+    shader->setBool("isBig", 1);
+    glDrawElements(GL_LINES, bigCount * (smallCount + 1) * 2, GL_UNSIGNED_INT, 0);
+    shader->setBool("isBig", 0);
+    glBindVertexArray(mesh[1]->GetVAO());
+    glDrawElements(GL_LINES, smallCount * (bigCount + 1) * 2, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
 	
 }
 
 void Torus::RenderMenu()
 {
+    ImGui::Checkbox("Reverse trimming", &reverseTrimming);
     bool hasChanged = false;
     hasChanged |= ImGui::SliderInt("Ring vertice count", &smallCount, 3, 70);
 	hasChanged |= ImGui::SliderInt("Ring count", &bigCount, 3, 200);
@@ -137,6 +165,7 @@ TngSpace Torus::GetTangentAt(float u, float v)
 
 void Torus::SetTrimCurve(std::shared_ptr<IntersectionCurve> curve, bool _isFirst)
 {
+    isTrimmed = true;
     Surface::SetTrimCurve(curve, _isFirst);
     curve->CalcTrimming(20, 0, isFirst);
     curve->CalcTrimming(20, 1, isFirst);

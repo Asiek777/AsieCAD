@@ -10,7 +10,6 @@ protected:
 	bool isCylinder = false;
 	int patchCount[2];
 	int curveCount[2];
-	bool isTrimmed = false;
 	std::shared_ptr<MeshBuffer> curveIndexes[2];
 	
 	static int PatchCount[2];

@@ -268,5 +268,8 @@
     <None Include="shaders\patch.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
+    <None Include="shaders\torusTrim.vert">
+      <Filter>Source Files\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>
