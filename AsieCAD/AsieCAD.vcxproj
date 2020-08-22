@@ -226,6 +226,7 @@
     <None Include="shaders\torus.frag" />
     <None Include="shaders\torus.vert" />
     <None Include="shaders\torusTrim.vert" />
+    <None Include="shaders\trim.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -116,6 +116,8 @@ void Framebuffers::RenderScene(Camera &camera, glm::mat4& viewProjection)
 	frameShader->setInt("frame0", 0);
 	frameShader->setInt("frame1", 1);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 void Framebuffers::DrawMenu()

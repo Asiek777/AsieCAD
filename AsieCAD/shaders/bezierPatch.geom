@@ -2,11 +2,12 @@
 
 layout(points) in;
 layout(line_strip, max_vertices = 256) out;
-out vec3 coords;
+//out float coords;
+out vec2 texCoords;
 
 uniform mat4 Knots[3];
 uniform bool isForward;
-uniform vec2 coordsRange;
+uniform vec4 coordsRange;
 uniform mat4 viewProjection;
 
 
@@ -58,8 +59,13 @@ void main(void)
     float delta = 1.0 / float(steps);
     for (int i=0; i<=steps; ++i){
         gl_Position = toBezier3(delta, i, B[0], B[1], B[2], B[3]);
-        coords = vec3(delta * i * (coordsRange[1] - coordsRange[0]) + coordsRange[0],
-            gl_in[0].gl_Position.yz);
+        
+        if (isForward)
+            texCoords = vec2(delta * i * (coordsRange[1] - coordsRange[0]) + coordsRange[0],
+                u * (coordsRange[3] - coordsRange[2]) + coordsRange[2]);
+        else
+            texCoords = vec2(u * (coordsRange[1] - coordsRange[0]) + coordsRange[0],
+                delta * i * (coordsRange[3] - coordsRange[2]) + coordsRange[2]);
         EmitVertex();
     }
 }

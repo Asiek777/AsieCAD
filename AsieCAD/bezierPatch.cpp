@@ -17,7 +17,7 @@ BezierPatch::BezierPatch(std::vector<std::shared_ptr<Point>> _points, bool _isCy
 {
 	if (!patchShader) {
 		patchShader = std::make_unique<Shader>("shaders/patch.vert",
-			"shaders/patch.frag", "shaders/bezierPatch.geom");
+			"shaders/trim.frag", "shaders/bezierPatch.geom");
 	}
 	Number++;
 }
@@ -75,26 +75,36 @@ void BezierPatch::DrawPatch(int offset[2], std::vector<glm::vec3>& knots)
 		}
 	
 	patchShader->use();
+	if (!trimCurve.expired()) {
+		auto curve = trimCurve.lock();
+		glBindTexture(GL_TEXTURE_2D, curve->GetTexture(isFirst));
+		patchShader->setBool("isTrimmed", true);
+	}
+	else
+		patchShader->setBool("isTrimmed", false);
 	patchShader->setMat4("Knots", coords[0], 3);
 	glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
 	patchShader->setVec3("color", color);
 	patchShader->setBool("isForward", 1);
 	patchShader->setBool("reverseTrimming", reverseTrimming && isTrimmed);
 	patchShader->setMat4("viewProjection", viewProjection);
-	glm::vec2 coordsRange(offset[0] / 3 / (float)patchCount[0],
-		(offset[0] / 3 + 1) / (float)patchCount[0]);
-	patchShader->setVec2("coordsRange", coordsRange);
+	glm::vec4 coordsRange(offset[0] / 3 / (float)patchCount[0],
+		(offset[0] / 3 + 1) / (float)patchCount[0],
+		offset[1] / 3 / (float)patchCount[1],
+		(offset[1] / 3 + 1) / (float)patchCount[1]);
+	patchShader->setVec4("coordsRange", coordsRange);
 
 	glBindVertexArray(curveIndexes[1]->GetVAO());
 	glDrawArrays(GL_POINTS, curveCount[1] * offset[1] / 3, curveCount[1]);
-
-	coordsRange = glm::vec2(offset[1] / 3 / (float)patchCount[1],
-		(offset[1] / 3 + 1) / (float)patchCount[1]);
-	patchShader->setVec2("coordsRange", coordsRange);
+	
+	//coordsRange = glm::vec2(offset[1] / 3 / (float)patchCount[1],
+	//	(offset[1] / 3 + 1) / (float)patchCount[1]);
+	patchShader->setVec4("coordsRange", coordsRange);
 	patchShader->setBool("isForward", 0);
 	glBindVertexArray(curveIndexes[0]->GetVAO());
 	glDrawArrays(GL_POINTS, curveCount[0] * offset[0] / 3, curveCount[0]);
 	glBindVertexArray(0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 }
 

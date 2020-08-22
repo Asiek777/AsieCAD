@@ -30,6 +30,12 @@ IntersectionCurve::IntersectionCurve(std::vector<IntersectionPoint> _points, boo
 		pointsPos[i] = points[i].location;
 	}
 	mesh = std::make_unique<MeshBuffer>(MeshBuffer::Vec3ToFloats(pointsPos));
+	GenerateTextures();
+}
+
+IntersectionCurve::~IntersectionCurve()
+{
+	glDeleteTextures(2, tex);
 }
 
 void IntersectionCurve::Render()
@@ -72,7 +78,34 @@ glm::vec3 IntersectionCurve::GetCenter()
 	return center / (float)points.size();
 }
 
-
+void IntersectionCurve::GenerateTextures()
+{
+	glGenTextures(2, tex);
+	static const int TEX_SIZE = 8192;
+	static unsigned char texData[TEX_SIZE][TEX_SIZE];
+	for (int k = 0; k < 2; k++) {
+		CalcTrimming(TEX_SIZE, 1, k);
+		for (int i = 0; i < TEX_SIZE; i++) {
+			bool isIn = false;
+			int vecInx = 0;
+			std::vector<float>& line = grid[1 + 2 * !k][i];
+			for (int j = 0; j < TEX_SIZE; j++) {
+				float linePix = (j + 1) / (float)(TEX_SIZE + 1) + 1.f / 8192.f;
+				while (vecInx < line.size() && line[vecInx] < linePix) {
+					isIn = !isIn;
+					vecInx++;
+				}
+				texData[i][j] = isIn ? 0 : 255;
+			}
+		}
+		glBindTexture(GL_TEXTURE_2D, tex[k]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEX_SIZE, TEX_SIZE, 0, GL_RED, GL_UNSIGNED_BYTE, texData);
+		
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+}
 
 std::vector<glm::vec2> IntersectionCurve::CalcTrimming(int lineCount, 
 	bool alongU, bool isFirst)
@@ -129,7 +162,7 @@ void IntersectionCurve::CalcLineInteresctions(float line, std::vector<glm::vec2>
 	std::sort(intersections.begin(), intersections.end());
 }
 
-void IntersectionCurve::IzolineIntersection(float line, std::vector<float>& intersections, 
+void IntersectionCurve::IzolineIntersection(float line, std::vector<float>& intersections,
 	glm::vec2 p1, glm::vec2 p2, bool isReversed)
 {
 	if(isReversed) {

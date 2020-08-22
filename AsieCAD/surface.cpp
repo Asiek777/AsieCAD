@@ -31,7 +31,7 @@ void Surface::SurfaceInteresectionMenu()
 				SceneObject::SceneObjects[SceneObject::selected]);
 			if (ImGui::CollapsingHeader("Find Intersection")) {
 				ImGui::Checkbox("Begin from cursor", &beginFromCursor);
-				ImGui::DragFloat("Step length", &stepLength, 0.001, 0.001f, 1.f);
+				ImGui::DragFloat("Step length", &stepLength, 0.001f, 0.010f, 1.f);
 
 				if (ImGui::Button("Calculate intersection")) {
 					FindIntersection(surface, surface);
