@@ -13,7 +13,7 @@ SplinePatch::SplinePatch(std::vector<std::shared_ptr<Point>> _points, bool _isCy
 {
 	if (!patchShader) {
 		patchShader = std::make_unique<Shader>("shaders/patch.vert",
-			"shaders/patch.frag", "shaders/splinePatch.geom");
+			"shaders/trim.frag", "shaders/splinePatch.geom");
 	}
 	Number++;
 }
@@ -69,6 +69,13 @@ void SplinePatch::DrawPatch(int offset[2], std::vector<glm::vec3> knots)
 			coords[2][j][i] = knots[index].z;
 		}
 	patchShader->use();
+	if (!trimCurve.expired()) {
+		auto curve = trimCurve.lock();
+		glBindTexture(GL_TEXTURE_2D, curve->GetTexture(isFirst));
+		patchShader->setBool("isTrimmed", true);
+	}
+	else
+		patchShader->setBool("isTrimmed", false);
 	patchShader->setMat4("Knots", coords[0], 3);
 	glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
 	
@@ -76,20 +83,19 @@ void SplinePatch::DrawPatch(int offset[2], std::vector<glm::vec3> knots)
 	patchShader->setBool("isForward", 1);
 	patchShader->setBool("reverseTrimming", reverseTrimming && isTrimmed);
 	patchShader->setMat4("viewProjection", viewProjection);
-	glm::vec2 coordsRange(offset[1] / (float)patchCount[1],
-		(offset[1] + 1) / (float)patchCount[1]);
-	patchShader->setVec2("coordsRange", coordsRange);
+	glm::vec4 coordsRange(offset[1] / (float)patchCount[1],
+		(offset[1] + 1) / (float)patchCount[1],
+		offset[0] / (float)patchCount[0],
+		(offset[0] + 1) / (float)patchCount[0]);
+	patchShader->setVec4("coordsRange", coordsRange);
 	glBindVertexArray(curveIndexes[0]->GetVAO());
 	glDrawArrays(GL_POINTS, curveCount[0] * offset[0], curveCount[0]);
 
-	coordsRange = glm::vec2(offset[0] / (float)patchCount[0],
-		(offset[0] + 1) / (float)patchCount[0]);
-	patchShader->setVec2("coordsRange", coordsRange);
 	patchShader->setBool("isForward", 0);
 	glBindVertexArray(curveIndexes[1]->GetVAO());
 	glDrawArrays(GL_POINTS, curveCount[1] * offset[1], curveCount[1]);
 	glBindVertexArray(0);
-	
+	glBindTexture(GL_TEXTURE_2D, 0);	
 }
 
 void SplinePatch::RenderMesh()

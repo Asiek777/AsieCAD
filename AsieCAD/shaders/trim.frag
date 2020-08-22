@@ -10,7 +10,7 @@ uniform sampler2D tex;
 void main()
 {
     if (isTrimmed) {
-        float alfa = texture(tex, texCoords.yx).r;
+        float alfa = texture(tex, texCoords).r;
         if (reverseTrimming)
             alfa = 1 - alfa;
         FragColor = vec4(color, alfa);
