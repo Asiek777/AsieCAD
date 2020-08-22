@@ -10,7 +10,7 @@ Torus::Torus(int _smallCircle, int _bigCircle, float _smallRadius, float _bigRad
 	SceneObject(("Torus " + std::to_string(Number)).c_str())
 {
 	if(!shader)
-        shader = std::make_unique<Shader>("shaders/torusTrim.vert", "shaders/patch.frag");
+        shader = std::make_unique<Shader>("shaders/torusTrim.vert", "shaders/trim.frag");
     bigCount = _bigCircle;
     smallCount = _smallCircle;
     smallRadius = _smallRadius;
@@ -52,17 +52,8 @@ void Torus::prepareBuffers()
             vertices.emplace_back(smallRadius * std::sinf(smallAngle));
             vertices.emplace_back((bigRadius + smallRadius * std::cosf(smallAngle))
                 * std::sinf(bigAngle));
-            if (isTrimmed) {
-                vertices.emplace_back(i / (float)smallCount);
-                vertices.emplace_back(j / (float)bigCount);
-                vertices.emplace_back(izolinesSmall[j].x);
-                vertices.emplace_back(izolinesSmall[j].y);
-                vertices.emplace_back(izolinesBig[i].x);
-                vertices.emplace_back(izolinesBig[i].y);
-            }
-            else
-                for (int k = 0; k < 6; k++)
-                    vertices.emplace_back(0);        	
+            vertices.emplace_back(i / (float)bigCount);
+            vertices.emplace_back(j / (float)smallCount);    	
         }
     }
     for (int i = 0; i < bigCount; i++)
@@ -85,17 +76,24 @@ void Torus::Render()
 {
     glBindVertexArray(mesh[0]->GetVAO());
     shader->use();
+    if (!trimCurve.expired()) {
+        auto curve = trimCurve.lock();
+        glBindTexture(GL_TEXTURE_2D, curve->GetTexture(isFirst));
+        shader->setBool("isTrimmed", true);
+    }
+    else
+        shader->setBool("isTrimmed", false);
     shader->setMat4("model", position.GetModelMatrix());
     shader->setMat4("viewProjection", viewProjection);
     shader->setBool("reverseTrimming", reverseTrimming && isTrimmed);
     glm::vec3 color = isSelected ? COLORS::HIGHLIGHT : COLORS::BASE;
     shader->setVec3("color", color);
-    shader->setBool("isBig", 1);
     glDrawElements(GL_LINES, bigCount * (smallCount + 1) * 2, GL_UNSIGNED_INT, 0);
-    shader->setBool("isBig", 0);
+
     glBindVertexArray(mesh[1]->GetVAO());
     glDrawElements(GL_LINES, smallCount * (bigCount + 1) * 2, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
+    glBindTexture(GL_TEXTURE_2D, 0);
 	
 }
 
