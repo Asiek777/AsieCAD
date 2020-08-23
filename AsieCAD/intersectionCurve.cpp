@@ -11,7 +11,7 @@ int IntersectionCurve::Number = 0;
 bool IntersectionCurve::intersectionNotFound = false;
 std::weak_ptr<IntersectionCurve> IntersectionCurve::newest;
 
-IntersectionCurve::IntersectionCurve(std::vector<IntersectionPoint> _points, bool isClosed,
+IntersectionCurve::IntersectionCurve(std::vector<IntersectionPoint> _points, Openness isClosed,
 	std::shared_ptr<Surface> _s1, std::shared_ptr<Surface> _s2) :
 	SceneObject(("Intersection curve " + std::to_string(Number)).c_str()),
 	s1(_s1), s2(_s2)
@@ -20,17 +20,22 @@ IntersectionCurve::IntersectionCurve(std::vector<IntersectionPoint> _points, boo
 	if (!shader)
 		shader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag");
 	points = _points;
-	if (isClosed) {
+	if (isClosed == ClosedBoth) {
 		points.emplace_back(points[0]);
 		for (int i = 0; i < 4; i++)
 			points[points.size() - 1].coords[i] += std::floorf(points[points.size() - 2].coords[i]);
 	}
+	if (s1 == s2)
+		isClosed = Open;
+	if(isClosed == Closed0 || isClosed == ClosedBoth)
+		GenerateTextures(1);
+	if (isClosed == Closed1 || isClosed == ClosedBoth)
+		GenerateTextures(0);
 	std::vector <glm::vec3> pointsPos(points.size());
 	for (int i = 0; i < points.size(); i++) {
 		pointsPos[i] = points[i].location;
 	}
 	mesh = std::make_unique<MeshBuffer>(MeshBuffer::Vec3ToFloats(pointsPos));
-	GenerateTextures();
 }
 
 IntersectionCurve::~IntersectionCurve()
@@ -78,33 +83,33 @@ glm::vec3 IntersectionCurve::GetCenter()
 	return center / (float)points.size();
 }
 
-void IntersectionCurve::GenerateTextures()
+void IntersectionCurve::GenerateTextures(int texNumber)
 {
-	glGenTextures(2, tex);
+	glGenTextures(1, tex + texNumber);
 	static const int TEX_SIZE = 8192;
 	static unsigned char texData[TEX_SIZE][TEX_SIZE];
-	for (int k = 0; k < 2; k++) {
-		CalcTrimming(TEX_SIZE, 1, k);
-		for (int i = 0; i < TEX_SIZE; i++) {
-			bool isIn = false;
-			int vecInx = 0;
-			std::vector<float>& line = grid[1 + 2 * !k][i];
-			for (int j = 0; j < TEX_SIZE; j++) {
-				float linePix = (j + 1) / (float)(TEX_SIZE + 1) + 1.f / 8192.f;
-				while (vecInx < line.size() && line[vecInx] < linePix) {
-					isIn = !isIn;
-					vecInx++;
-				}
-				texData[i][j] = isIn ? 0 : 255;
+	CalcTrimming(TEX_SIZE, 1, texNumber);
+	for (int i = 0; i < TEX_SIZE; i++) {
+		bool isIn = false;
+		int vecInx = 0;
+		std::vector<float>& line = grid[1 + 2 * !texNumber][i];
+		for (int j = 0; j < TEX_SIZE; j++) {
+			float linePix = (j + 1) / (float)(TEX_SIZE + 2) + 0.5f / TEX_SIZE;
+			while (vecInx < line.size() && line[vecInx] < linePix) {
+				isIn = !isIn;
+				vecInx++;
 			}
+			texData[i][j] = isIn ? 0 : 255;
 		}
-		glBindTexture(GL_TEXTURE_2D, tex[k]);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEX_SIZE, TEX_SIZE, 0, GL_RED, GL_UNSIGNED_BYTE, texData);
-		
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-		glBindTexture(GL_TEXTURE_2D, 0);
 	}
+	glBindTexture(GL_TEXTURE_2D, tex[texNumber]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, TEX_SIZE, TEX_SIZE, 0, GL_RED, GL_UNSIGNED_BYTE, texData);
+		
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
 std::vector<glm::vec2> IntersectionCurve::CalcTrimming(int lineCount, 
@@ -155,8 +160,11 @@ void IntersectionCurve::CalcLineInteresctions(float line, std::vector<glm::vec2>
 	for (int j = 0; j < coords.size() - 1; j++) {
 		glm::vec2 p1(coords[j]), p2(coords[j + 1]);
 		IzolineIntersection(line, intersections, p1, p2, isReversed);
-		IzolineIntersection(line + 1, intersections, p1, p2, isReversed);
-		IzolineIntersection(line - 1, intersections, p1, p2, isReversed);
+		if (p1.x != 1.001f && p1.x != -0.001f && p1.y != 1.001f && p1.y != -0.001f &&
+			p2.x != 1.001f && p2.x != -0.001f && p2.y != 1.001f && p2.y != -0.001f) {
+			IzolineIntersection(line + 1, intersections, p1, p2, isReversed);
+			IzolineIntersection(line - 1, intersections, p1, p2, isReversed);
+		}
 			
 	}
 	std::sort(intersections.begin(), intersections.end());

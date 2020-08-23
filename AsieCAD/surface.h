@@ -12,6 +12,10 @@ struct TngSpace
 	glm::vec3 pos, diffU, diffV, normal;
 };
 
+enum Openness {
+	Open, Closed0, Closed1, ClosedBoth
+};
+
 struct IntersectionPoint;
 class IntersectionCurve;
 
@@ -25,6 +29,8 @@ class Surface
 		std::shared_ptr<Surface> s2, glm::vec4 pos);
 	
 	static void FindIntersection(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
+	static void clampCoords(glm::vec4& pos, std::shared_ptr<Surface>& s1, 
+		std::shared_ptr<Surface>& s2);
 	static glm::vec4 CalcFirstPoint(std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
 	
 	static glm::vec4 FirstPointFromCursor(std::shared_ptr<Surface> s1,
@@ -32,6 +38,7 @@ class Surface
 	static glm::vec4 FirstPointFromTwoSurfaces(std::shared_ptr<Surface> s1,
 		std::shared_ptr<Surface> s2, float divide);
 	static glm::vec4 FirstPointFromOneSurface(std::shared_ptr<Surface> s1, float divide);
+	static glm::vec4 FirstPointFromOneSurfaceCursor(std::shared_ptr<Surface> s1, float divide);
 	static glm::vec4 GradientMinimalization(glm::vec4 pos, 
 		std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
 	
@@ -40,9 +47,9 @@ class Surface
 		std::shared_ptr<Surface>& s1, std::shared_ptr<Surface>& s2);
 
 	
-	static bool FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& points,
-	                              bool isReverse, std::shared_ptr<Surface> s1,
-	                              std::shared_ptr<Surface> s2);
+	static Openness FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& points,
+		bool isReverse, std::shared_ptr<Surface> s1,
+		std::shared_ptr<Surface> s2);
 	
 protected:
 	std::weak_ptr<IntersectionCurve> trimCurve;

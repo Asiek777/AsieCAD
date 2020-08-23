@@ -9,6 +9,7 @@ struct IntersectionPoint
 	glm::vec3 location;
 };
 
+enum Openness;
 
 class IntersectionCurve :
     public SceneObject
@@ -24,7 +25,7 @@ class IntersectionCurve :
 	static std::unique_ptr<Shader> shader;
 	static std::weak_ptr<IntersectionCurve> newest;
 	friend class Surface;
-	void GenerateTextures();
+	void GenerateTextures(int texNumber);
 	void IzolineIntersection(float line, std::vector<float>& intersections, 
 		glm::vec2 p1, glm::vec2 p2, bool isReversed);
 	static void RenderPlotGrid(std::shared_ptr<IntersectionCurve> curve, int offset);
@@ -32,7 +33,7 @@ class IntersectionCurve :
 	                           std::vector<float>& intersections, bool isReversed);
 	
 public:
-	IntersectionCurve(std::vector<IntersectionPoint> _points, bool isClosed,
+	IntersectionCurve(std::vector<IntersectionPoint> _points, Openness isClosed,
 		std::shared_ptr<Surface> _s1, std::shared_ptr<Surface> _s2);
 	virtual ~IntersectionCurve();
 	void Render() override;
