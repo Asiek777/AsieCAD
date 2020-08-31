@@ -128,6 +128,10 @@ std::vector<glm::vec2> IntersectionCurve::CalcTrimming(int lineCount,
 	}
 	std::vector<float> startLine;
 	CalcLineInteresctions(0, coords, startLine, true);
+	if (!alongU && startLine.size() % 2 == 1 && (isFirst ? s1 : s2)->RollV())
+		(isFirst ? s1 : s2)->isTrimmed = false;
+	if (alongU && startLine.size() % 2 == 1 && (isFirst ? s1 : s2)->RollU())
+		(isFirst ? s1 : s2)->isTrimmed = false;
 	
 	for (int i = 0; i < lineCount; i++) {
 		std::vector<float> intersections = std::vector<float>();
@@ -218,7 +222,8 @@ void IntersectionCurve::RenderPlot()
 				ImPlot::PlotLine("#polygon" , 
 					x.data(), y.data(), x.size(), 0);
 			}
-		RenderPlotGrid(curve, 0);		
+		if(curve->s1->isTrimmed)
+			RenderPlotGrid(curve, 0);		
 		ImPlot::EndPlot();
 	}
 	//ImGui::SameLine();
@@ -234,7 +239,8 @@ void IntersectionCurve::RenderPlot()
 				ImPlot::PlotLine("#polygon" , 
 					x.data(), y.data(), x.size(), 0);
 			}
-		RenderPlotGrid(curve, 2);
+		if (curve->s2->isTrimmed)
+			RenderPlotGrid(curve, 2);
 		ImPlot::EndPlot();
 	}
 	if (ImGui::Button("Close window"))

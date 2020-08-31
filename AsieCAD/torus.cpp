@@ -76,7 +76,9 @@ void Torus::Render()
 {
     glBindVertexArray(mesh[0]->GetVAO());
     shader->use();
-    if (!trimCurve.expired()) {
+    if (trimCurve.expired())
+        isTrimmed = false;
+    if (isTrimmed) {
         auto curve = trimCurve.lock();
         glBindTexture(GL_TEXTURE_2D, curve->GetTexture(isFirst));
         shader->setBool("isTrimmed", true);

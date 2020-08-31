@@ -69,7 +69,9 @@ void SplinePatch::DrawPatch(int offset[2], std::vector<glm::vec3> knots)
 			coords[2][j][i] = knots[index].z;
 		}
 	patchShader->use();
-	if (!trimCurve.expired()) {
+	if (trimCurve.expired())
+		isTrimmed = false;
+	if (isTrimmed) {
 		auto curve = trimCurve.lock();
 		glBindTexture(GL_TEXTURE_2D, curve->GetTexture(isFirst));
 		patchShader->setBool("isTrimmed", true);

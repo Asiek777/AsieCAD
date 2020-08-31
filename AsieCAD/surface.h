@@ -53,12 +53,12 @@ class Surface
 	
 protected:
 	std::weak_ptr<IntersectionCurve> trimCurve;
-	bool isTrimmed = false;
 	bool isFirst;
 	bool reverseTrimming = false;
 	void TestSurfaceMenu();
 	
 public:
+	bool isTrimmed = false;
 	virtual ~Surface() {}
 	virtual glm::vec3 GetPointAt(float u, float v) = 0;
 	virtual TngSpace GetTangentAt(float u, float v) = 0;
