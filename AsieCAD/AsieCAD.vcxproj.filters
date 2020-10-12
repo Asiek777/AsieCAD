@@ -238,9 +238,6 @@
     <None Include="shaders\torus.vert">
       <Filter>Source Files\Shaders</Filter>
     </None>
-    <None Include="shaders\point.vert">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
     <None Include="position.cpp">
       <Filter>Source Files</Filter>
     </None>
@@ -263,9 +260,6 @@
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="shaders\gregoryPatch.geom">
-      <Filter>Source Files\Shaders</Filter>
-    </None>
-    <None Include="shaders\patch.frag">
       <Filter>Source Files\Shaders</Filter>
     </None>
     <None Include="shaders\torusTrim.vert">

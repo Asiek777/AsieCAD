@@ -25,7 +25,6 @@ class Framebuffers
 		 1.0f,  1.0f,  1.0f, 1.0f
 	};
 	std::unique_ptr<Shader> frameShader;
-	glm::mat4 frustMatrix(float l, float r, float b, float t, float n, float f);
 	glm::mat4 frustrumMatrix(float cameraZoom, float eyeOffset);
 public:
 	Framebuffers(int _screenWidth, int _screenHeight);

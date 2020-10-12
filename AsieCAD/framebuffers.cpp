@@ -1,16 +1,5 @@
 #include "framebuffers.h"
 
-glm::mat4 Framebuffers::frustMatrix(float l, float r, float b, float t, float n, float f)
-{
-	glm::mat4 mat = glm::mat4(
-		2.f * n / (r - l), 0.f, (r + l) / (r - l), 0.f,
-		0.f, 2.f * n / (t - b), (t + b) / (t - b), 0.f,
-		0.f, 0.f, (f + n) / (f - n), -2.f * f * n / (f - n),
-		0.f, 0.f, 1.f, 0.f
-	);
-	return mat;
-}
-
 Framebuffers::Framebuffers(int _screenWidth, int _screenHeight)
 {
 	screenHeight = _screenHeight;
@@ -41,6 +30,7 @@ Framebuffers::Framebuffers(int _screenWidth, int _screenHeight)
 
 Framebuffers::~Framebuffers()
 {
+	glDeleteFramebuffers(2, framebuffer);
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
 }
