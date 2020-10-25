@@ -24,12 +24,18 @@ Framebuffers::Framebuffers(int _screenWidth, int _screenHeight)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer[i], 0);
+		glGenRenderbuffers(1, rbo + i);
+		glBindRenderbuffer(GL_RENDERBUFFER, rbo[i]);
+		glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, screenWidth, screenHeight);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo[i]);
 	}
 	frameShader = std::make_unique<Shader>("shaders/frame.vert", "shaders/frame.frag");
 }
 
 Framebuffers::~Framebuffers()
 {
+	glDeleteRenderbuffers(2, rbo);
+	glDeleteTextures(2, textureColorbuffer);
 	glDeleteFramebuffers(2, framebuffer);
 	glDeleteVertexArrays(1, &quadVAO);
 	glDeleteBuffers(1, &quadVBO);
@@ -83,9 +89,6 @@ void Framebuffers::RenderScene(Camera &camera, glm::mat4& viewProjection)
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		viewProjection = frustrumMatrix(camera.Zoom, 0) *
 			camera.GetViewMatrix(0);
-		//glm::mat4 viewProjection = glm::perspective(glm::radians(camera.Zoom),
-		//	(float)screenWidth / screenHeight, nearZ, farZ)
-		//	* camera.GetViewMatrix(0);
 		SceneObject::SetViewProjectionMatrix(viewProjection);
 
 		SceneObject::RenderScene();

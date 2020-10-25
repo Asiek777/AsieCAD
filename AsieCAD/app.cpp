@@ -2,9 +2,11 @@
 #include "point.h"
 #include "cursor.h"
 #include "BezierC0.h"
+#include "milling.h"
 #include "tinyxml2/tinyxml2.h"
 #include "tinyxml2/tinyfiledialogs.h"
 #include "toolXML.h"
+#include "woodBlock.h"
 
 App* App::instance;
 
@@ -91,8 +93,10 @@ void App::DrawMenu()
 		ImGui::SliderFloat("View Angle", &camera.Zoom, 1.0f, 45.0f);
 
 		framebuffers->DrawMenu();
+		Milling::MillingFileMenu();
 		SceneObject::DrawMenu();
-
+		auto milling = std::static_pointer_cast<Milling>(SceneObject::SceneObjects[2]);
+		milling->Update(1.f / ImGui::GetIO().Framerate);
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
 		            1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		if (ImGui::Button("Quit"))
@@ -109,16 +113,8 @@ void App::DrawMenu()
 
 void App::CreateDefaultScene()
 {
-	//SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 4, "torus 1"));
-	//SceneObject::SceneObjects.emplace_back(std::make_shared<Torus>(50, 50, 1, 6, "torus 2"));
-	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1, 0, 0));
-	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.4, -2, 0));
-	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(1.7, 2, 0));
-	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.5, 3));
-	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2, 1.7, 0));
-	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.4, 1.9, 4));
-	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.2, 0.7, 2));
-	//SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(2.8, 0.3, 0));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<WoodBlock>(1000, 1000));
+	SceneObject::SceneObjects.emplace_back(std::make_shared<Milling>(0.5, false));
 }
 
 void App::framebuffer_size_callback(GLFWwindow* window, int width, int height) {

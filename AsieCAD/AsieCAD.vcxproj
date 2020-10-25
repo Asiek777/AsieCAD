@@ -164,6 +164,7 @@
     <ClCompile Include="intersectionCurve.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshBuffer.cpp" />
+    <ClCompile Include="milling.cpp" />
     <ClCompile Include="splinePatch.cpp" />
     <ClCompile Include="pointSurface.cpp" />
     <ClCompile Include="point.cpp" />
@@ -174,6 +175,7 @@
     <ClCompile Include="tinyxml2\tinyxml2.cpp" />
     <ClCompile Include="toolXML.cpp" />
     <ClCompile Include="torus.cpp" />
+    <ClCompile Include="woodBlock.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="app.h" />
@@ -199,6 +201,7 @@
     <ClInclude Include="Imgui\imstb_truetype.h" />
     <ClInclude Include="intersectionCurve.h" />
     <ClInclude Include="meshBuffer.h" />
+    <ClInclude Include="milling.h" />
     <ClInclude Include="splinePatch.h" />
     <ClInclude Include="pointSurface.h" />
     <ClInclude Include="point.h" />
@@ -211,20 +214,25 @@
     <ClInclude Include="tinyxml2\tinyxml2.h" />
     <ClInclude Include="toolXML.h" />
     <ClInclude Include="torus.h" />
+    <ClInclude Include="woodBlock.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="position.cpp" />
     <None Include="shaders\bezier.geom" />
     <None Include="shaders\bezierPatch.geom" />
     <None Include="shaders\gregoryPatch.geom" />
+    <None Include="shaders\milling.vert" />
     <None Include="shaders\patch.vert" />
     <None Include="shaders\frame.frag" />
     <None Include="shaders\frame.vert" />
+    <None Include="shaders\phong.frag" />
+    <None Include="shaders\wood.vert" />
     <None Include="shaders\splinePatch.geom" />
     <None Include="shaders\torus.frag" />
     <None Include="shaders\torus.vert" />
     <None Include="shaders\torusTrim.vert" />
     <None Include="shaders\trim.frag" />
+    <None Include="shaders\wood.geom" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

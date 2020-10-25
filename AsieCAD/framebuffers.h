@@ -11,7 +11,7 @@ class Framebuffers
 	glm::vec3 leftFilter = glm::vec3(0, 1, 1);
 	glm::vec3 rightFilter = glm::vec3(1, 0, 0);
 	
-	unsigned int framebuffer[2], quadVAO, quadVBO, textureColorbuffer[2];
+	unsigned int framebuffer[2], quadVAO, quadVBO, textureColorbuffer[2], rbo[2];
 	int screenWidth, screenHeight;
 	float nearZ = 1.0f, farZ = 100.0f;
 	float projPlaneDist = 50;
