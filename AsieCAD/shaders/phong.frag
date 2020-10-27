@@ -12,8 +12,10 @@ struct DirLight {
 
 in vec3 FragPos;
 in vec3 Normal;
-in vec2 texCoord;
 
+uniform sampler2D tex;
+
+uniform bool useTexture;
 uniform vec3 viewPos;
 uniform vec3 color;
 float shininess = 128;
@@ -43,9 +45,13 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
-
-    vec3 ambient = light.ambient * color;
-    vec3 diffuse = light.diffuse * diff * color;
-    vec3 specular = light.specular * spec * color;
+    vec3 texColor;
+    if (useTexture)
+        texColor = texture2D(tex, FragPos.xz/8 + FragPos.y/5.5).rgb;
+    else
+        texColor = color;
+    vec3 ambient = light.ambient * texColor;
+    vec3 diffuse = light.diffuse * diff * texColor;
+    vec3 specular = light.specular * spec * texColor;
     return (ambient + diffuse + specular);
 }

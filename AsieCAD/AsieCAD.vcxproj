@@ -209,6 +209,7 @@
     <ClInclude Include="position.h" />
     <ClInclude Include="sceneObject.h" />
     <ClInclude Include="shader_s.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="surface.h" />
     <ClInclude Include="tinyxml2\tinyfiledialogs.h" />
     <ClInclude Include="tinyxml2\tinyxml2.h" />
