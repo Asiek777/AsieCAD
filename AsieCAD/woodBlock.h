@@ -12,11 +12,11 @@ class WoodBlock : public SceneObject
 	std::unique_ptr<Shader> shader;
 	unsigned highMapTex, woodTex;
 	std::vector<float> highMap;
-	glm::vec3 size = glm::vec3(15,5,15);
 	int texWidth, texHeight, indexCount[2];
 	
 	static int NewTexSize[2];
 	static float maxDeep;
+	static glm::vec3 scale;
 	void PrepareBuffers();
 public:
 	WoodBlock();

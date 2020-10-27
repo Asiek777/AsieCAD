@@ -6,7 +6,7 @@
 
 int WoodBlock::NewTexSize[] = { 1000, 1000 };
 float WoodBlock::maxDeep = 1.0f;
-
+glm::vec3 WoodBlock::scale = glm::vec3(15, 5, 15);
 
 
 WoodBlock::WoodBlock() :
@@ -18,7 +18,7 @@ WoodBlock::WoodBlock() :
 	highMap = std::vector<float>(texHeight *texWidth);
 	for (int i = 0; i < texHeight; i++)
 		for (int j = 0; j < texWidth; j++) {
-			highMap[i * texWidth + j] = size.y;
+			highMap[i * texWidth + j] = scale.y;
 		}
 	glGenTextures(1, &highMapTex);
 	glBindTexture(GL_TEXTURE_2D, highMapTex);
@@ -161,7 +161,8 @@ void WoodBlock::Render()
 	shader->setMat4("viewProjection", viewProjection);
 	shader->setInt("tex", 1);
 	shader->setInt("useTexture", true);
-	glm::mat4 model = model = glm::scale(glm::mat4(1), glm::vec3(15, 1, 15));
+	glm::vec3 scalling = glm::vec3(scale.x, 1, scale.z);
+	glm::mat4 model = model = glm::scale(glm::mat4(1), scalling);
 	model = glm::translate(model, glm::vec3(-0.5f, 0.0f, -0.5f));
 	shader->setMat4("model", model);
 	glDrawElements(GL_TRIANGLES, indexCount[0], GL_UNSIGNED_INT, 0);
@@ -176,10 +177,10 @@ void WoodBlock::Render()
 
 ::std::string WoodBlock::UpdateWood(glm::vec3 pos, float radius, bool isFlat, bool UpdateTex)
 {
-	float r = radius / size.x;
-	glm::vec2 texCenter = glm::vec2(pos.z, pos.x) / size.x + 0.5f;
-	float rH = r * texHeight;
-	float rW = r * texWidth;
+	float r = radius / scale.x;
+	glm::vec2 texCenter = glm::vec2(pos.z / scale.z, pos.x / scale.x) + 0.5f;
+	float rH = radius / scale.x * texHeight;
+	float rW = radius / scale.z * texWidth;
 	int center[2] = { std::round(texCenter.x * texHeight),
 		std::round(texCenter.y * texWidth) };
 	for (int i = -rH - 1; i <= rH + 1; i++)
@@ -189,11 +190,14 @@ void WoodBlock::Render()
 				glm::vec2 coords = glm::vec2(center[0] + i, center[1] + j);
 				coords.x /= texHeight;
 				coords.y /= texWidth;
-				float dist = glm::distance(coords, texCenter);
-				if (dist < r) {
+				coords.x = (coords.x - 0.5f) * scale.z;
+				coords.y = (coords.y - 0.5f) * scale.x;
+				glm::vec2 worldPos(pos.z, pos.x);
+				float dist = glm::distance(coords, worldPos);
+				if (dist < radius) {
 					float high = pos.y;
 					if(!isFlat)
-						high += (r - sqrtf(r * r - dist * dist)) * size.x;
+						high += (radius - sqrtf(radius * radius - dist * dist));
 					if(high<maxDeep) {
 						UpdateHighMapTexture();
 						return "Milling went to deep";
@@ -223,7 +227,8 @@ void WoodBlock::UpdateHighMapTexture()
 
 void WoodBlock::ShowMenu()
 {
-	ImGui::DragInt2("HighMap size", NewTexSize);
+	ImGui::DragInt2("HighMap scale", NewTexSize);
+	ImGui::DragFloat3("Wood Size", &scale.x, 0.05f, 0);
 	ImGui::DragFloat("Maximal deepness", &maxDeep, 0.01f, 0, 5);
 	if (ImGui::Button("Reset block")) {
 		SceneObjects[1] = std::make_shared<WoodBlock>();
