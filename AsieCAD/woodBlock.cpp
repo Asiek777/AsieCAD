@@ -12,6 +12,7 @@ glm::vec3 WoodBlock::scale = glm::vec3(15, 5, 15);
 WoodBlock::WoodBlock() :
 	SceneObject("WoodBlock"), texWidth(NewTexSize[0]), texHeight(NewTexSize[1])
 {
+	std::cout << texWidth << " " << texHeight << "\n";
 	shader = std::make_unique<Shader>("shaders/wood.vert", "shaders/phong.frag", "shaders/wood.geom");
 	PrepareBuffers();
 
@@ -24,8 +25,8 @@ WoodBlock::WoodBlock() :
 	glBindTexture(GL_TEXTURE_2D, highMapTex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, texWidth, texHeight, 0, GL_RED, GL_FLOAT, highMap.data());
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -177,10 +178,9 @@ void WoodBlock::Render()
 
 ::std::string WoodBlock::UpdateWood(glm::vec3 pos, float radius, bool isFlat, bool UpdateTex)
 {
-	float r = radius / scale.x;
 	glm::vec2 texCenter = glm::vec2(pos.z / scale.z, pos.x / scale.x) + 0.5f;
-	float rH = radius / scale.x * texHeight;
-	float rW = radius / scale.z * texWidth;
+	float rH = radius / scale.z * texHeight;
+	float rW = radius / scale.x * texWidth;
 	int center[2] = { std::round(texCenter.x * texHeight),
 		std::round(texCenter.y * texWidth) };
 	for (int i = -rH - 1; i <= rH + 1; i++)
@@ -198,12 +198,12 @@ void WoodBlock::Render()
 					float high = pos.y;
 					if(!isFlat)
 						high += (radius - sqrtf(radius * radius - dist * dist));
-					if(high<maxDeep) {
+					if(high < maxDeep) {
 						UpdateHighMapTexture();
 						return "Milling went to deep";
 					}
 					if (highMap[(center[0] + i) * texWidth + (center[1] + j)] > high) {
-						if (isFlat && dist < 0.8 * r && 
+						if (isFlat && dist < 0.8 * radius && 
 							highMap[(center[0] + i) * texWidth + (center[1] + j)] > high + 0.0001)
 							return "Milling with wrong cutter's part";
 						highMap[(center[0] + i) * texWidth + (center[1] + j)] = high;
@@ -219,9 +219,9 @@ void WoodBlock::Render()
 void WoodBlock::UpdateHighMapTexture()
 {
 	glBindTexture(GL_TEXTURE_2D, highMapTex);
-	//glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texWidth, texHeight, GL_RED, GL_FLOAT, highMap.data());
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, texWidth, texHeight, 0, 
-	             GL_RED, GL_FLOAT, highMap.data());
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, texWidth, texHeight, GL_RED, GL_FLOAT, highMap.data());
+	//glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, texWidth, texHeight, 0, 
+	//             GL_RED, GL_FLOAT, highMap.data());
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 

@@ -91,13 +91,13 @@ void App::DrawMenu()
 		ImGui::Begin("Settings Window");
 
 		ImGui::SliderFloat("View Angle", &camera.Zoom, 1.0f, 45.0f);
-
-		framebuffers->DrawMenu();
+		pathGenerator.ShowMenu();
 		Milling::ShowMenu();
 		if (Milling::millingMode) {
 			auto milling = std::static_pointer_cast<Milling>(SceneObject::SceneObjects[2]);
 			milling->Update(1.f / ImGui::GetIO().Framerate);
 		}
+		framebuffers->DrawMenu();
 		SceneObject::DrawMenu();
 		ImGui::Text("Application average %.3f ms/frame (%.1f FPS)",
 		            1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);

@@ -10,11 +10,8 @@ bool Milling::showPath = true;
 bool Milling::millingMode = false;
 std::string Milling::error = "";
 
-Milling::Milling(float _radius, bool _isFlat) :
-	SceneObject("Milling"), radius(_radius), isFlat(_isFlat)
+void Milling::PrepareBuffers()
 {
-	shader = std::make_unique<Shader>("shaders/milling.vert", "shaders/phong.frag", "shaders/wood.geom");
-	pathShader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag");
 	int width = 100, height = isFlat ? 2 : 50;
 	std::vector<float> vertices;
 	std::vector<unsigned> indices;
@@ -57,6 +54,14 @@ Milling::Milling(float _radius, bool _isFlat) :
 	};
 	indexCount = indices.size();
 	mesh = std::make_unique<MeshBuffer>(vertices, 1, indices);
+}
+
+Milling::Milling(float _radius, bool _isFlat) :
+	SceneObject("Milling"), radius(_radius), isFlat(_isFlat)
+{
+	shader = std::make_unique<Shader>("shaders/milling.vert", "shaders/phong.frag", "shaders/wood.geom");
+	pathShader = std::make_unique<Shader>("shaders/torus.vert", "shaders/torus.frag");
+	PrepareBuffers();
 	position = glm::vec3(0, 10, 0);
 }
 
@@ -130,6 +135,12 @@ void Milling::RenderMenu()
 		auto block = static_cast<WoodBlock*>(SceneObjects[1].get());
 		error = block->UpdateWood(position, radius, isFlat, true);		
 	}
+	if (ImGui::Button("Change cutter type")) {
+		isFlat = !isFlat;
+		PrepareBuffers();
+	}
+	if (ImGui::DragFloat("Cutter radius", &radius, 0.05))
+		PrepareBuffers();
 
 }
 
@@ -183,6 +194,8 @@ void Milling::ShowMenu()
 			milling->Update(10000000);
 		}
 		ImGui::Checkbox("Show path", &showPath);
+
+		
 		ImGui::DragFloat("Milling speed", &speed, 0.1f, 0, 100);
 		if (error.length() > 1) {
 			ImGui::Begin("Error");

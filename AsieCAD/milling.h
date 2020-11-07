@@ -20,6 +20,7 @@ class Milling : public SceneObject
 	static float speed;
 	static bool showPath;
 	static std::string error;
+	void PrepareBuffers();
 	static void ReadPaths(std::string path);
 
 public:

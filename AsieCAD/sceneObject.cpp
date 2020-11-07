@@ -104,9 +104,11 @@ void SceneObject::ChangeSelection(int i)
 }
 void SceneObject::DrawMenu()
 {
-	ImGui::Checkbox("Rotate Camera Around Cursor", &rotateAroundCursor);
-	ImGui::Checkbox("Hide Points", &hidePoints);
-	ToolXML::LoadSaveMenu();
+	if (ImGui::CollapsingHeader("General options")) {
+		ImGui::Checkbox("Rotate Camera Around Cursor", &rotateAroundCursor);
+		ImGui::Checkbox("Hide Points", &hidePoints);
+		ToolXML::LoadSaveMenu();
+	}
 	AddItemMenu();
 	ItemListMenu();
 	COLORS::DrawMenu();

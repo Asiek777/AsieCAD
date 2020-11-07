@@ -17,6 +17,7 @@
 #include "Imgui/imgui_impl_opengl3.h"
 #include "torus.h"
 #include "framebuffers.h"
+#include "pathGenerator.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -37,6 +38,7 @@ class App
 	float firstX, firstY;
 	bool isCameraRotating = false, isCameraMoving = false, isSelecting = false;
 	glm::mat4 viewProjection;
+	PathGenerator pathGenerator;
 
 	void SelectItem(bool isPressed);
 	void processInput(GLFWwindow *window);

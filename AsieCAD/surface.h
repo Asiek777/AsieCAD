@@ -42,7 +42,6 @@ class Surface
 	static glm::vec4 GradientMinimalization(glm::vec4 pos, 
 		std::shared_ptr<Surface> s1, std::shared_ptr<Surface> s2);
 	
-	static std::shared_ptr<Surface> SceneObjectToSurface(std::shared_ptr<SceneObject> object);
 	static float FunctionMin(glm::vec4 x, glm::vec4 p, 
 		std::shared_ptr<Surface>& s1, std::shared_ptr<Surface>& s2);
 
@@ -67,6 +66,7 @@ public:
 	virtual void SetTrimCurve(std::shared_ptr<IntersectionCurve> curve, bool _isFirst)
 		{	trimCurve = curve; isFirst = _isFirst;	}
 	static void SurfaceInteresectionMenu();
+	static std::shared_ptr<Surface> SceneObjectToSurface(std::shared_ptr<SceneObject> object);
 
 	
 };
