@@ -7,14 +7,23 @@ class PathGenerator
 {
 	const int MAP_SIZE= 1000;
 	int step = 3;
-	glm::vec2 min = glm::vec2(100, 100), max = glm::vec2(-100, -100);
+	//float min, max;
+	float scale;
+	glm::vec2 offset;
+	glm::vec2 _min = glm::vec2(100), _max = glm::vec2(-100);
 	std::vector<std::vector<float>> highMap;
+	std::vector<glm::vec3> path;
 	std::ofstream file;
 
-	float GetHighAt(int x, int y);
 	void PrepareFatPaths();
+	float GetHighAt(int x, int y);
+	void SavePathToFile(std::string filename);
+	void AddToFile(float x, float y, float z);
+	void AddToFile(glm::vec3 pos) { return AddToFile(pos.x, pos.y, pos.z); }
+	void PreparePaths();
+	
 public:
-	PathGenerator();
+	void Initialize();
 	void ShowMenu();
 };
 

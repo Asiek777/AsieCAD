@@ -179,19 +179,21 @@ void Milling::ShowMenu()
 				ReadPaths(lTheOpenFileName);
 			}
 		}
-		if (ImGui::Button(milling->isRunning ? "Pause" : "Run"))
-			milling->isRunning = !milling->isRunning;
-		ImGui::SameLine(100);
-		if(ImGui::Button("Reset Milling")) {
-			milling->isRunning = false;
-			milling->step = 0;
-			milling->t = 0;
-			milling->position = milling->path[0];
-		}
-		ImGui::SameLine();
-		if(ImGui::Button("Show result")) {
-			milling->isRunning = true;
-			milling->Update(10000000);
+		if (!milling->path.empty()) {
+			if (ImGui::Button(milling->isRunning ? "Pause" : "Run"))
+				milling->isRunning = !milling->isRunning;
+			ImGui::SameLine(100);
+			if(ImGui::Button("Reset Milling")) {
+				milling->isRunning = false;
+				milling->step = 0;
+				milling->t = 0;
+				milling->position = milling->path[0];
+			}
+			ImGui::SameLine();
+			if(ImGui::Button("Show result")) {
+				milling->isRunning = true;
+				milling->Update(10000000);
+			}
 		}
 		ImGui::Checkbox("Show path", &showPath);
 

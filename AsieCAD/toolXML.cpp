@@ -5,6 +5,7 @@
 #include "bezierPatch.h"
 #include "bSpline.h"
 #include "cubicInterpolated.h"
+#include "milling.h"
 #include "splinePatch.h"
 #include "torus.h"
 #include "tinyxml2/tinyfiledialogs.h"
@@ -15,8 +16,7 @@ void ToolXML::LoadScene(std::string path)
 	tinyxml2::XMLDocument doc;
 	if (doc.LoadFile(path.c_str()) != tinyxml2::XML_SUCCESS)
 		return;
-	SceneObject::SceneObjects.erase(SceneObject::SceneObjects.begin() + 1,
-		SceneObject::SceneObjects.end());
+	ClearScene();
 	tinyxml2::XMLElement* scene = doc.FirstChildElement("Scene");
 	LoadPoints(scene);
 	LoadNotPoints(scene);
@@ -201,6 +201,17 @@ void ToolXML::SaveVec3(glm::vec3 vec, std::string Name, tinyxml2::XMLElement* el
 	vector->SetAttribute("Y", vec.y);
 	vector->SetAttribute("Z", vec.z);
 }
+
+void ToolXML::ClearScene()
+{
+	if(!Milling::millingMode)
+		SceneObject::SceneObjects.erase(SceneObject::SceneObjects.begin() + 1,
+	                                SceneObject::SceneObjects.end());
+	else
+		SceneObject::SceneObjects.erase(SceneObject::SceneObjects.begin() + 3,
+			SceneObject::SceneObjects.end());
+}
+
 void ToolXML::LoadSaveMenu()
 {
 	char const* lTheSaveFileName, *lTheOpenFileName;
@@ -232,6 +243,5 @@ void ToolXML::LoadSaveMenu()
 	}
 	ImGui::SameLine();
 	if (ImGui::Button("Clear scene"))
-		SceneObject::SceneObjects.erase(SceneObject::SceneObjects.begin() + 1,
-			SceneObject::SceneObjects.end());
+		ClearScene();
 }
