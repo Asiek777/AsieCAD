@@ -140,10 +140,17 @@ glm::vec3 Torus::GetPointAt(float u, float v)
 {
     float bigAngle = 2 * M_PI * u;
     float smallAngle = 2 * M_PI * v;
-    glm::vec3 pos(
-        (bigRadius + smallRadius * std::cosf(smallAngle)) * std::cosf(bigAngle),
-        smallRadius * std::sinf(smallAngle),
-        (bigRadius + smallRadius * std::cosf(smallAngle)) * std::sinf(bigAngle));
+    glm::vec3 pos;
+    if (bigRadius > 0)
+        pos = glm::vec3(
+            (bigRadius + smallRadius * std::cosf(smallAngle)) * std::cosf(bigAngle),
+            smallRadius * std::sinf(smallAngle),
+            (bigRadius + smallRadius * std::cosf(smallAngle)) * std::sinf(bigAngle));
+    else
+        pos = glm::vec3(
+            smallRadius * std::sinf(smallAngle/2 + M_PI) * std::cosf(bigAngle),
+            smallRadius * std::cosf(smallAngle/2 + M_PI),
+            smallRadius * std::sinf(smallAngle/2 + M_PI) * std::sinf(bigAngle));
     return position.GetModelMatrix() * glm::vec4(pos, 1.0f);
 }
 
@@ -159,6 +166,8 @@ TngSpace Torus::GetTangentAt(float u, float v)
     diffV[1] = GetPointAt(u, v - 0.25f);
     result.diffU = (diffU[1] - diffU[0]) * (float)-M_PI;
     result.diffV = (diffV[1] - diffV[0]) * (float)-M_PI;
+    if (bigRadius == 0)
+        result.diffV /= 2;
     result.normal = glm::normalize(glm::cross(result.diffV, result.diffU));
     return result;
 }

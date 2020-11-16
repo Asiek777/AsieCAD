@@ -28,6 +28,12 @@
     <Filter Include="Resource Files\IOlibs">
       <UniqueIdentifier>{95e5f516-7122-4d52-9815-25155ac78666}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Milling">
+      <UniqueIdentifier>{6b0f679d-3ac4-4d32-b341-fce43bce4673}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Milling">
+      <UniqueIdentifier>{1592e31c-6633-4383-9965-68ac77b4bd8b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -123,14 +129,14 @@
     <ClCompile Include="Imgui\implot_demo.cpp">
       <Filter>Source Files\Imgui</Filter>
     </ClCompile>
-    <ClCompile Include="woodBlock.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="pathGenerator.cpp">
+      <Filter>Source Files\Milling</Filter>
     </ClCompile>
     <ClCompile Include="milling.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\Milling</Filter>
     </ClCompile>
-    <ClCompile Include="pathGenerator.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="woodBlock.cpp">
+      <Filter>Source Files\Milling</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -239,17 +245,20 @@
     <ClInclude Include="Imgui\implot.h">
       <Filter>Source Files\Imgui</Filter>
     </ClInclude>
-    <ClInclude Include="woodBlock.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="milling.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="pathGenerator.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\Milling</Filter>
+    </ClInclude>
+    <ClInclude Include="milling.h">
+      <Filter>Header Files\Milling</Filter>
+    </ClInclude>
+    <ClInclude Include="woodBlock.h">
+      <Filter>Header Files\Milling</Filter>
+    </ClInclude>
+    <ClInclude Include="inboxSurface.h">
+      <Filter>Header Files\Milling</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -9,18 +9,18 @@
 #include "PointSurface.h"
 #include "torus.h"
 
-float Surface::stepLength = 0.1f;
-bool Surface::beginFromCursor = false;
+float Surface::stepLength = 0.01f;
+bool Surface::beginFromCursor = true;
 
 void Surface::TestSurfaceMenu()
 {
-	//static glm::vec2 coords = glm::vec2(0.5f, 0.5f);
-	//ImGui::DragFloat2("Point coords", &coords.x, 0.002, 0, 1);
-	//TngSpace space = GetTangentAt(coords.x, coords.y);
-	//Point::DrawPoint(space.pos, COLORS::CURVE_POINT);
-	//Point::DrawPoint(space.pos + 0.3f * space.normal, COLORS::CURVE_POINT);
-	//Point::DrawPoint(space.pos + space.diffU, COLORS::CURVE_POINT);
-	//Point::DrawPoint(space.pos + space.diffV, COLORS::CURVE_POINT);
+	static glm::vec2 coords = glm::vec2(0.5f, 0.5f);
+	ImGui::DragFloat2("Point coords", &coords.x, 0.002, 0, 1);
+	TngSpace space = GetTangentAt(coords.x, coords.y);
+	Point::DrawPoint(space.pos, COLORS::CURVE_POINT);
+	Point::DrawPoint(space.pos + 0.4f * space.normal, COLORS::CURVE_POINT);
+	Point::DrawPoint(space.pos + space.diffU, COLORS::CURVE_POINT);
+	Point::DrawPoint(space.pos + space.diffV, COLORS::CURVE_POINT);
 }
 
 void Surface::SurfaceInteresectionMenu()
@@ -366,13 +366,16 @@ Openness Surface::FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint
 			}
 			return Closed1;
 		}
-		if(glm::length(f) > 0.01)
+		if (glm::length(f) > 0.01) {
 			if (!isReverse) {
 				glm::vec4 coords = points[0].coords;
 				std::reverse(points.begin(), points.end());
 				FindAnotherPoints(coords, points, true, s1, s2);
 				return Open;
 			}
+			else
+				return Open;
+		}
 		glm::vec3 location = s1->GetPointAt(pos.s, pos.t);
 		IntersectionPoint inter{ pos, location };
 		points.emplace_back(inter);

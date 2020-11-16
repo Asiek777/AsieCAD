@@ -49,7 +49,7 @@ class Surface
 	static Openness FindAnotherPoints(glm::vec4 pos, std::vector<IntersectionPoint>& points,
 		bool isReverse, std::shared_ptr<Surface> s1,
 		std::shared_ptr<Surface> s2);
-	
+	friend class PathGenerator;
 protected:
 	std::weak_ptr<IntersectionCurve> trimCurve;
 	bool isFirst;

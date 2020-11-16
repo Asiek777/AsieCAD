@@ -58,12 +58,7 @@ void IntersectionCurve::Render()
 void IntersectionCurve::RenderMenu()
 {
 	if (ImGui::Button("Convert to interpolation curve")) {
-		auto curve = std::make_shared<CubicInterpolated>();
-		for (int i = 0; i < points.size(); i++) {
-			auto point = std::make_shared<Point>(points[i].location);
-			curve->AddPoint(point);
-			SceneObjects.emplace_back(point);
-		}
+		auto curve = MakeInterpolatedCurve();
 		SceneObjects.emplace_back(curve);
 	}
 	if (ImGui::Button("Show plot"))
@@ -72,6 +67,17 @@ void IntersectionCurve::RenderMenu()
 				newest = std::static_pointer_cast<IntersectionCurve>(SceneObjects[i]);
 				break;
 			}
+}
+
+std::shared_ptr<CubicInterpolated> IntersectionCurve::MakeInterpolatedCurve()
+{
+	std::shared_ptr<CubicInterpolated> curve = std::make_shared<CubicInterpolated>();
+	for (int i = 0; i < points.size(); i++) {
+		auto point = std::make_shared<Point>(points[i].location);
+		curve->AddPoint(point);
+		SceneObjects.emplace_back(point);
+	}
+	return curve;
 }
 
 glm::vec3 IntersectionCurve::GetCenter()

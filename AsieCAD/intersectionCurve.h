@@ -1,4 +1,5 @@
 #pragma once
+#include "cubicInterpolated.h"
 #include "sceneObject.h"
 #include "surface.h"
 #include "meshBuffer.h"
@@ -37,6 +38,7 @@ public:
 		std::shared_ptr<Surface> _s1, std::shared_ptr<Surface> _s2);
 	virtual ~IntersectionCurve();
 	void Render() override;
+	std::shared_ptr<CubicInterpolated> MakeInterpolatedCurve();
 	void RenderMenu() override;
 	glm::vec3 GetCenter() override;
 	void Serialize(tinyxml2::XMLElement* scene) override {}
