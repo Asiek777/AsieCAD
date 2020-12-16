@@ -36,8 +36,8 @@ void Torus::prepareBuffers()
     std::vector<glm::vec2> izolinesSmall, izolinesBig;
 	if (isTrimmed) {
         auto curve = trimCurve.lock();
-        izolinesSmall = curve->CalcTrimming(smallCount + 1, 0, isFirst);
-        izolinesBig = curve->CalcTrimming(bigCount + 1, 1, isFirst);
+        curve->CalcTrimming(smallCount + 1, 0, isFirst);
+        curve->CalcTrimming(bigCount + 1, 1, isFirst);
 	}
     std::vector<float> vertices;
     std::vector<unsigned> indices[2];

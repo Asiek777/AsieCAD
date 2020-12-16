@@ -118,8 +118,8 @@ void IntersectionCurve::GenerateTextures(int texNumber)
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-std::vector<glm::vec2> IntersectionCurve::CalcTrimming(int lineCount, 
-	bool alongU, bool isFirst)
+std::vector<std::vector<float>> IntersectionCurve::CalcTrimming(int lineCount,
+	bool alongU, bool isFirst, bool isReversed)
 {
 	grid[alongU + 2*!isFirst] = std::vector<std::vector<float>>(lineCount);
 	std::vector<glm::vec2> coords;
@@ -161,7 +161,7 @@ std::vector<glm::vec2> IntersectionCurve::CalcTrimming(int lineCount,
 		}
 		grid[alongU + 2*!isFirst][i] = intersections;
 	}
-	return result;
+	return grid[alongU + 2 * !isFirst];
 }
 
 void IntersectionCurve::CalcLineInteresctions(float line, std::vector<glm::vec2>& coords, 

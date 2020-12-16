@@ -1,7 +1,9 @@
 #include "pathGenerator.h"
 
 
-#include "inboxSurface.h"
+
+#include "bezierPatch.h"
+#include "OffsetSurface.h"
 #include "sceneObject.h"
 #include "surface.h"
 #include "stb_image.h"
@@ -9,8 +11,9 @@
 void PathGenerator::PreparePaths()
 {
 	Initialize();
-	//PrepareFatPaths();
+	PrepareFatPaths();
 	PrepareExactPaths();
+	PrepareFlatPaths();
 }
 
 void PathGenerator::Initialize()
@@ -55,7 +58,7 @@ void PathGenerator::PrepareFatPaths()
 				}
 		}
 	float x, y;
-	for (int i = MAP_SIZE * -.07f; i < MAP_SIZE * 1.07; i += 95) {
+	for (int i = MAP_SIZE * -.07f; i < MAP_SIZE * 1.07; i += 75) {
 		for (int j = i % 2 ? MAP_SIZE * -.07f : MAP_SIZE * 1.07 - 1; i % 2 ? j < MAP_SIZE * 1.07 :
 			j >= -50; i % 2 ? j += 1 : j -= 1) {
 			float z = GetHighAt(i, j);
@@ -97,36 +100,44 @@ void PathGenerator::PrepareExactPaths()
 	path.clear();
 	float radius = 0.4f;
 	std::vector<std::shared_ptr<Surface>> surfaces;
-	std::vector<std::shared_ptr<InboxSurface>> inboxSurfaces;
+	std::vector<std::shared_ptr<OffsetSurface>> inboxSurfaces;
+	std::vector<Izolines> izolines;
 	for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
 		if (SceneObject::SceneObjects[i]->IsSurface()) 
 			surfaces.emplace_back(Surface::SceneObjectToSurface(
 				SceneObject::SceneObjects[i]));
 	
-	for (int i = 0; i < surfaces.size(); i++)
-		inboxSurfaces.emplace_back(std::make_shared<InboxSurface>(surfaces[i], radius));
-	const int interSize = 6;
-	struct inter { int index; glm::vec3 cursorPos; } inters[interSize] = {
-		{1, glm::vec3(12, -0.7, 2.0)},
-		{2, glm::vec3(8.6, 2, 1.2)},
-		{4, glm::vec3(3.6, 3.0, 1.1)},
-		{4, glm::vec3(8.2, 3.0, 1.1)},
-		{5, glm::vec3(5.4, -3.74, 0.9)}
+	for (int i = 0; i < surfaces.size(); i++) {
+		inboxSurfaces.emplace_back(std::make_shared<OffsetSurface>(surfaces[i], radius));
+		izolines.emplace_back(SurfaceSize(surfaces[i]) * 4);
+	}
+	Surface::beginFromCursor = false;
+	const int interSize = 5;
+	struct inter{ int index[2]; glm::vec3 cursorPos; } inters[interSize] = {
+		{{0,1}, glm::vec3(12, -0.7, 2.0)},
+		{{0,1}, glm::vec3(12, 0.7, 2.0)},
+		{{0,2}, glm::vec3(8.6, 2, 1.6)},
+		{{0,4}, glm::vec3(3.6, 3.0, 1.1)},
+		//{{0,4}, glm::vec3(8.2, 3.0, 1.1)},
+		//{{0,4}, glm::vec3(8.78, 3.0, 0.82)},
+		//{{0,4}, glm::vec3(9.0, 3.0, 0.34)},
+		{{0,5}, glm::vec3(5.4, -3.74, 0.9)},
+		//{{0,5}, glm::vec3(3.3, -3.6, 0.5)},
+		//{{0,5}, glm::vec3(7.34, -3.94, 0.5)}
 	};
 	
 	for (int i = 0; i < interSize; i++) {
-		int index = inters[i].index;
-		//glm::vec3 cursorPos = surfaces[index]->GetPointAt(0.25f, 0.f);
-		//cursorPos.z = 2.0f;
+		int index = inters[i].index[1];
 		SceneObject::SceneObjects[0]->UpdatePosition(inters[i].cursorPos);
-		Surface::FindIntersection(inboxSurfaces[0], inboxSurfaces[index]);
 		auto end = SceneObject::SceneObjects.size();
+		Surface::FindIntersection(inboxSurfaces[0], inboxSurfaces[index]);
 		
 		auto intersectionCurve = std::dynamic_pointer_cast<IntersectionCurve>(
 			SceneObject::SceneObjects.back());
-		if (intersectionCurve) {
+		if (SceneObject::SceneObjects.size() > end) {
+			end = SceneObject::SceneObjects.size();
 			auto interpolationCurve = intersectionCurve->MakeInterpolatedCurve();
-			
+
 			for (auto j = end; j < SceneObject::SceneObjects.size(); j++) {
 				glm::vec3 pos = SceneObject::SceneObjects[j]->GetCenter();
 				if (pos.z > radius)
@@ -134,27 +145,85 @@ void PathGenerator::PrepareExactPaths()
 						(pos.y - offset.y) / scale, pos.z - 0.4f));
 			}
 			path.emplace_back(glm::vec3(-1));
+			for (int j = 0; j < 2; j++) {
+				int lineCount = SurfaceSize(surfaces[inters[i].index[j]]) * 4;
+				izolines[inters[i].index[j]].AddIzolines(intersectionCurve->CalcTrimming(
+					lineCount + 1, false, !j));
+			}
+			
 			SceneObject::SceneObjects.erase(SceneObject::SceneObjects.begin()+end, 
 				SceneObject::SceneObjects.end());
 		}
-	}
+	}	
 	SceneObject::SceneObjects[0]->UpdatePosition( glm::vec3(0.f));
+
 	for (int k = 0; k < surfaces.size(); k++) {
 		int stepCount = SurfaceSize(surfaces[k]) * 4;
 		float step = 1.f / stepCount;
-	
-		for (int i = 0; i <= stepCount; i++)
-			for (int j = i % 2 ? 0 : stepCount; i % 2 ? j <= stepCount : j >= 0;
-				i % 2 ? j++ : j--) {
-			auto tangent = surfaces[k]->GetTangentAt(j * step, (i + stepCount / 2) * step);
-			glm::vec3 pos = tangent.normal * 0.4f + tangent.pos;
-			if (pos.z > 0.4f && tangent.normal.z > 0)
-				path.emplace_back(glm::vec3((pos.x - offset.x) / scale,
-					(pos.y - offset.y) / scale, pos.z - 0.4f));
+		
+		for (int i = 0; i < stepCount; i++){
+			int lineIt = 0, lastLineIt = 0;
+			std::vector<float>& line = izolines[k].lines[i];
+			for (int j = 0; j < stepCount;j++) {
+				while (lineIt < line.size() && j * step > line[lineIt])
+					lineIt++;
+				if(lineIt > lastLineIt)
+					path.emplace_back(glm::vec3(-1));
+				lastLineIt = lineIt;
+
+				if (lineIt % 2 == 0 ^ k >= 2) {
+					auto tangent = surfaces[k]->GetTangentAt(j * step, i * step);
+					glm::vec3 pos = tangent.normal * 0.4f + tangent.pos;
+					if (pos.z > 0.4f && tangent.normal.z > 0)
+						path.emplace_back(glm::vec3((pos.x - offset.x) / scale,
+							(pos.y - offset.y) / scale, pos.z - 0.4f));
+				}
+			}
+			if (path.back() != glm::vec3(-1))
+				path.emplace_back(glm::vec3(-1));
 		}
-		path.emplace_back(glm::vec3(-1));
 	}
 	SavePathToFile("paths/test.k08", 0, 3);
+}
+
+void PathGenerator::PrepareFlatPaths()
+{
+	std::vector<std::shared_ptr<Point>> flatPoints;
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 4; j++)
+			flatPoints.emplace_back(std::make_shared<Point>(
+				((_min.x - 1) * (3 - i) + (_max.x + 1) * i) / 3,
+				((_min.y - 1) * (3 - j) + (_max.y + 1) * j) / 3, 0));
+	auto floor = std::make_shared<BezierPatch>(flatPoints, false);
+	//SceneObject::SceneObjects.emplace_back(floor);
+	//SceneObject::SceneObjects.insert(SceneObject::SceneObjects.end(), 
+	//	flatPoints.begin(), flatPoints.end());
+	const int circuitSize = 10;
+	struct { int index; bool constU; float param; } circuits[circuitSize] = {
+		{0, 0, 0.16685},
+		{0, 0, 0.66685},
+		{0, 1, 0},
+		{1, 0, 0.6},
+		{1, 0, 0.1},
+		{2, 0, 0.5},
+		{4, 0, 0.2},
+		{5, 0, 0.16685},
+		{5, 0, 0.66685},
+		{5, 1, 1},
+		
+	};
+	std::vector<std::shared_ptr<Surface>> surfaces;
+	for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
+		if (SceneObject::SceneObjects[i]->IsSurface())
+			surfaces.emplace_back(Surface::SceneObjectToSurface(
+				SceneObject::SceneObjects[i]));
+
+	for(int i=0;i<circuitSize;i++) {
+		
+	}
+	
+		
+	
 }
 
 void PathGenerator::ReducePath(std::vector<glm::vec3>& reducedPath)
@@ -185,8 +254,10 @@ void PathGenerator::SavePathToFile(std::string filename, float minZ, float maxZ)
 			if (higherPath[i].z >= 0)
 				AddToFile(higherPath[i]);
 			else {
-				AddToFile(higherPath[i - 1].x, higherPath[i - 1].y, maxZ);
-				AddToFile(higherPath[i + 1].x, higherPath[i + 1].y, maxZ);
+				if (higherPath[i - 1].z >= 0)
+					AddToFile(higherPath[i - 1].x, higherPath[i - 1].y, maxZ);
+				if (higherPath[i + 1].z >= 0)
+					AddToFile(higherPath[i + 1].x, higherPath[i + 1].y, maxZ);
 			}
 		
 		AddToFile(higherPath.back().x, higherPath.back().y, maxZ);
@@ -199,9 +270,10 @@ void PathGenerator::SavePathToFile(std::string filename, float minZ, float maxZ)
 		if (path[i].z >= 0)
 			AddToFile(path[i]);
 		else if (i + 1 < path.size() && i > 0) {
-			AddToFile(path[i - 1].x, path[i - 1].y, maxZ);
-
-			AddToFile(path[i + 1].x, path[i + 1].y, maxZ);
+			if (path[i - 1].z >= 0)
+				AddToFile(path[i - 1].x, path[i - 1].y, maxZ);
+			if (path[i + 1].z >= 0)
+				AddToFile(path[i + 1].x, path[i + 1].y, maxZ);
 		}
 	AddToFile(path.back().x, path.back().y, maxZ);
 	AddToFile(0.5, 0.5, maxZ);

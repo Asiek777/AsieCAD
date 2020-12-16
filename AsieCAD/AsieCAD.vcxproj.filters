@@ -257,7 +257,7 @@
     <ClInclude Include="woodBlock.h">
       <Filter>Header Files\Milling</Filter>
     </ClInclude>
-    <ClInclude Include="inboxSurface.h">
+    <ClInclude Include="OffsetSurface.h">
       <Filter>Header Files\Milling</Filter>
     </ClInclude>
   </ItemGroup>

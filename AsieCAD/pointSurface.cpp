@@ -92,25 +92,16 @@ void PointSurface::Serialize(int pointCount[2], tinyxml2::XMLElement* scene, std
 void PointSurface::UpdateCurvesBuffers()
 {
 	for (int dim = 0; dim < 2; dim++) {
-		std::vector<glm::vec3> curves(curveCount[dim] * patchCount[dim]);
-		if (!isTrimmed) {
-			for (int i = 0; i < patchCount[dim]; i++) 
-				for (int j = 0; j < curveCount[dim]; j++) {
-					curves[i * curveCount[dim] + j] = glm::vec3(
-						(float)j / (curveCount[dim] - 1), -1, -1);
-				}
-		}
-		else {
+		std::vector<glm::vec3> curves(curveCount[dim] * patchCount[dim]);		
+		for (int i = 0; i < patchCount[dim]; i++) 
+			for (int j = 0; j < curveCount[dim]; j++) {
+				curves[i * curveCount[dim] + j] = glm::vec3(
+					(float)j / (curveCount[dim] - 1), -1, -1);
+			}		
+		if(isTrimmed) {
 			auto curve = trimCurve.lock();
-			//bool alongU = dynamic_cast<BezierPatch*>(this) ? !dim : dim;
-			auto izolines = curve->CalcTrimming((curveCount[dim] - 1) * patchCount[dim] + 1,
+			curve->CalcTrimming((curveCount[dim] - 1) * patchCount[dim] + 1,
 				!dim, isFirst);
-			for (int i = 0; i < patchCount[dim]; i++)
-				for (int j = 0; j < curveCount[dim]; j++) {
-					glm::vec2 coordsRange = izolines[i * (curveCount[dim] - 1) + j];
-					curves[i * curveCount[dim] + j] = glm::vec3(
-						(float)j / (curveCount[dim] - 1), coordsRange.s, coordsRange.t);
-				}
 		}
 		curveIndexes[dim]->UpdateBuffer(MeshBuffer::Vec3ToFloats(curves));
 	}

@@ -42,7 +42,8 @@ public:
 	void RenderMenu() override;
 	glm::vec3 GetCenter() override;
 	void Serialize(tinyxml2::XMLElement* scene) override {}
-	std::vector<glm::vec2> CalcTrimming(int lineCount, bool alongU, bool isFirst);
+	std::vector<std::vector<float>> CalcTrimming(int lineCount, bool alongU, 
+		bool isFirst, bool isReversed = false);
 	unsigned int GetTexture(int isFirst) { return tex[isFirst]; }
 	static void RenderPlot();
 };
