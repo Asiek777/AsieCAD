@@ -29,6 +29,9 @@ class PathGenerator
 	void SavePathToFile(std::string filename, float minZ = 0, float maxZ = 7);
 	void AddToFile(float x, float y, float z);
 	void AddToFile(glm::vec3 pos) { return AddToFile(pos.x, pos.y, pos.z); }
+
+	static glm::vec2 intersection(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, glm::vec2 p4);
+	static bool isBeetween(glm::vec2 p1, glm::vec2 p2, glm::vec2 q);
 	
 public:
 	void ShowMenu();

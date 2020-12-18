@@ -100,7 +100,7 @@ void PathGenerator::PrepareExactPaths()
 	path.clear();
 	float radius = 0.4f;
 	std::vector<std::shared_ptr<Surface>> surfaces;
-	std::vector<std::shared_ptr<OffsetSurface>> inboxSurfaces;
+	std::vector<std::shared_ptr<OffsetSurface>> offsetSurfaces;
 	std::vector<Izolines> izolines;
 	for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
 		if (SceneObject::SceneObjects[i]->IsSurface()) 
@@ -108,7 +108,7 @@ void PathGenerator::PrepareExactPaths()
 				SceneObject::SceneObjects[i]));
 	
 	for (int i = 0; i < surfaces.size(); i++) {
-		inboxSurfaces.emplace_back(std::make_shared<OffsetSurface>(surfaces[i], radius));
+		offsetSurfaces.emplace_back(std::make_shared<OffsetSurface>(surfaces[i], radius));
 		izolines.emplace_back(SurfaceSize(surfaces[i]) * 4);
 	}
 	Surface::beginFromCursor = false;
@@ -130,7 +130,7 @@ void PathGenerator::PrepareExactPaths()
 		int index = inters[i].index[1];
 		SceneObject::SceneObjects[0]->UpdatePosition(inters[i].cursorPos);
 		auto end = SceneObject::SceneObjects.size();
-		Surface::FindIntersection(inboxSurfaces[0], inboxSurfaces[index]);
+		Surface::FindIntersection(offsetSurfaces[0], offsetSurfaces[index]);
 		
 		auto intersectionCurve = std::dynamic_pointer_cast<IntersectionCurve>(
 			SceneObject::SceneObjects.back());
@@ -140,9 +140,9 @@ void PathGenerator::PrepareExactPaths()
 
 			for (auto j = end; j < SceneObject::SceneObjects.size(); j++) {
 				glm::vec3 pos = SceneObject::SceneObjects[j]->GetCenter();
-				if (pos.z > radius)
+				if (pos.z >= radius)
 					path.emplace_back(glm::vec3((pos.x - offset.x) / scale,
-						(pos.y - offset.y) / scale, pos.z - 0.4f));
+						(pos.y - offset.y) / scale, pos.z - radius));
 			}
 			path.emplace_back(glm::vec3(-1));
 			for (int j = 0; j < 2; j++) {
@@ -173,10 +173,10 @@ void PathGenerator::PrepareExactPaths()
 
 				if (lineIt % 2 == 0 ^ k >= 2) {
 					auto tangent = surfaces[k]->GetTangentAt(j * step, i * step);
-					glm::vec3 pos = tangent.normal * 0.4f + tangent.pos;
-					if (pos.z > 0.4f && tangent.normal.z > 0)
+					glm::vec3 pos = tangent.normal * radius + tangent.pos;
+					if (pos.z > radius && tangent.normal.z > 0)
 						path.emplace_back(glm::vec3((pos.x - offset.x) / scale,
-							(pos.y - offset.y) / scale, pos.z - 0.4f));
+							(pos.y - offset.y) / scale, pos.z - radius));
 				}
 			}
 			if (path.back() != glm::vec3(-1))
@@ -188,42 +188,131 @@ void PathGenerator::PrepareExactPaths()
 
 void PathGenerator::PrepareFlatPaths()
 {
-	std::vector<std::shared_ptr<Point>> flatPoints;
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			flatPoints.emplace_back(std::make_shared<Point>(
-				((_min.x - 1) * (3 - i) + (_max.x + 1) * i) / 3,
-				((_min.y - 1) * (3 - j) + (_max.y + 1) * j) / 3, 0));
-	auto floor = std::make_shared<BezierPatch>(flatPoints, false);
-	//SceneObject::SceneObjects.emplace_back(floor);
-	//SceneObject::SceneObjects.insert(SceneObject::SceneObjects.end(), 
-	//	flatPoints.begin(), flatPoints.end());
-	const int circuitSize = 10;
-	struct { int index; bool constU; float param; } circuits[circuitSize] = {
-		{0, 0, 0.16685},
-		{0, 0, 0.66685},
-		{0, 1, 0},
-		{1, 0, 0.6},
-		{1, 0, 0.1},
-		{2, 0, 0.5},
-		{4, 0, 0.2},
-		{5, 0, 0.16685},
-		{5, 0, 0.66685},
-		{5, 1, 1},
-		
+	path.clear();
+	float radius = 0.5f;
+	const int circuitCount = 10;
+	struct { int index; bool constU; float param; bool isReversed; } circuits[circuitCount] = {
+		{0, 1, 0, 1},
+		{0, 0, 1.f / 6, 0},
+		{0, 0, 4.f / 6, 1},
+		{1, 0, 0.1, 0},
+		{1, 0, 0.6, 1},
+		{2, 0, 0.5, 0},
+		{4, 0, 0.2, 0},
+		{5, 0, 1.f / 6, 0},
+		{5, 1, 1, 0},
+		{5, 0, 4.f / 6, 1},
+
 	};
+	std::vector<glm::vec2> offsets[circuitCount];
+	
 	std::vector<std::shared_ptr<Surface>> surfaces;
 	for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
 		if (SceneObject::SceneObjects[i]->IsSurface())
 			surfaces.emplace_back(Surface::SceneObjectToSurface(
 				SceneObject::SceneObjects[i]));
 
-	for(int i=0;i<circuitSize;i++) {
-		
+	for (int i = 0; i < circuitCount; i++) {
+		auto surface = surfaces[circuits[i].index];
+		int len = 100;
+		if (!circuits[i].constU) {
+			float v = circuits[i].param;
+			for (int j = 0; j <= len; j++) {
+				TngSpace tangent = surface->GetTangentAt(j / (float)len, v);
+				glm::vec2 pos = glm::vec2(tangent.pos.x, tangent.pos.y);
+				glm::vec2 normal = glm::vec2(tangent.normal.x, tangent.normal.y);
+				normal = glm::normalize(normal) * radius;
+				if (!std::isnan(normal.x))
+					offsets[i].emplace_back(pos + normal);
+					//path.emplace_back(glm::vec3((pos + normal - offset) / scale, 0));
+			}
+		}
+		else {
+			float u = circuits[i].param;
+			for (int j = 1; j <= len; j++) {
+				TngSpace tangent = surface->GetTangentAt(u, j / (float)len / 2 + 1 / 6.f);
+				glm::vec2 pos = glm::vec2(tangent.pos.x, tangent.pos.y);
+				glm::vec2 normal = glm::vec2(tangent.diffV.y, -tangent.diffV.x);
+				if (i > 3)
+					normal = -normal;
+				normal = glm::normalize(normal) * radius;
+				if (!std::isnan(normal.x))
+					offsets[i].emplace_back(pos + normal);
+				//path.emplace_back(glm::vec3((pos + normal - offset) / scale, 0));
+			}
+		}
+		if (circuits[i].isReversed)
+			std::reverse(offsets[i].begin(), offsets[i].end());
+		//path.emplace_back(glm::vec3(-1));
 	}
+
 	
-		
+	std::vector<glm::vec2> ringRoad;
+	const int partsLen = 15;
+	int parts[partsLen] = { 0,1,5,1,6,1,3,4,3,2,7,8,9,2,0 };
+	int start = 0;
+	for (int i = 0; i < partsLen - 1; i++) {
+		auto& current = offsets[parts[i]];
+		auto& next = offsets[parts[i + 1]];
+		for (int j = start; j < current.size()-1; j++) {
+			ringRoad.emplace_back(current[j]);
+			bool isIntersecting = false;
+			for (int k = 0; k < next.size() - 1; ++k) {
+				glm::vec2 q = intersection(current[j], current[j + 1], next[k], next[k + 1]);
+				if (isBeetween(current[j], current[j + 1], q) &&
+					isBeetween(next[k], next[k + 1], q)) {
+					ringRoad.emplace_back(q);
+					start = k + 1;
+					isIntersecting = true;
+					break;
+				}
+			}
+			if (isIntersecting)
+				break;
+			start = 0;
+		}
+	}
+	for (int i = 0; i < ringRoad.size(); i++)
+		path.emplace_back(glm::vec3((ringRoad[i] - offset) / scale, 0));
+	//for (int i = 0; i < offsets[1].size() - 1; i++)
+	//	for (int j = 0; j < offsets[6].size() - 1; j++) {
+	//		glm::vec2 p1 = offsets[1][i];
+	//		glm::vec2 p2 = offsets[1][i + 1];
+	//		glm::vec2 p3 = offsets[6][j];
+	//		glm::vec2 p4 = offsets[6][j + 1];
+	//		glm::vec2 q = intersection(p1, p2, p3, p4);
+	//		if (isBeetween(p1, p2, q) && isBeetween(p3, p4, q))
+	//			SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(q.x, q.y, 0));
+	//	}
+
+	SavePathToFile("paths/test.f10", 0);
 	
+}
+
+glm::vec2 PathGenerator::intersection(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, glm::vec2 p4)
+{
+	float div = (p1.x - p2.x) * (p3.y - p4.y) - (p1.y - p2.y) * (p3.x - p4.x);
+	float a = p1.x * p2.y - p1.y * p2.x;
+	float b = p3.x * p4.y - p3.y * p4.x;
+	float x = (a * (p3.x - p4.x) - b * (p1.x - p2.x)) / div;
+	float y = (a * (p3.y - p4.y) - b * (p1.y - p2.y)) / div;
+	return glm::vec2(x, y);
+}
+
+bool PathGenerator::isBeetween(glm::vec2 p1, glm::vec2 p2, glm::vec2 q)
+{
+	float eps = 0.000001;
+	if (std::isnan(q.x))
+		return false;
+	if (std::max(p1.x, p2.x) - q.x < -eps)
+		return false;
+	if (std::min(p1.x, p2.x) - q.x > eps)
+		return false;
+	if (std::max(p1.y, p2.y) - q.y < -eps)
+		return false;
+	if (std::min(p1.y, p2.y) - q.y > eps)
+		return false;
+	return true;
 }
 
 void PathGenerator::ReducePath(std::vector<glm::vec3>& reducedPath)
