@@ -31,6 +31,7 @@ void PathGenerator::PreparePaths()
 	PrepareFatPaths();
 	PrepareExactPaths();
 	PrepareCircuitPaths();
+	PrepareFlatPaths();
 }
 
 void PathGenerator::Initialize()
@@ -55,9 +56,7 @@ void PathGenerator::Initialize()
 }
 
 void PathGenerator::PrepareFatPaths()
-{
-	Initialize();
-	
+{	
 	for (int i = 0; i < SceneObject::SceneObjects.size(); i++)
 		if (SceneObject::SceneObjects[i]->IsSurface()) {
 			auto surface = Surface::SceneObjectToSurface(
@@ -77,7 +76,7 @@ void PathGenerator::PrepareFatPaths()
 	float x, y;
 	for (int i = MAP_SIZE * -.07f; i < MAP_SIZE * 1.07; i += 75) {
 		for (int j = i % 2 ? MAP_SIZE * -.07f : MAP_SIZE * 1.07 - 1; i % 2 ? j < MAP_SIZE * 1.07 :
-			j >= -50; i % 2 ? j += 1 : j -= 1) {
+			j >= MAP_SIZE * -.07f; i % 2 ? j += 1 : j -= 1) {
 			float z = GetHighAt(i, j);
 
 			x = i / (float)(MAP_SIZE - 1);
@@ -105,7 +104,7 @@ float PathGenerator::GetHighAt(int x, int y)
 			if (x + i >= 0 && x + i < MAP_SIZE && y + j >= 0 &&
 				y + j < MAP_SIZE && i * i + j * j < radius * radius) {
 				float dist = i * i + j * j;
-				float high = highMap[x + i][y + j]; +0.2 -
+				float high = highMap[x + i][y + j] +0.2 -
 					(radius - sqrtf(radius * radius - dist)) / radius * 0.8f;
 				max = std::max(high, max);
 			}
@@ -266,8 +265,8 @@ void PathGenerator::PrepareCircuitPaths()
 	path.emplace_back(glm::vec3(-1));
 	
 	std::vector<glm::vec2> ringRoad{ glm::vec2(-4,0), glm::vec2(-1,0) };
-	const int partsLen = 15;
-	int parts[partsLen] = { 0,1,5,1,6,1,3,4,3,2,7,8,9,2,0 };
+	const int partsLen = 16;
+	int parts[partsLen] = { 0,1,5,1,6,1,3,4,4,3,2,7,8,9,2,0 };
 	int start = 0;
 	for (int i = 0; i < partsLen - 1; i++) {
 		auto& current = offsets[parts[i]];
@@ -297,17 +296,6 @@ void PathGenerator::PrepareCircuitPaths()
 	}
 	for (int i = 0; i < ringRoad.size(); i++)
 		path.emplace_back(glm::vec3((ringRoad[i] - offset) / scale, 0));
-	//for (int i = 0; i < offsets[1].size() - 1; i++)
-	//	for (int j = 0; j < offsets[6].size() - 1; j++) {
-	//		glm::vec2 p1 = offsets[1][i];
-	//		glm::vec2 p2 = offsets[1][i + 1];
-	//		glm::vec2 p3 = offsets[6][j];
-	//		glm::vec2 p4 = offsets[6][j + 1];
-	//		glm::vec2 q = intersection(p1, p2, p3, p4);
-	//		if (isBeetween(p1, p2, q) && isBeetween(p3, p4, q))
-	//			SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(q.x, q.y, 0));
-	//	}
-
 	SavePathToFile("paths/test.f10", 0, 2.5);
 	
 }
@@ -352,6 +340,60 @@ bool PathGenerator::isBeetween(glm::vec2 p1, glm::vec2 p2, glm::vec2 q)
 	if (std::min(p1.y, p2.y) - q.y > eps)
 		return false;
 	return true;
+}
+
+void PathGenerator::PrepareFlatPaths()
+{
+	path.clear();
+	float x, y;
+	for (int i = MAP_SIZE * -.07f; i < MAP_SIZE * 1.07; i += 37) {
+		std::vector<glm::vec3> oneLine;
+		for (int j =  MAP_SIZE * 1.07 - 1; 	j >= MAP_SIZE * .5f; j -= 1) {
+			if (!IsColliding(i, j)) {
+				x = i / (float)(MAP_SIZE - 1);
+				y = j / (float)(MAP_SIZE - 1);
+				oneLine.emplace_back(glm::vec3(x, y, 0));
+			}
+			else
+				break;
+		}
+		if (i % 2)
+			std::reverse(oneLine.begin(), oneLine.end());
+		path.insert(path.end(), oneLine.begin(), oneLine.end());
+	}
+	path.emplace_back(glm::vec3(0.96f, 0.54f, 0));
+	path.emplace_back(glm::vec3(0.96f, 0.48f, 0));
+	path.emplace_back(glm::vec3(-1));
+	for (int i = MAP_SIZE * -.07f; i < MAP_SIZE * 1.07; i += 37) {
+		std::vector<glm::vec3> oneLine;
+		for (int j = MAP_SIZE * -.07; j <= MAP_SIZE * .5f; j += 1) {
+			if (!IsColliding(i, j)) {
+				x = i / (float)(MAP_SIZE - 1);
+				y = j / (float)(MAP_SIZE - 1);
+				oneLine.emplace_back(glm::vec3(x, y, 0));
+			}
+			else
+				break;
+		}
+		if (i % 2)
+			std::reverse(oneLine.begin(), oneLine.end());
+		path.insert(path.end(), oneLine.begin(), oneLine.end());
+	}
+	SavePathToFile("paths/test2.f10", 0);
+}
+
+bool PathGenerator::IsColliding(int x, int y)
+{
+	float radius = (MAP_SIZE - 1) / 20.f;
+	for (int i = -radius*0.7; i <= radius*0.7; i++)
+		for (int j = -radius; j <= radius; j++)
+			if (x + i >= 0 && x + i < MAP_SIZE && y + j >= 0 &&
+				y + j < MAP_SIZE && i * i + j * j < radius * radius) {
+				float high = highMap[x + i][y + j];
+				if (high > 0)
+					return true;
+			}
+	return false;
 }
 
 void PathGenerator::ReducePath(std::vector<glm::vec3>& reducedPath)

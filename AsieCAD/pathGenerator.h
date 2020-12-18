@@ -39,6 +39,8 @@ class PathGenerator
 	void PrepareExactPaths();
 	void PrepareCircuitPaths();
 	std::vector<glm::vec2> CalcDetour(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, float radius);
+	void PrepareFlatPaths();
+	bool IsColliding(int i, int j);
 	void ReducePath(std::vector<glm::vec3>& reducedPath);
 	void SavePathToFile(std::string filename, float minZ = 0, float maxZ = 7);
 	void AddToFile(float x, float y, float z);
@@ -50,6 +52,7 @@ class PathGenerator
 public:
 	void ShowMenu();
 };
+
 
 struct Izolines {
 	std::vector<std::vector<float>> lines;
