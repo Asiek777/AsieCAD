@@ -92,7 +92,7 @@ int PathGenerator::SurfaceSize(std::shared_ptr<Surface>& surface)
 	glm::vec3 pos1 = surface->GetPointAt(0, 0);
 	glm::vec3 pos2 = surface->GetPointAt(0.25f, 0.25f);
 	glm::vec3 pos3 = surface->GetPointAt(0.5f, 0.5f);
-	return (int)((glm::distance(pos1, pos2) + glm::distance(pos2, pos3)) * 5);
+	return std::max((int)((glm::distance(pos1, pos2) + glm::distance(pos2, pos3)) * 5), 50);
 }
 
 float PathGenerator::GetHighAt(int x, int y)
@@ -127,19 +127,15 @@ void PathGenerator::PrepareExactPaths()
 		offsetSurfaces.emplace_back(std::make_shared<OffsetSurface>(surfaces[i], radius));
 		izolines.emplace_back(SurfaceSize(surfaces[i]) * 4);
 	}
-	Surface::beginFromCursor = false;
-	const int interSize = 5;
+	Surface::beginFromCursor = true;
+	const int interSize = 6;
 	struct inter{ int index[2]; glm::vec3 cursorPos; } inters[interSize] = {
 		{{0,1}, glm::vec3(12, -0.7, 2.0)},
 		{{0,1}, glm::vec3(12, 0.7, 2.0)},
 		{{0,2}, glm::vec3(8.6, 2, 1.6)},
-		{{0,4}, glm::vec3(3.6, 3.0, 1.1)},
-		//{{0,4}, glm::vec3(8.2, 3.0, 1.1)},
-		//{{0,4}, glm::vec3(8.78, 3.0, 0.82)},
-		//{{0,4}, glm::vec3(9.0, 3.0, 0.34)},
-		{{0,5}, glm::vec3(5.4, -3.74, 0.9)},
-		//{{0,5}, glm::vec3(3.3, -3.6, 0.5)},
-		//{{0,5}, glm::vec3(7.34, -3.94, 0.5)}
+		{{0,4}, glm::vec3(3.24, 3.22, -1.3)},
+		{{0,4}, glm::vec3(7.46, 3.44, -2.5)},
+		{{0,5}, glm::vec3(5.4, -3.74, -0.9)},
 	};
 	
 	for (int i = 0; i < interSize; i++) {
@@ -188,8 +184,10 @@ void PathGenerator::PrepareExactPaths()
 				lastLineIt = lineIt;
 
 				if (lineIt % 2 == 0 ^ k >= 2) {
-					auto tangent = surfaces[k]->GetTangentAt(j * step, i * step);
-					glm::vec3 pos = tangent.normal * radius + tangent.pos;
+					auto tangent = offsetSurfaces[k]->GetTangentAt(j * step, i * step);
+					glm::vec3 pos = tangent.pos;
+					//if (k == 2)
+					//	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(tangent.pos));
 					if (pos.z > radius && tangent.normal.z > 0)
 						path.emplace_back(glm::vec3((pos.x - offset.x) / scale,
 							(pos.y - offset.y) / scale, pos.z - radius));

@@ -12,6 +12,13 @@ public:
 	glm::vec3 GetPointAt(float u, float v) override
 	{
 		auto tangent = surface->GetTangentAt(u, v);
+		if (std::dynamic_pointer_cast<Torus>(surface) != nullptr) 
+			if (v < 0.5f) {
+				tangent = surface->GetTangentAt(u, 0.5f);
+				tangent.pos.z *= std::max(v / 0.5f, 0.f);
+			}
+		
+		
 		if (!glm::isnan(tangent.normal.x))
 			return tangent.pos + distance * tangent.normal;
 		else
@@ -19,24 +26,24 @@ public:
 	}
 	TngSpace GetTangentAt(float u, float v) override
 	{
-		if (std::dynamic_pointer_cast<Torus>(surface)) {
-			glm::vec3 diffU[2], diffV[2], antiNormal;
-			TngSpace result;
-			result.pos = GetPointAt(u, v);
-			antiNormal = GetPointAt(u, v + 0.5f);
-			diffU[0] = GetPointAt(u + 0.25f, v);
-			diffU[1] = GetPointAt(u - 0.25f, v);
-			diffV[0] = GetPointAt(u, v + 0.25f);
-			diffV[1] = GetPointAt(u, v - 0.25f);
-			result.diffU = (diffU[1] - diffU[0]) * (float)-M_PI;
-			result.diffV = (diffV[1] - diffV[0]) * (float)-M_PI;
-			result.normal = glm::normalize(glm::cross(result.diffV, result.diffU));
-			return result;			
-		}
 		float d = 0.000001;
 		auto tangent = surface->GetTangentAt(u, v);
 		auto tangentDU = surface->GetTangentAt(u + d, v);
 		auto tangentDV = surface->GetTangentAt(u, v + d);
+		if (std::dynamic_pointer_cast<Torus>(surface) != nullptr) {			
+			if (v < 0.5f) {
+				tangent = surface->GetTangentAt(u, 0.5f);
+				tangent.pos.z *= std::max(v / 0.5f, 0.f);
+			}
+			if (v < 0.5f) {
+				tangentDU = surface->GetTangentAt(u + d, 0.5f);
+				tangentDU.pos.z *= std::max(v / 0.5f, 0.f);
+			}
+			if (v + d < 0.5f) {
+				tangentDV = surface->GetTangentAt(u, 0.5f);
+				tangentDV.pos.z *= (v + d) / 0.5f;
+			}			
+		}
 		if (!glm::isnan(tangent.normal.x)) {
 			tangent.pos += tangent.normal * distance;
 			tangent.diffU = (tangentDU.pos + tangentDU.normal * distance - tangent.pos) / d;
