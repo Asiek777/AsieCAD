@@ -2,6 +2,23 @@
 
 
 
+#include <iosfwd>
+#include <iosfwd>
+#include <vector>
+#include <vector>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+
+
+
 #include "bezierPatch.h"
 #include "OffsetSurface.h"
 #include "sceneObject.h"
@@ -13,7 +30,7 @@ void PathGenerator::PreparePaths()
 	Initialize();
 	PrepareFatPaths();
 	PrepareExactPaths();
-	PrepareFlatPaths();
+	PrepareCircuitPaths();
 }
 
 void PathGenerator::Initialize()
@@ -186,7 +203,7 @@ void PathGenerator::PrepareExactPaths()
 	SavePathToFile("paths/test.k08", 0, 3);
 }
 
-void PathGenerator::PrepareFlatPaths()
+void PathGenerator::PrepareCircuitPaths()
 {
 	path.clear();
 	float radius = 0.5f;
@@ -214,7 +231,7 @@ void PathGenerator::PrepareFlatPaths()
 
 	for (int i = 0; i < circuitCount; i++) {
 		auto surface = surfaces[circuits[i].index];
-		int len = 100;
+		int len = SurfaceSize(surface) * 4;
 		if (!circuits[i].constU) {
 			float v = circuits[i].param;
 			for (int j = 0; j <= len; j++) {
@@ -224,12 +241,11 @@ void PathGenerator::PrepareFlatPaths()
 				normal = glm::normalize(normal) * radius;
 				if (!std::isnan(normal.x))
 					offsets[i].emplace_back(pos + normal);
-					//path.emplace_back(glm::vec3((pos + normal - offset) / scale, 0));
 			}
 		}
 		else {
 			float u = circuits[i].param;
-			for (int j = 1; j <= len; j++) {
+			for (int j = 1; j < len; j++) {
 				TngSpace tangent = surface->GetTangentAt(u, j / (float)len / 2 + 1 / 6.f);
 				glm::vec2 pos = glm::vec2(tangent.pos.x, tangent.pos.y);
 				glm::vec2 normal = glm::vec2(tangent.diffV.y, -tangent.diffV.x);
@@ -238,16 +254,18 @@ void PathGenerator::PrepareFlatPaths()
 				normal = glm::normalize(normal) * radius;
 				if (!std::isnan(normal.x))
 					offsets[i].emplace_back(pos + normal);
-				//path.emplace_back(glm::vec3((pos + normal - offset) / scale, 0));
 			}
 		}
 		if (circuits[i].isReversed)
 			std::reverse(offsets[i].begin(), offsets[i].end());
-		//path.emplace_back(glm::vec3(-1));
 	}
 
+	path.emplace_back(glm::vec3((glm::vec2(-4, 0) - offset) / scale, 1));
+	for (int j = 0; j < offsets[0].size() - 1; j++)
+		path.emplace_back(glm::vec3((offsets[0][j] - offset) / scale, 1));
+	path.emplace_back(glm::vec3(-1));
 	
-	std::vector<glm::vec2> ringRoad;
+	std::vector<glm::vec2> ringRoad{ glm::vec2(-4,0), glm::vec2(-1,0) };
 	const int partsLen = 15;
 	int parts[partsLen] = { 0,1,5,1,6,1,3,4,3,2,7,8,9,2,0 };
 	int start = 0;
@@ -270,6 +288,11 @@ void PathGenerator::PrepareFlatPaths()
 			if (isIntersecting)
 				break;
 			start = 0;
+			if(j == current.size() - 2) {
+				ringRoad.emplace_back(current[j]);
+				std::vector<glm::vec2> detour = CalcDetour(current[j], current[j + 1], next[0], radius);
+				ringRoad.insert(ringRoad.end(), detour.begin(), detour.end());
+			}
 		}
 	}
 	for (int i = 0; i < ringRoad.size(); i++)
@@ -285,8 +308,24 @@ void PathGenerator::PrepareFlatPaths()
 	//			SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(q.x, q.y, 0));
 	//	}
 
-	SavePathToFile("paths/test.f10", 0);
+	SavePathToFile("paths/test.f10", 0, 2.5);
 	
+}
+
+std::vector<glm::vec2> PathGenerator::CalcDetour(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, float radius)
+{
+	std::vector<glm::vec2> result;
+	p1 = p1 - p2;
+	p1 = glm::vec2(-p1.y, p1.x);
+	p1 = glm::normalize(p1) * radius;
+	p1 = p2 + p1;
+	float a1 = std::atan2f(p2.y - p1.y, p2.x - p1.x);
+	float a2 = std::atan2f(p3.y - p1.y, p3.x - p1.x);
+	if (a2 > a1)
+		a2 -= 2 * glm::pi<float>();
+	for (float a = a1; a > a2; a -= 0.02f)
+		result.emplace_back(p1 + radius * glm::vec2(std::cosf(a), std::sinf(a)));
+	return result;	
 }
 
 glm::vec2 PathGenerator::intersection(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, glm::vec2 p4)

@@ -3,6 +3,19 @@
 #include <vector>
 #include <glm/glm.hpp>
 #include <algorithm>
+#include <iosfwd>
+#include <iosfwd>
+#include <vector>
+#include <vector>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+#include <glm/detail/_vectorize.hpp>
+
 
 #include "surface.h"
 
@@ -24,7 +37,8 @@ class PathGenerator
 	int SurfaceSize(std::shared_ptr<Surface>& surface);
 	float GetHighAt(int x, int y);
 	void PrepareExactPaths();
-	void PrepareFlatPaths();
+	void PrepareCircuitPaths();
+	std::vector<glm::vec2> CalcDetour(glm::vec2 p1, glm::vec2 p2, glm::vec2 p3, float radius);
 	void ReducePath(std::vector<glm::vec3>& reducedPath);
 	void SavePathToFile(std::string filename, float minZ = 0, float maxZ = 7);
 	void AddToFile(float x, float y, float z);
