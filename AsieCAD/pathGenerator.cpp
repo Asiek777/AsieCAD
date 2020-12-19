@@ -92,7 +92,12 @@ int PathGenerator::SurfaceSize(std::shared_ptr<Surface>& surface)
 	glm::vec3 pos1 = surface->GetPointAt(0, 0);
 	glm::vec3 pos2 = surface->GetPointAt(0.25f, 0.25f);
 	glm::vec3 pos3 = surface->GetPointAt(0.5f, 0.5f);
-	return std::max((int)((glm::distance(pos1, pos2) + glm::distance(pos2, pos3)) * 5), 50);
+	int result = (int)((glm::distance(pos1, pos2) + glm::distance(pos2, pos3)) * 5);
+	if (result == 4)
+		return 8;
+	if (result == 15)
+		return 22;
+	return result;
 }
 
 float PathGenerator::GetHighAt(int x, int y)
@@ -136,13 +141,15 @@ void PathGenerator::PrepareExactPaths()
 		{{0,4}, glm::vec3(3.24, 3.22, -1.3)},
 		{{0,4}, glm::vec3(7.46, 3.44, -2.5)},
 		{{0,5}, glm::vec3(5.4, -3.74, -0.9)},
+		//{{0,6}, glm::vec3(4.7, 3.8, 0.6)},
+		//{{4,6}, glm::vec3(4.7, 3.8, 0.6)},
 	};
 	
 	for (int i = 0; i < interSize; i++) {
 		int index = inters[i].index[1];
 		SceneObject::SceneObjects[0]->UpdatePosition(inters[i].cursorPos);
 		auto end = SceneObject::SceneObjects.size();
-		Surface::FindIntersection(offsetSurfaces[0], offsetSurfaces[index]);
+		Surface::FindIntersection(offsetSurfaces[inters[i].index[0]], offsetSurfaces[index]);
 		
 		auto intersectionCurve = std::dynamic_pointer_cast<IntersectionCurve>(
 			SceneObject::SceneObjects.back());
@@ -174,28 +181,40 @@ void PathGenerator::PrepareExactPaths()
 		float step = 1.f / stepCount;
 		
 		for (int i = 0; i < stepCount; i++){
+			std::vector<glm::vec3> part = std::vector<glm::vec3>();
 			int lineIt = 0, lastLineIt = 0;
 			std::vector<float>& line = izolines[k].lines[i];
 			for (int j = 0; j < stepCount;j++) {
 				while (lineIt < line.size() && j * step > line[lineIt])
 					lineIt++;
-				if(lineIt > lastLineIt)
-					path.emplace_back(glm::vec3(-1));
+				if (lineIt > lastLineIt) {
+					if (lineIt % 2 == 0 ^ k >= 2)
+						part.emplace_back(glm::vec3(-1));
+						
+					auto tangent = offsetSurfaces[k]->GetTangentAt(line[lastLineIt], i * step);
+					glm::vec3 pos = tangent.pos;
+					if (pos.z > radius && tangent.normal.z > 0)
+						part.emplace_back(glm::vec3((pos.x - offset.x) / scale,
+							(pos.y - offset.y) / scale, pos.z - radius));
+					if (lineIt % 2 == 1 ^ k >= 2)
+						part.emplace_back(glm::vec3(-1));
+				}
 				lastLineIt = lineIt;
 
-				if (lineIt % 2 == 0 ^ k >= 2) {
+				if (lineIt % 2 == 0 ^ (k >= 2 && k < 6)) {
 					auto tangent = offsetSurfaces[k]->GetTangentAt(j * step, i * step);
 					glm::vec3 pos = tangent.pos;
-					//if (k == 2)
-					//	SceneObject::SceneObjects.emplace_back(std::make_shared<Point>(tangent.pos));
 					if (pos.z > radius && tangent.normal.z > 0)
-						path.emplace_back(glm::vec3((pos.x - offset.x) / scale,
+						part.emplace_back(glm::vec3((pos.x - offset.x) / scale,
 							(pos.y - offset.y) / scale, pos.z - radius));
 				}
 			}
-			if (path.back() != glm::vec3(-1))
-				path.emplace_back(glm::vec3(-1));
+			if (i % 2)
+				std::reverse(part.begin(), part.end());
+			path.insert(path.end(), part.begin(), part.end());
+			
 		}
+		path.emplace_back(glm::vec3(-1));
 	}
 	SavePathToFile("paths/test.k08", 0, 3);
 }
@@ -294,7 +313,7 @@ void PathGenerator::PrepareCircuitPaths()
 	}
 	for (int i = 0; i < ringRoad.size(); i++)
 		path.emplace_back(glm::vec3((ringRoad[i] - offset) / scale, 0));
-	SavePathToFile("paths/test.f10", 0, 2.5);
+	SavePathToFile("paths/test.f10", 0);
 	
 }
 
@@ -344,7 +363,7 @@ void PathGenerator::PrepareFlatPaths()
 {
 	path.clear();
 	float x, y;
-	for (int i = MAP_SIZE * -.07f; i < MAP_SIZE * 1.07; i += 37) {
+	for (int i = MAP_SIZE * -.07f; i < MAP_SIZE * 1.07; i += 59) {
 		std::vector<glm::vec3> oneLine;
 		for (int j =  MAP_SIZE * 1.07 - 1; 	j >= MAP_SIZE * .5f; j -= 1) {
 			if (!IsColliding(i, j)) {
@@ -396,13 +415,21 @@ bool PathGenerator::IsColliding(int x, int y)
 
 void PathGenerator::ReducePath(std::vector<glm::vec3>& reducedPath)
 {
+	while (reducedPath.front() == glm::vec3(-1))
+		reducedPath.erase(reducedPath.begin());
+	while (reducedPath.back() == glm::vec3(-1))
+		reducedPath.erase(reducedPath.end() - 1);
 	for (int j = 0; j < 12; j++)
 		for (int i = 0; i < reducedPath.size() - 2; i++) {
+			if (reducedPath[i] != glm::vec3(-1) && 
+				reducedPath[i + 1] != glm::vec3(-1) && 
+				reducedPath[i + 2] != glm::vec3(-1)) {
 			glm::vec3 a = glm::normalize(reducedPath[i + 1] - reducedPath[i]);
 			glm::vec3 b = glm::normalize(reducedPath[i + 2] - reducedPath[i]);
 			float cos = glm::dot(a, b);
 			if (cos > 0.999999)
 				reducedPath.erase(reducedPath.begin() + i + 1);
+			}
 		}
 }
 
